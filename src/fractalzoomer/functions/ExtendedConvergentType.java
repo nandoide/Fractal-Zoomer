@@ -237,7 +237,7 @@ public abstract class ExtendedConvergentType extends Julia {
             return;
         }
         else if(sts.statisticGroup == 4) {
-            statistic = new RootColoring(sts.rootIterationsScaling, max_iterations, sts.rootColors, sts.rootSmooting, this, sts.unmmapedRootColor.getRGB(), sts.rootScalingCapto1);
+            statistic = new RootColoring(sts.rootIterationsScaling, max_iterations, sts.rootColors, sts.rootSmoothing, this, sts.unmmapedRootColor.getRGB(), sts.rootScalingCapto1);
             return;
         }
 

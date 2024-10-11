@@ -7,6 +7,7 @@ import de.articdive.jnoise.generators.noisegen.opensimplex.FastSimplexNoiseGener
 import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
 import fractalzoomer.core.TaskRender;
 import fractalzoomer.main.CommonFunctions;
+import fractalzoomer.main.Constants;
 import fractalzoomer.main.MainWindow;
 import fractalzoomer.palettes.CustomPalette;
 import fractalzoomer.settings.SettingsPalette;
@@ -1002,11 +1003,8 @@ public class CustomPaletteEditorDialog extends JDialog {
         color_space_panel.setLayout(new FlowLayout());
         color_space_panel.setBackground(MainWindow.bg_color);
 
-        String[] color_space_str = {"RGB", "HSB", "Exp", "Square", "Sqrt", "RYB", "Lab", "XYZ", "LCH_ab", "Bezier RGB", "HSL", "Luv", "LCH_uv", "OKLab", "LCH_oklab", "JzAzBz", "LCH_JzAzBz", "HSL_uv", "HPL_uv", "HWB", "Linear sRGB", "yCbCr"};
-
-        combo_box_color_space = new JComboBox<>(color_space_str);
+        combo_box_color_space = new JComboBox<>(Constants.colorSpaces);
         combo_box_color_space.setSelectedIndex(color_space);
-        combo_box_color_space.setFocusable(false);
         combo_box_color_space.setToolTipText("Sets the color space option.");
 
         combo_box_color_space.addActionListener(e -> {
@@ -1037,7 +1035,6 @@ public class CustomPaletteEditorDialog extends JDialog {
 
         combo_box_color_interp = new JComboBox<>(color_interp_str);
         combo_box_color_interp.setSelectedIndex(color_interpolation);
-        combo_box_color_interp.setFocusable(false);
         combo_box_color_interp.setToolTipText("Sets the color interpolation option.");
 
         combo_box_color_interp.addActionListener(e -> {
@@ -2585,6 +2582,9 @@ public class CustomPaletteEditorDialog extends JDialog {
                 min_sat = max_sat = generator.nextDouble() * 3;
             }
 
+            //double start = (0.5) * 120;
+            //double rotation = (-1.5) * 360;
+            //gamma = 1;
             ArrayList<int[]> colors = Cubehelix.makePalette(start, rotation, gamma, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, min_sat, max_sat, 0.0, 1.0, palette.length, false);
 
             for (int m = 0; m < colors.size(); m++) {

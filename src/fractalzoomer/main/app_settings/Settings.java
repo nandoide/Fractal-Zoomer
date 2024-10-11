@@ -63,6 +63,7 @@ public class Settings implements Constants {
     public long old_max_iterations;
     public double circle_period;
     public int color_smoothing_method;
+    public int color_space;
     public Color fractal_color;
     public Color dem_color;
     public Color special_color;
@@ -170,6 +171,7 @@ public class Settings implements Constants {
         circle_period = 1;
 
         color_smoothing_method = INTERPOLATION_LINEAR;
+        color_space = COLOR_SPACE_RGB;
 
         special_use_palette_color = true;
 
@@ -1316,7 +1318,7 @@ public class Settings implements Constants {
             pps.sts.rootShadingFunction = defaults.pps.sts.rootShadingFunction;
             pps.sts.revertRootShading = defaults.pps.sts.revertRootShading;
             pps.sts.highlightRoots = defaults.pps.sts.highlightRoots;
-            pps.sts.rootSmooting = defaults.pps.sts.rootSmooting;
+            pps.sts.rootSmoothing = defaults.pps.sts.rootSmoothing;
             pps.sts.rootColors = defaults.pps.sts.rootColors;
 
             MagnetColorOffset = defaults.MagnetColorOffset;
@@ -1349,7 +1351,7 @@ public class Settings implements Constants {
             pps.sts.rootShadingFunction = ((SettingsFractals1080) settings).getRootShadingFunction();
             pps.sts.revertRootShading = ((SettingsFractals1080) settings).getRevertRootShading();
             pps.sts.highlightRoots = ((SettingsFractals1080) settings).getHighlightRoots();
-            pps.sts.rootSmooting = ((SettingsFractals1080) settings).getRootSmooting();
+            pps.sts.rootSmoothing = ((SettingsFractals1080) settings).getRootSmooting();
             pps.sts.rootColors = ((SettingsFractals1080) settings).getRootColors();
 
             MagnetColorOffset = ((SettingsFractals1080) settings).getMagnetColorOffset();
@@ -3201,15 +3203,15 @@ public class Settings implements Constants {
     public void applyStaticSettings() {
 
         if (ps.color_choice == CUSTOM_PALETTE_ID) {
-            TaskRender.palette_outcoloring = new CustomPalette(ps.custom_palette, ps.color_interpolation, ps.color_space, ps.reversed_palette, ps.scale_factor_palette_val, ps.processing_alg, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method).getRawPalette();
+            TaskRender.palette_outcoloring = new CustomPalette(ps.custom_palette, ps.color_interpolation, ps.color_space, ps.reversed_palette, ps.scale_factor_palette_val, ps.processing_alg, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();
         } else {
-            TaskRender.palette_outcoloring = new PresetPalette(ps.color_choice, ps.direct_palette, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method).getRawPalette();
+            TaskRender.palette_outcoloring = new PresetPalette(ps.color_choice, ps.direct_palette, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();
         }
 
         if (ps2.color_choice == CUSTOM_PALETTE_ID) {
-            TaskRender.palette_incoloring = new CustomPalette(ps2.custom_palette, ps2.color_interpolation, ps2.color_space, ps2.reversed_palette, ps2.scale_factor_palette_val, ps2.processing_alg, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method).getRawPalette();
+            TaskRender.palette_incoloring = new CustomPalette(ps2.custom_palette, ps2.color_interpolation, ps2.color_space, ps2.reversed_palette, ps2.scale_factor_palette_val, ps2.processing_alg, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();
         } else {
-            TaskRender.palette_incoloring = new PresetPalette(ps2.color_choice, ps2.direct_palette, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method).getRawPalette();
+            TaskRender.palette_incoloring = new PresetPalette(ps2.color_choice, ps2.direct_palette, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();
         }
 
         NNormDistanceBailoutCondition.A = fns.cbs.norm_a;
@@ -3238,6 +3240,7 @@ public class Settings implements Constants {
         TaskRender.gradient = CustomPalette.createGradient(gs.colorA.getRGB(), gs.colorB.getRGB(), Constants.GRADIENT_LENGTH, gs.gradient_interpolation, gs.gradient_color_space, gs.gradient_reversed, 0);
 
         TaskRender.COLOR_SMOOTHING_METHOD = color_smoothing_method;
+        TaskRender.COLOR_SPACE = color_space;
 
         SkipBailoutCondition.SKIPPED_ITERATION_COUNT = fns.skip_bailout_iterations;
 

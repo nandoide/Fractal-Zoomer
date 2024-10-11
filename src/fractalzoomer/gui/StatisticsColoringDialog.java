@@ -866,7 +866,7 @@ public class StatisticsColoringDialog extends JDialog {
         rootSmoothing = new JCheckBox("Contour Smoothing");
         rootSmoothing.setToolTipText("Enables the contour smoothing.");
         rootSmoothing.setBackground(MainWindow.bg_color);
-        rootSmoothing.setSelected(sts.rootSmooting);
+        rootSmoothing.setSelected(sts.rootSmoothing);
         rootSmoothing.setFocusable(false);
 
 
@@ -1731,7 +1731,7 @@ public class StatisticsColoringDialog extends JDialog {
             sts.rootShadingFunction = root_shading_function_combo.getSelectedIndex();
             sts.highlightRoots = hightlight.isSelected();
             sts.rootColors = tempColors;
-            sts.rootSmooting = rootSmoothing.isSelected();
+            sts.rootSmoothing = rootSmoothing.isSelected();
             sts.unmmapedRootColor = unmmapped_root_label.getBackground();
             sts.rootShadingColor = root_shading_color_label.getBackground();
             sts.rootScalingCapto1 = root_Scale_cap.isSelected();

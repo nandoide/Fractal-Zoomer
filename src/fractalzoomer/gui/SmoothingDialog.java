@@ -8,6 +8,7 @@ import fractalzoomer.main.app_settings.Settings;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 import static fractalzoomer.main.Constants.color_interp_str;
 
@@ -19,6 +20,20 @@ public class SmoothingDialog extends JDialog {
 
     private MainWindow ptra;
     private JOptionPane optionPane;
+
+    class Item {
+        public String label;
+        public int value;
+        public Item(String label, int value) {
+            this.label = label;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
 
     public SmoothingDialog(MainWindow ptr, Settings s) {
         
@@ -61,6 +76,26 @@ public class SmoothingDialog extends JDialog {
         combo_box_color_interp.setFocusable(false);
         combo_box_color_interp.setToolTipText("Sets the color interpolation method.");
 
+        ArrayList<Item> items = new ArrayList<>();
+        for(int i = 0; i < Constants.colorSpaces.length; i++) {
+            if(i != Constants.COLOR_SPACE_BEZIER_RGB) {
+                items.add(new Item(Constants.colorSpaces[i], i));
+            }
+        }
+        Item[] items_ar = new Item[items.size()];
+        items_ar = items.toArray(items_ar);
+
+        int selectedItemIndex = 0;
+        for(int i = 0; i < items_ar.length; i++) {
+            if(s.color_space == items_ar[i].value) {
+                selectedItemIndex = i;
+            }
+        }
+        final JComboBox<Item> combo_box_color_space = new JComboBox<>(items_ar);
+        combo_box_color_space.setSelectedIndex(selectedItemIndex);
+        combo_box_color_space.setFocusable(false);
+        combo_box_color_space.setToolTipText("Sets the color space.");
+
         JComboBox<String> color_selection = new JComboBox<>(new String[] {"n - 1, n", "n, n + 1"});
         color_selection.setSelectedIndex(s.fns.smoothing_color_selection);
         color_selection.setFocusable(false);
@@ -99,7 +134,12 @@ public class SmoothingDialog extends JDialog {
             "Converging:", converging_alg_combo,
             " ",
             "Set the color interpolation method.",
+                "Interpolation Method:",
             combo_box_color_interp,
+                " ",
+                "Set the color space.",
+                "Color Space:",
+                combo_box_color_space,
             " ",};
 
         optionPane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
@@ -154,6 +194,7 @@ public class SmoothingDialog extends JDialog {
                             s.fns.converging_smooth_algorithm = converging_alg_combo.getSelectedIndex();
                             s.color_smoothing_method = combo_box_color_interp.getSelectedIndex();
                             s.fns.smoothing_fractional_transfer_method = fractional_transfer.getSelectedIndex();
+                            s.color_space = ((Item)combo_box_color_space.getSelectedItem()).value;
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                             return;

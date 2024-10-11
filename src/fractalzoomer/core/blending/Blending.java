@@ -11,9 +11,10 @@ public abstract class Blending {
     protected InterpolationMethod method;
     protected boolean reverseColors;
     
-    protected Blending(int color_interpolation) {
+    protected Blending(int color_interpolation, int color_space) {
         
         method = InterpolationMethod.create(color_interpolation);
+        method.setColorSpace(color_space);
 
     }
 

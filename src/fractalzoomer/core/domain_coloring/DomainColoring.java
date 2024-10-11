@@ -88,7 +88,7 @@ public abstract class DomainColoring {
 
     protected double shadingPercent;
 
-    protected DomainColoring(int coloring_mode, PaletteColor palette, TransferFunction color_transfer, int color_cycling_location, GeneratedPaletteSettings gps, int color_interpolation, Blending blending, double countourFactor) {
+    protected DomainColoring(int coloring_mode, PaletteColor palette, TransferFunction color_transfer, int color_cycling_location, GeneratedPaletteSettings gps, int color_interpolation, Blending blending, double countourFactor, int color_space) {
 
         this.coloring_mode = coloring_mode;
         this.palette = palette;
@@ -116,6 +116,7 @@ public abstract class DomainColoring {
         this.blending = blending;
 
         method = InterpolationMethod.create(color_interpolation);
+        method.setColorSpace(color_space);
     }
 
     public abstract int getDomainColor(Complex res);
@@ -402,7 +403,7 @@ public abstract class DomainColoring {
             tempBlue = grad_color & 0xff;
         }
 
-        return method.interpolate(red, green, blue, tempRed, tempGreen, tempBlue, b);
+        return method.interpolateColors(red, green, blue, tempRed, tempGreen, tempBlue, b);
 
     }
 
@@ -459,7 +460,7 @@ public abstract class DomainColoring {
             }
         }
 
-        return method.interpolate(red, green, blue, tempRed, tempGreen, tempBlue, b);
+        return method.interpolateColors(red, green, blue, tempRed, tempGreen, tempBlue, b);
 
     }
 
@@ -517,7 +518,7 @@ public abstract class DomainColoring {
             tempBlue = argColor & 0xff;
         }
 
-        return method.interpolate(red, green, blue, tempRed, tempGreen, tempBlue, coef);
+        return method.interpolateColors(red, green, blue, tempRed, tempGreen, tempBlue, coef);
     }
 
     protected int applyNormContours(int color, double norm) {

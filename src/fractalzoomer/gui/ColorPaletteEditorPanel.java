@@ -542,7 +542,6 @@ class ColorPoint implements Comparable<ColorPoint> {
                 String[] bg_mode = {"White", "Gradient"};
                 backgroundMode = new JComboBox<>(bg_mode);
                 backgroundMode.setSelectedIndex(0);
-                backgroundMode.setFocusable(false);
                 backgroundMode.setToolTipText("Changes the color channel background.");
 
                 backgroundMode.addActionListener( e -> {
@@ -556,7 +555,6 @@ class ColorPoint implements Comparable<ColorPoint> {
                 String[] color_interp_str = {"Linear", "Cosine", "Acceleration", "Deceleration", "Exponential", "Catmull-Rom", "Catmull-Rom 2", "Sigmoid", "Sine", "Square Root", "3rd Degree Poly", "5th Degree Poly", "Exponential 2", "Cube Root", "Fourth Root", "Smooth Transition", "Quarter Sine"};
                 interpolationMode = new JComboBox<>(color_interp_str);
                 interpolationMode.setSelectedIndex(0);
-                interpolationMode.setFocusable(false);
                 interpolationMode.setToolTipText("Sets the color interpolation method.");
 
                 interpolationMode.addActionListener( e -> {
@@ -574,7 +572,6 @@ class ColorPoint implements Comparable<ColorPoint> {
                         "Custom out", "Custom in", "Neon 3", "1 - x", "1 - (2*x - 1)^2", "(2*x - 1)^2", "1 - (2*x - 1)^4", "(2*x - 1)^4", "sin(x*pi)", "1 - sin(x*pi)", "Triangle", "1 - Triangle", "0.5 - 0.5*cos(2*x*pi)", "0.5 + 0.5*cos(2*x*pi)", "Sqrt Triangle", "1 - Sqrt Triangle"};
                 interpolationColorMode = new JComboBox<>(color_interp_str);
                 interpolationColorMode.setSelectedIndex(0);
-                interpolationColorMode.setFocusable(false);
                 interpolationColorMode.setToolTipText("Sets the color mode.");
 
                 interpolationColorMode.addActionListener( e -> {

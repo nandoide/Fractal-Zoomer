@@ -226,6 +226,7 @@ public abstract class TaskRender implements Runnable {
 
     public static boolean USE_DIRECT_COLOR;
     public static int COLOR_SMOOTHING_METHOD;
+    public static int COLOR_SPACE;
 
     public static LongAccumulator PostProcessingCalculationTime;
 
@@ -1007,7 +1008,7 @@ public abstract class TaskRender implements Runnable {
 
         rgbs = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         fractal = fractalFactory(function, xCenter.doubleValue(), yCenter.doubleValue(), size, size.doubleValue(), max_iterations, perturbation, perturbation_vals, variable_perturbation, user_perturbation_algorithm, user_perturbation_conditions, user_perturbation_condition_formula, perturbation_user_formula, init_val, initial_vals, variable_init_value, user_initial_value_algorithm, user_initial_value_conditions, user_initial_value_condition_formula, initial_value_user_formula, plane_type, Settings.fromDDArray(rotation_vals), Settings.fromDDArray(rotation_center), burning_ship, mandel_grass, mandel_grass_vals, user_plane, user_plane_algorithm, user_plane_conditions, user_plane_condition_formula, plane_transform_center, plane_transform_center_hp, plane_transform_angle, plane_transform_radius, plane_transform_scales, plane_transform_wavelength, waveType, plane_transform_angle2, plane_transform_sides, plane_transform_amount, z_exponent, z_exponent_complex, coefficients, coefficients_im, z_exponent_nova, relaxation, nova_method, bail_technique, user_formula, user_formula2, user_formula_iteration_based, user_formula_conditions, user_formula_condition_formula, coupling, user_formula_coupled, coupling_method, coupling_amplitude, coupling_frequency, coupling_seed, bailout_test_algorithm, bailout, bailout_test_user_formula, bailout_test_user_formula2, bailout_test_comparison, n_norm, out_coloring_algorithm, user_out_coloring_algorithm, outcoloring_formula, user_outcoloring_conditions, user_outcoloring_condition_formula, in_coloring_algorithm, user_in_coloring_algorithm, incoloring_formula, user_incoloring_conditions, user_incoloring_condition_formula, smoothing, periodicity_checking, gcs, lyapunovExpression, ots, exterior_de, exterior_de_factor, inverse_dem, escaping_smooth_algorithm, converging_smooth_algorithm, sts, useLyapunovExponent, user_fz_formula, user_dfz_formula, user_ddfz_formula, user_dddfz_formula, kleinianLine, kleinianK, kleinianM, laguerre_deg, durand_kernel_init_val, mps, lyapunovFunction, lyapunovExponentFunction, lyapunovVariableId, user_relaxation_formula, user_nova_addend_formula, gcps, igs, lfns, newton_hines_k, tcs, lyapunovInitialValue, lyapunovInitializationIteratons, lyapunovskipBailoutCheck, root_initialization_method, preffs, postffs, ips, defaultNovaInitialValue, cbs, useGlobalMethod, globalMethodFactor, period, variable_re, variable_im, inflections_re, inflections_im, inflectionsPower);
 
@@ -1021,7 +1022,7 @@ public abstract class TaskRender implements Runnable {
 
         setTrueColoringOptions(tcs);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
         iteration_algorithm = new FractalIterationAlgorithm(fractal);
@@ -1031,7 +1032,7 @@ public abstract class TaskRender implements Runnable {
         convergent_bailout = fractal.getConvergentBailout();
 
         if (domain_coloring) {
-            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD);
+            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD, COLOR_SPACE);
         }
 
         rendering_done = 0;
@@ -1103,7 +1104,7 @@ public abstract class TaskRender implements Runnable {
 
         rgbs = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         fractal = fractalFactory(function, xCenter.doubleValue(), yCenter.doubleValue(), size, size.doubleValue(), max_iterations, perturbation, perturbation_vals, variable_perturbation, user_perturbation_algorithm, user_perturbation_conditions, user_perturbation_condition_formula, perturbation_user_formula, init_val, initial_vals, variable_init_value, user_initial_value_algorithm, user_initial_value_conditions, user_initial_value_condition_formula, initial_value_user_formula, plane_type, Settings.fromDDArray(rotation_vals), Settings.fromDDArray(rotation_center), burning_ship, mandel_grass, mandel_grass_vals, user_plane, user_plane_algorithm, user_plane_conditions, user_plane_condition_formula, plane_transform_center, plane_transform_center_hp, plane_transform_angle, plane_transform_radius, plane_transform_scales, plane_transform_wavelength, waveType, plane_transform_angle2, plane_transform_sides, plane_transform_amount, z_exponent, z_exponent_complex, coefficients, coefficients_im, z_exponent_nova, relaxation, nova_method, bail_technique, user_formula, user_formula2, user_formula_iteration_based, user_formula_conditions, user_formula_condition_formula, coupling, user_formula_coupled, coupling_method, coupling_amplitude, coupling_frequency, coupling_seed, bailout_test_algorithm, bailout, bailout_test_user_formula, bailout_test_user_formula2, bailout_test_comparison, n_norm, out_coloring_algorithm, user_out_coloring_algorithm, outcoloring_formula, user_outcoloring_conditions, user_outcoloring_condition_formula, in_coloring_algorithm, user_in_coloring_algorithm, incoloring_formula, user_incoloring_conditions, user_incoloring_condition_formula, smoothing, periodicity_checking, gcs, lyapunovExpression, ots, exterior_de, exterior_de_factor, inverse_dem, escaping_smooth_algorithm, converging_smooth_algorithm, sts, useLyapunovExponent, user_fz_formula, user_dfz_formula, user_ddfz_formula, user_dddfz_formula, kleinianLine, kleinianK, kleinianM, laguerre_deg, durand_kernel_init_val, mps, lyapunovFunction, lyapunovExponentFunction, lyapunovVariableId, user_relaxation_formula, user_nova_addend_formula, gcps, igs, lfns, newton_hines_k, tcs, lyapunovInitialValue, lyapunovInitializationIteratons, lyapunovskipBailoutCheck, root_initialization_method, preffs, postffs, ips, defaultNovaInitialValue, cbs, useGlobalMethod, globalMethodFactor, period, variable_re, variable_im, inflections_re, inflections_im, inflectionsPower);
 
@@ -1117,7 +1118,7 @@ public abstract class TaskRender implements Runnable {
 
         setTrueColoringOptions(tcs);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
         iteration_algorithm = new FractalIterationAlgorithm(fractal);
@@ -1127,7 +1128,7 @@ public abstract class TaskRender implements Runnable {
         convergent_bailout = fractal.getConvergentBailout();
 
         if (domain_coloring) {
-            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD);
+            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD, COLOR_SPACE);
         }
 
         rendering_done = 0;
@@ -1224,7 +1225,7 @@ public abstract class TaskRender implements Runnable {
 
         rgbs = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         fractal = juliaFactory(function, xCenter.doubleValue(), yCenter.doubleValue(), size, size.doubleValue(), max_iterations, plane_type, apply_plane_on_julia, apply_plane_on_julia_seed, Settings.fromDDArray(rotation_vals), Settings.fromDDArray(rotation_center), burning_ship, mandel_grass, mandel_grass_vals, user_plane, user_plane_algorithm, user_plane_conditions, user_plane_condition_formula, plane_transform_center, plane_transform_center_hp, plane_transform_angle, plane_transform_radius, plane_transform_scales, plane_transform_wavelength, waveType, plane_transform_angle2, plane_transform_sides, plane_transform_amount, z_exponent, z_exponent_complex, coefficients, coefficients_im, z_exponent_nova, relaxation, nova_method, bail_technique, user_formula, user_formula2, user_formula_iteration_based, user_formula_conditions, user_formula_condition_formula, coupling, user_formula_coupled, coupling_method, coupling_amplitude, coupling_frequency, coupling_seed, bailout_test_algorithm, bailout, bailout_test_user_formula, bailout_test_user_formula2, bailout_test_comparison, n_norm, out_coloring_algorithm, user_out_coloring_algorithm, outcoloring_formula, user_outcoloring_conditions, user_outcoloring_condition_formula, in_coloring_algorithm, user_in_coloring_algorithm, incoloring_formula, user_incoloring_conditions, user_incoloring_condition_formula, smoothing, periodicity_checking, gcs, lyapunovExpression, ots, exterior_de, exterior_de_factor, inverse_dem, escaping_smooth_algorithm, converging_smooth_algorithm, sts, useLyapunovExponent, lyapunovFunction, lyapunovExponentFunction, lyapunovVariableId, user_fz_formula, user_dfz_formula, user_ddfz_formula, user_dddfz_formula, user_relaxation_formula, user_nova_addend_formula, laguerre_deg, gcps, lfns, newton_hines_k, tcs, lyapunovInitialValue, lyapunovInitializationIteratons, lyapunovskipBailoutCheck, preffs, postffs, ips, juliter, juliterIterations, juliterIncludeInitialIterations, defaultNovaInitialValue, perturbation, perturbation_vals, variable_perturbation, user_perturbation_algorithm, perturbation_user_formula, user_perturbation_conditions, user_perturbation_condition_formula, init_value, initial_vals, variable_init_value, user_initial_value_algorithm, initial_value_user_formula, user_initial_value_conditions, user_initial_value_condition_formula, cbs, useGlobalMethod, globalMethodFactor, variable_re, variable_im, inflections_re, inflections_im, inflectionsPower, xJuliaCenter, yJuliaCenter);
 
@@ -1239,7 +1240,7 @@ public abstract class TaskRender implements Runnable {
 
         setTrueColoringOptions(tcs);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
         iteration_algorithm = new JuliaIterationAlgorithm(fractal);
@@ -1252,7 +1253,7 @@ public abstract class TaskRender implements Runnable {
         convergent_bailout = fractal.getConvergentBailout();
 
         if (domain_coloring) {
-            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD);
+            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD, COLOR_SPACE);
         }
 
         rendering_done = 0;
@@ -1324,7 +1325,7 @@ public abstract class TaskRender implements Runnable {
 
         rgbs = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         fractal = juliaFactory(function, xCenter.doubleValue(), yCenter.doubleValue(), size, size.doubleValue(), max_iterations, plane_type, apply_plane_on_julia, apply_plane_on_julia_seed, Settings.fromDDArray(rotation_vals), Settings.fromDDArray(rotation_center), burning_ship, mandel_grass, mandel_grass_vals, user_plane, user_plane_algorithm, user_plane_conditions, user_plane_condition_formula, plane_transform_center, plane_transform_center_hp, plane_transform_angle, plane_transform_radius, plane_transform_scales, plane_transform_wavelength, waveType, plane_transform_angle2, plane_transform_sides, plane_transform_amount, z_exponent, z_exponent_complex, coefficients, coefficients_im, z_exponent_nova, relaxation, nova_method, bail_technique, user_formula, user_formula2, user_formula_iteration_based, user_formula_conditions, user_formula_condition_formula, coupling, user_formula_coupled, coupling_method, coupling_amplitude, coupling_frequency, coupling_seed, bailout_test_algorithm, bailout, bailout_test_user_formula, bailout_test_user_formula2, bailout_test_comparison, n_norm, out_coloring_algorithm, user_out_coloring_algorithm, outcoloring_formula, user_outcoloring_conditions, user_outcoloring_condition_formula, in_coloring_algorithm, user_in_coloring_algorithm, incoloring_formula, user_incoloring_conditions, user_incoloring_condition_formula, smoothing, periodicity_checking, gcs, lyapunovExpression, ots, exterior_de, exterior_de_factor, inverse_dem, escaping_smooth_algorithm, converging_smooth_algorithm, sts, useLyapunovExponent, lyapunovFunction, lyapunovExponentFunction, lyapunovVariableId, user_fz_formula, user_dfz_formula, user_ddfz_formula, user_dddfz_formula, user_relaxation_formula, user_nova_addend_formula, laguerre_deg, gcps, lfns, newton_hines_k, tcs, lyapunovInitialValue, lyapunovInitializationIteratons, lyapunovskipBailoutCheck, preffs, postffs, ips, juliter, juliterIterations, juliterIncludeInitialIterations, defaultNovaInitialValue, perturbation, perturbation_vals, variable_perturbation, user_perturbation_algorithm, perturbation_user_formula, user_perturbation_conditions, user_perturbation_condition_formula, init_value, initial_vals, variable_init_value, user_initial_value_algorithm, initial_value_user_formula, user_initial_value_conditions, user_initial_value_condition_formula, cbs,  useGlobalMethod, globalMethodFactor, variable_re, variable_im, inflections_re, inflections_im, inflectionsPower, xJuliaCenter, yJuliaCenter);
 
@@ -1339,7 +1340,7 @@ public abstract class TaskRender implements Runnable {
 
         setTrueColoringOptions(tcs);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
         iteration_algorithm = new JuliaIterationAlgorithm(fractal);
@@ -1351,7 +1352,7 @@ public abstract class TaskRender implements Runnable {
         convergent_bailout = fractal.getConvergentBailout();
 
         if (domain_coloring) {
-            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD);
+            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD, COLOR_SPACE);
         }
 
         rendering_done = 0;
@@ -1442,7 +1443,7 @@ public abstract class TaskRender implements Runnable {
             mapxCenter = -2;
         }
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         fractal = juliaFactory(function, mapxCenter, mapyCenter, size, size.doubleValue(), max_iterations, plane_type, apply_plane_on_julia, apply_plane_on_julia_seed, Settings.fromDDArray(rotation_vals), Settings.fromDDArray(rotation_center), burning_ship, mandel_grass, mandel_grass_vals, user_plane, user_plane_algorithm, user_plane_conditions, user_plane_condition_formula, plane_transform_center, plane_transform_center_hp, plane_transform_angle, plane_transform_radius, plane_transform_scales, plane_transform_wavelength, waveType, plane_transform_angle2, plane_transform_sides, plane_transform_amount, z_exponent, z_exponent_complex, coefficients, coefficients_im, z_exponent_nova, relaxation, nova_method, bail_technique, user_formula, user_formula2, user_formula_iteration_based, user_formula_conditions, user_formula_condition_formula, coupling, user_formula_coupled, coupling_method, coupling_amplitude, coupling_frequency, coupling_seed, bailout_test_algorithm, bailout, bailout_test_user_formula, bailout_test_user_formula2, bailout_test_comparison, n_norm, out_coloring_algorithm, user_out_coloring_algorithm, outcoloring_formula, user_outcoloring_conditions, user_outcoloring_condition_formula, in_coloring_algorithm, user_in_coloring_algorithm, incoloring_formula, user_incoloring_conditions, user_incoloring_condition_formula, smoothing, periodicity_checking, gcs, lyapunovExpression, ots, exterior_de, exterior_de_factor, inverse_dem, escaping_smooth_algorithm, converging_smooth_algorithm, sts, useLyapunovExponent, lyapunovFunction, lyapunovExponentFunction, lyapunovVariableId, user_fz_formula, user_dfz_formula, user_ddfz_formula, user_dddfz_formula, user_relaxation_formula, user_nova_addend_formula, laguerre_deg, gcps, lfns, newton_hines_k, tcs, lyapunovInitialValue, lyapunovInitializationIteratons, lyapunovskipBailoutCheck, preffs, postffs, ips, juliter, juliterIterations, juliterIncludeInitialIterations, defaultNovaInitialValue, perturbation, perturbation_vals, variable_perturbation, user_perturbation_algorithm, perturbation_user_formula, user_perturbation_conditions, user_perturbation_condition_formula, init_value, initial_vals, variable_init_value, user_initial_value_algorithm, initial_value_user_formula, user_initial_value_conditions, user_initial_value_condition_formula, cbs,  useGlobalMethod, globalMethodFactor, variable_re, variable_im, inflections_re, inflections_im, inflectionsPower, xJuliaCenter, yJuliaCenter);
         fractal.setJuliaMap(true);
@@ -1459,7 +1460,7 @@ public abstract class TaskRender implements Runnable {
 
         setTrueColoringOptions(tcs);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
         iteration_algorithm = new JuliaIterationAlgorithm(fractal);
@@ -1528,7 +1529,7 @@ public abstract class TaskRender implements Runnable {
         this.usePaletteForInColoring = usePaletteForInColoring;
         colorTransferFactory(transfer_function, transfer_function2, color_intensity, color_intensity2, color_density, color_density2);
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         fractal = juliaFactory(function, xCenter.doubleValue(), yCenter.doubleValue(), size, size.doubleValue(), max_iterations, plane_type, apply_plane_on_julia, apply_plane_on_julia_seed, Settings.fromDDArray(rotation_vals), Settings.fromDDArray(rotation_center), burning_ship, mandel_grass, mandel_grass_vals, user_plane, user_plane_algorithm, user_plane_conditions, user_plane_condition_formula, plane_transform_center, plane_transform_center_hp, plane_transform_angle, plane_transform_radius, plane_transform_scales, plane_transform_wavelength, waveType, plane_transform_angle2, plane_transform_sides, plane_transform_amount, z_exponent, z_exponent_complex, coefficients, coefficients_im, z_exponent_nova, relaxation, nova_method, bail_technique, user_formula, user_formula2, user_formula_iteration_based, user_formula_conditions, user_formula_condition_formula, coupling, user_formula_coupled, coupling_method, coupling_amplitude, coupling_frequency, coupling_seed, bailout_test_algorithm, bailout, bailout_test_user_formula, bailout_test_user_formula2, bailout_test_comparison, n_norm, out_coloring_algorithm, user_out_coloring_algorithm, outcoloring_formula, user_outcoloring_conditions, user_outcoloring_condition_formula, in_coloring_algorithm, user_in_coloring_algorithm, incoloring_formula, user_incoloring_conditions, user_incoloring_condition_formula, smoothing, periodicity_checking, gcs, lyapunovExpression, ots, exterior_de, exterior_de_factor, inverse_dem, escaping_smooth_algorithm, converging_smooth_algorithm, sts, useLyapunovExponent, lyapunovFunction, lyapunovExponentFunction, lyapunovVariableId, user_fz_formula, user_dfz_formula, user_ddfz_formula, user_dddfz_formula, user_relaxation_formula, user_nova_addend_formula, laguerre_deg, gcps, lfns, newton_hines_k, tcs, lyapunovInitialValue, lyapunovInitializationIteratons, lyapunovskipBailoutCheck, preffs, postffs, ips, juliter, juliterIterations, juliterIncludeInitialIterations, defaultNovaInitialValue, perturbation, perturbation_vals, variable_perturbation, user_perturbation_algorithm, perturbation_user_formula, user_perturbation_conditions, user_perturbation_condition_formula, init_value, initial_vals, variable_init_value, user_initial_value_algorithm, initial_value_user_formula, user_initial_value_conditions, user_initial_value_condition_formula, cbs, useGlobalMethod, globalMethodFactor, variable_re, variable_im, inflections_re, inflections_im, inflectionsPower, xJuliaCenter, yJuliaCenter);
 
@@ -1543,7 +1544,7 @@ public abstract class TaskRender implements Runnable {
 
         setTrueColoringOptions(tcs);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
         iteration_algorithm = new JuliaIterationAlgorithm(fractal);
@@ -1602,13 +1603,13 @@ public abstract class TaskRender implements Runnable {
         this.usePaletteForInColoring = usePaletteForInColoring;
         colorTransferFactory(transfer_function, transfer_function2, color_intensity, color_intensity2, color_density, color_density2);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         if (domain_coloring) {
-            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD);
+            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD, COLOR_SPACE);
         }
 
         rgbs = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
@@ -1660,13 +1661,13 @@ public abstract class TaskRender implements Runnable {
         this.usePaletteForInColoring = usePaletteForInColoring;
         colorTransferFactory(transfer_function, transfer_function2, color_intensity, color_intensity2, color_density, color_density2);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         if (domain_coloring) {
-            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD);
+            domainColoringFactory(ds, COLOR_SMOOTHING_METHOD, COLOR_SPACE);
         }
 
         rgbs = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
@@ -1710,10 +1711,10 @@ public abstract class TaskRender implements Runnable {
         progress = ptr.getProgressBar();
         progress_one_percent = progress.getMaximum() / 100;
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         ColorAlgorithm.DomainColoringBypass = domain_coloring;
 
@@ -1771,10 +1772,10 @@ public abstract class TaskRender implements Runnable {
         this.usePaletteForInColoring = usePaletteForInColoring;
         colorTransferFactory(transfer_function, transfer_function2, color_intensity, color_intensity2, color_density, color_density2);
 
-        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending);
+        blending = blendingFactory(COLOR_SMOOTHING_METHOD, color_blending.color_blending, COLOR_SPACE);
         blending.setReverseColors(color_blending.blending_reversed_colors);
 
-        interpolationFactory(COLOR_SMOOTHING_METHOD);
+        interpolationFactory(COLOR_SMOOTHING_METHOD, COLOR_SPACE);
 
         rgbs = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
@@ -3319,7 +3320,7 @@ public abstract class TaskRender implements Runnable {
                 b2 = dem_color & 0xFF;
             }
 
-            output_color = method.interpolate(r1, g1, b1, r2, g2, b2, 1 - nm.getDeCoefficient());
+            output_color = method.interpolateColors(r1, g1, b1, r2, g2, b2, 1 - nm.getDeCoefficient());
         }
 
         return output_color;
@@ -3416,7 +3417,7 @@ public abstract class TaskRender implements Runnable {
             int temp_green1 = !sts.revertRootShading ? sts.rootShadingColor.getGreen()  : 255 - sts.rootShadingColor.getGreen();
             int temp_blue1 = !sts.revertRootShading ? sts.rootShadingColor.getBlue()  : 255 - sts.rootShadingColor.getBlue();
 
-            return method.interpolate(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, highlightFactor);
+            return method.interpolateColors(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, highlightFactor);
 
         }
 
@@ -3660,7 +3661,7 @@ public abstract class TaskRender implements Runnable {
                 }
             }
 
-            trapColor = method.interpolate(red, green, blue, trapRed, trapGreen, trapBlue, ots.trapColorInterpolation);
+            trapColor = method.interpolateColors(red, green, blue, trapRed, trapGreen, trapBlue, ots.trapColorInterpolation);
 
         }
 
@@ -3686,7 +3687,7 @@ public abstract class TaskRender implements Runnable {
                 coef = 1 - coef;
             }
 
-            trapColor = method.interpolate(ots.trapCellularColor.getRed(), ots.trapCellularColor.getGreen(), ots.trapCellularColor.getBlue(), trapRed, trapGreen, trapBlue, 1 - coef);
+            trapColor = method.interpolateColors(ots.trapCellularColor.getRed(), ots.trapCellularColor.getGreen(), ots.trapCellularColor.getBlue(), trapRed, trapGreen, trapBlue, 1 - coef);
         }
 
         return trapColor;
@@ -4640,7 +4641,7 @@ public abstract class TaskRender implements Runnable {
                     int temp_green2 = (color2 >> 8) & 0xff;
                     int temp_blue2 = color2 & 0xff;
 
-                    output[m] = method.interpolate(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, coef);
+                    output[m] = method.interpolateColors(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, coef);
                 }
                 else {
 
@@ -4697,7 +4698,7 @@ public abstract class TaskRender implements Runnable {
                     int temp_green1 = (color1 >> 8) & 0xff;
                     int temp_blue1 = color1 & 0xff;
 
-                    output[m] = method.interpolate(temp_red1, temp_green1, temp_blue1, r, g, b, coef);
+                    output[m] = method.interpolateColors(temp_red1, temp_green1, temp_blue1, r, g, b, coef);
                 }
                 else {
                     output[m] = color;
@@ -5241,7 +5242,7 @@ public abstract class TaskRender implements Runnable {
             int fc_green = (new_colors[m] >> 8) & 0xFF;
             int fc_blue = new_colors[m] & 0xFF;
 
-            output[m] = method.interpolate(fc_red, fc_green, fc_blue, r, g, b, coef);
+            output[m] = method.interpolateColors(fc_red, fc_green, fc_blue, r, g, b, coef);
         }
         return output;
 
@@ -5385,7 +5386,7 @@ public abstract class TaskRender implements Runnable {
                 coef = 1 - coef;
             }
 
-            output[m] = method.interpolate(fc_red, fc_green, fc_blue, r, g, b, coef);
+            output[m] = method.interpolateColors(fc_red, fc_green, fc_blue, r, g, b, coef);
         }
         return output;
 
@@ -7592,167 +7593,167 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private Blending blendingFactory(int interpolation, int color_blending) {
+    private Blending blendingFactory(int interpolation, int color_blending, int color_space) {
 
         switch (color_blending) {
             case MainWindow.NORMAL_BLENDING:
-                return new NormalBlending(interpolation);
+                return new NormalBlending(interpolation, color_space);
             case MainWindow.MULTIPLY_BLENDING:
-                return new MultiplyBlending(interpolation);
+                return new MultiplyBlending(interpolation, color_space);
             case MainWindow.DIVIDE_BLENDING:
-                return new DivideBlending(interpolation);
+                return new DivideBlending(interpolation, color_space);
             case MainWindow.ADDITION_BLENDING:
-                return new AdditionBlending(interpolation);
+                return new AdditionBlending(interpolation, color_space);
             case MainWindow.SUBTRACTION_BLENDING:
-                return new SubtractionBlending(interpolation);
+                return new SubtractionBlending(interpolation, color_space);
             case MainWindow.DIFFERENCE_BLENDING:
-                return new DifferenceBlending(interpolation);
+                return new DifferenceBlending(interpolation, color_space);
             case MainWindow.VALUE_BLENDING:
-                return new ValueBlending(interpolation);
+                return new ValueBlending(interpolation, color_space);
             case MainWindow.SOFT_LIGHT_BLENDING:
-                return new SoftLightBlending(interpolation);
+                return new SoftLightBlending(interpolation, color_space);
             case MainWindow.SCREEN_BLENDING:
-                return new ScreenBlending(interpolation);
+                return new ScreenBlending(interpolation, color_space);
             case MainWindow.DODGE_BLENDING:
-                return new DodgeBlending(interpolation);
+                return new DodgeBlending(interpolation, color_space);
             case MainWindow.BURN_BLENDING:
-                return new BurnBlending(interpolation);
+                return new BurnBlending(interpolation, color_space);
             case MainWindow.DARKEN_ONLY_BLENDING:
-                return new DarkenOnlyBlending(interpolation);
+                return new DarkenOnlyBlending(interpolation, color_space);
             case MainWindow.LIGHTEN_ONLY_BLENDING:
-                return new LightenOnlyBlending(interpolation);
+                return new LightenOnlyBlending(interpolation, color_space);
             case MainWindow.HARD_LIGHT_BLENDING:
-                return new HardLightBlending(interpolation);
+                return new HardLightBlending(interpolation, color_space);
             case MainWindow.GRAIN_EXTRACT_BLENDING:
-                return new GrainExtractBlending(interpolation);
+                return new GrainExtractBlending(interpolation, color_space);
             case MainWindow.GRAIN_MERGE_BLENDING:
-                return new GrainMergeBlending(interpolation);
+                return new GrainMergeBlending(interpolation, color_space);
             case MainWindow.SATURATION_BLENDING:
-                return new SaturationBlending(interpolation);
+                return new SaturationBlending(interpolation, color_space);
             case MainWindow.COLOR_BLENDING:
-                return new ColorBlending(interpolation);
+                return new ColorBlending(interpolation, color_space);
             case MainWindow.HUE_BLENDING:
-                return new HueBlending(interpolation);
+                return new HueBlending(interpolation, color_space);
             case MainWindow.EXCLUSION_BLENDING:
-                return new ExclusionBlending(interpolation);
+                return new ExclusionBlending(interpolation, color_space);
             case MainWindow.PIN_LIGHT_BLENDING:
-                return new PinLightBlending(interpolation);
+                return new PinLightBlending(interpolation, color_space);
             case MainWindow.LINEAR_LIGHT_BLENDING:
-                return new LinearLightBlending(interpolation);
+                return new LinearLightBlending(interpolation, color_space);
             case MainWindow.VIVID_LIGHT_BLENDING:
-                return new VividLightBlending(interpolation);
+                return new VividLightBlending(interpolation, color_space);
             case MainWindow.OVERLAY_BLENDING:
-                return new OverlayBlending(interpolation);
+                return new OverlayBlending(interpolation, color_space);
             case MainWindow.LCH_CHROMA_BLENDING:
-                return new LCHChromaBlending(interpolation);
+                return new LCHChromaBlending(interpolation, color_space);
             case MainWindow.LCH_COLOR_BLENDING:
-                return new LCHColorBlending(interpolation);
+                return new LCHColorBlending(interpolation, color_space);
             case MainWindow.LCH_HUE_BLENDING:
-                return new LCHHueBlending(interpolation);
+                return new LCHHueBlending(interpolation, color_space);
             case MainWindow.LCH_LIGHTNESS_BLENDING:
-                return new LCHLightnessBlending(interpolation);
+                return new LCHLightnessBlending(interpolation, color_space);
             case MainWindow.LUMINANCE_BLENDING:
-                return new LuminanceBlending(interpolation);
+                return new LuminanceBlending(interpolation, color_space);
             case MainWindow.LINEAR_BURN_BLENDING:
-                return new LinearBurnBlending(interpolation);
+                return new LinearBurnBlending(interpolation, color_space);
         }
 
         return null;
     }
 
-    private void domainColoringFactory(DomainColoringSettings ds, int interpolation) {
+    private void domainColoringFactory(DomainColoringSettings ds, int interpolation, int color_space) {
 
         this.ds = ds;
 
         if (ds.customDomainColoring) {
-            domain_color = new CustomDomainColoring(ds, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, gradient, interpolation, gradient_offset, contourFactor);
+            domain_color = new CustomDomainColoring(ds, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, gradient, interpolation, gradient_offset, contourFactor, color_space);
             return;
         }
 
         switch (ds.domain_coloring_alg) {
             case 0:
-                domain_color = new BlackGridWhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new BlackGridWhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 1:
-                domain_color = new WhiteGridBlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new WhiteGridBlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 2:
-                domain_color = new BlackGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new BlackGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 3:
-                domain_color = new WhiteGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new WhiteGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 4:
-                domain_color = new BlackGridBrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new BlackGridBrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 5:
-                domain_color = new WhiteGridDarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new WhiteGridDarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 6:
-                domain_color = new NormBlackGridWhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormBlackGridWhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 7:
-                domain_color = new NormWhiteGridBlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormWhiteGridBlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 8:
-                domain_color = new NormBlackGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormBlackGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 9:
-                domain_color = new NormWhiteGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormWhiteGridDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 10:
-                domain_color = new NormBlackGridBrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormBlackGridBrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 11:
-                domain_color = new NormWhiteGridDarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormWhiteGridDarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 12:
-                domain_color = new WhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new WhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 13:
-                domain_color = new BlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new BlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 14:
-                domain_color = new BrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new BrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 15:
-                domain_color = new DarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new DarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 16:
-                domain_color = new NormWhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormWhiteCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 17:
-                domain_color = new NormBlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormBlackCirclesLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 18:
-                domain_color = new NormBrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormBrightContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 19:
-                domain_color = new NormDarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormDarkContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 20:
-                domain_color = new BlackGridContoursLog2IsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new BlackGridContoursLog2IsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 21:
-                domain_color = new NormBlackGridContoursLog2IsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormBlackGridContoursLog2IsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 22:
-                domain_color = new BlackGridIsoContoursDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new BlackGridIsoContoursDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 23:
-                domain_color = new NormBlackGridIsoContoursDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormBlackGridIsoContoursDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 24:
-                domain_color = new IsoContoursContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new IsoContoursContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 25:
-                domain_color = new NormIsoContoursContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormIsoContoursContoursLog2DomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 26:
-                domain_color = new GridContoursIsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new GridContoursIsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
             case 27:
-                domain_color = new NormGridContoursIsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor);
+                domain_color = new NormGridContoursIsoLinesDomainColoring(ds.domain_coloring_mode, palette_outcoloring, color_transfer_outcoloring, color_cycling_location_outcoloring, gps, blending, interpolation, contourFactor, color_space);
                 break;
         }
 
@@ -10636,9 +10637,10 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void interpolationFactory(int color_interpolation) {
+    private void interpolationFactory(int color_interpolation, int color_space) {
 
         method = InterpolationMethod.create(color_interpolation);
+        method.setColorSpace(color_space);
 
     }
 
@@ -13364,19 +13366,19 @@ public abstract class TaskRender implements Runnable {
 
     private void setPostProcessingBlending() {
 
-        ens_blending = blendingFactory(COLOR_SMOOTHING_METHOD, ens.en_color_blending);
+        ens_blending = blendingFactory(COLOR_SMOOTHING_METHOD, ens.en_color_blending, COLOR_SPACE);
         ens_blending.setReverseColors(ens.en_reverse_color_blending);
 
-        rps_blending = blendingFactory(COLOR_SMOOTHING_METHOD, rps.rp_color_blending);
+        rps_blending = blendingFactory(COLOR_SMOOTHING_METHOD, rps.rp_color_blending, COLOR_SPACE);
         rps_blending.setReverseColors(rps.rp_reverse_color_blending);
 
-        ndes_blending = blendingFactory(COLOR_SMOOTHING_METHOD, ndes.nde_color_blending);
+        ndes_blending = blendingFactory(COLOR_SMOOTHING_METHOD, ndes.nde_color_blending, COLOR_SPACE);
         ndes_blending.setReverseColors(ndes.nde_reverse_color_blending);
 
-        hss_blending = blendingFactory(COLOR_SMOOTHING_METHOD, hss.hs_color_blending);
+        hss_blending = blendingFactory(COLOR_SMOOTHING_METHOD, hss.hs_color_blending, COLOR_SPACE);
         hss_blending.setReverseColors(hss.hs_reverse_color_blending);
 
-        ofs_blending = blendingFactory(COLOR_SMOOTHING_METHOD, ofs.of_color_blending);
+        ofs_blending = blendingFactory(COLOR_SMOOTHING_METHOD, ofs.of_color_blending, COLOR_SPACE);
         ofs_blending.setReverseColors(ofs.of_reverse_color_blending);
 
     }
