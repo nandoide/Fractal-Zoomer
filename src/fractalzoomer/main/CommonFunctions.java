@@ -1669,7 +1669,7 @@ public class CommonFunctions implements Constants {
                 if (s.fns.smoothing) {
                     overview += "<b><font color='red'>Color Smoothing:</font></b><br>";
                     overview += tab + "Fractional Transfer = " + Constants.smoothingFractionalTransfer[s.fns.smoothing_fractional_transfer_method] + "<br>";
-                    overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br><br>";
+                    overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br>";
                     overview += tab + "Color Space = " + colorSpaces[s.color_space] + "<br><br>";
                 }
             }
@@ -1689,7 +1689,7 @@ public class CommonFunctions implements Constants {
                 } else {
                     overview += tab + "Converging Smooth Algorithm 2<br>";
                 }
-                overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br><br>";
+                overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br>";
                 overview += tab + "Color Space = " + colorSpaces[s.color_space] + "<br><br>";
             }
         }
@@ -2109,7 +2109,7 @@ public class CommonFunctions implements Constants {
 
         if (!s.useDirectColor) {
             overview += "<b><font color='red'>Color Blending Mode:</font></b> " + ColorBlendingMenu.colorBlendingNames[s.color_blending.color_blending] + "<br>";
-            overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br><br>";
+            overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br>";
             overview += tab + "Color Space = " + colorSpaces[s.color_space] + "<br><br>";
 
 
@@ -2185,7 +2185,7 @@ public class CommonFunctions implements Constants {
                 }
 
                 overview += tab + "Interpolation = " + Constants.color_interp_str[s.color_smoothing_method] + "<br>";
-                overview += tab + "Color Space = " + colorSpaces[s.color_space] + "<br><br>";
+                overview += tab + "Color Space = " + colorSpaces[s.color_space] + "<br>";
                 overview += tab + "Circle Log Base = " + s.ds.logBase + "<br>";
                 overview += tab + "Grid Spacing = " + s.ds.gridFactor + "<br>";
                 overview += tab + "Grid Algorithm = " + Constants.gridAlgorithms[s.ds.gridAlgorithm] + "<br>";

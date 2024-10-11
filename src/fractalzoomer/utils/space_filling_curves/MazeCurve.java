@@ -958,9 +958,14 @@ public class MazeCurve {
         int width = size;
         int height = size;
 
-        Object[] data = //generateBacktracking(width, height, new Random(1));
+        Object[] data =
+                //generateKruskalsRandom(width, height, new Random(1));
+                //generateRandomPrims(width, height, new Random(1));
+                generateBacktracking(width, height, new Random(1));
                 //generateSidewinder(width, height, new Random(1), 0, 0.5);
-                generateEller(width, height, new Random(1), 0, 0.52, 0.01, 5);
+                //generateEller(width, height, new Random(1), 0, 0.52, 0.01, 5);
+                //generateHuntAndKill(width, height, new Random(1), 0);
+                //generateBinaryTree(width, height, new Random(1), 0);
         ArrayList<Edge> edges = (ArrayList<Edge>) data[1];
         Point start = (Point) data[0];
 

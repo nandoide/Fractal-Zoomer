@@ -97,7 +97,7 @@ public class CustomPalette extends Palette {
         return palette;
     }
 
-    private static int[] createPalette(int[][] custom_palette, boolean reverse, int processing_alg, double scale_factor_palette_val, int color_interpolation, int color_space, int color_cycling_location) {
+    public static int[] createPalette(int[][] custom_palette, boolean reverse, int processing_alg, double scale_factor_palette_val, int color_interpolation, int color_space, int color_cycling_location) {
 
         int n = 0, counter = 0;
         for (int i = 0; i < custom_palette.length; i++) { // get the number of all colors

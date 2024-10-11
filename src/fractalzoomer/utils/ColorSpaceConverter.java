@@ -1663,8 +1663,12 @@ import java.util.ArrayList;
 
           double l = (BC_DA * b + ED * r - EB * g) / (BC_DA + ED - EB),
                   bl = b - l,
-                  k = (E * (g - l) - C * bl) / D,
-                  s = Math.sqrt(k * k + bl * bl) / (E * l * (1 - l)); // NaN if l=0 or l=1
+                  k = (E * (g - l) - C * bl) / D;
+
+          k = Math.abs(k) < 1e-14 ? 0 : k;
+          bl = Math.abs(bl) < 1e-14 ? 0 : bl;
+
+          double s = Math.sqrt(k * k + bl * bl) / (E * l * (1 - l)); // NaN if l=0 or l=1
           double h = Double.NaN;
           if(!Double.isNaN(s)) {
               h = Math.toDegrees(Math.atan2(k, bl)) - 120;

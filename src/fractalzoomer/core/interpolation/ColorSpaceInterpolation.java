@@ -91,28 +91,46 @@ public class ColorSpaceInterpolation {
         double[] c1_hsl = ColorSpaceConverter.RGBtoCubehelix(c1[1], c1[2], c1[3]);
         double[] c2_hsl = ColorSpaceConverter.RGBtoCubehelix(c2[1], c2[2], c2[3]);
 
-        double h;
-        double s = method.interpolate(c1_hsl[1], c2_hsl[1], coef);
+        double h = Double.NaN;
+        double s = Double.NaN;
         double l = method.interpolate(c1_hsl[2], c2_hsl[2], coef);
 
-        double d = c2_hsl[0] - c1_hsl[0];
-
-        double temp;
-        if (c1_hsl[0] > c2_hsl[0]) {
-            temp = c1_hsl[0];
-            c1_hsl[0] = c2_hsl[0];
-            c2_hsl[0] = temp;
-            d = -d;
-            coef = 1 - coef;
+        if(!Double.isNaN(c2_hsl[1]) && !Double.isNaN(c1_hsl[1])) {
+            s = method.interpolate(c1_hsl[1], c2_hsl[1], coef);
+        }
+        else if(!Double.isNaN(c2_hsl[1])) {
+            s = c2_hsl[1];
+        }
+        else if(!Double.isNaN(c1_hsl[1])) {
+            s = c1_hsl[1];
         }
 
-        boolean condition = shortPath ? d > 180 : d <= 180;
+        if(!Double.isNaN(c2_hsl[0]) && !Double.isNaN(c1_hsl[0])) {
+            double d = c2_hsl[0] - c1_hsl[0];
 
-        if (condition) {
-            c1_hsl[0] += 360;
-            h = method.interpolate(c1_hsl[0], c2_hsl[0], coef) % 360.0;
-        } else {
-            h = method.interpolate(c1_hsl[0], c2_hsl[0], coef);
+            double temp;
+            if (c1_hsl[0] > c2_hsl[0]) {
+                temp = c1_hsl[0];
+                c1_hsl[0] = c2_hsl[0];
+                c2_hsl[0] = temp;
+                d = -d;
+                coef = 1 - coef;
+            }
+
+            boolean condition = shortPath ? d > 180 : d <= 180;
+
+            if (condition) {
+                c1_hsl[0] += 360;
+                h = method.interpolate(c1_hsl[0], c2_hsl[0], coef) % 360.0;
+            } else {
+                h = method.interpolate(c1_hsl[0], c2_hsl[0], coef);
+            }
+        }
+        else if(!Double.isNaN(c2_hsl[0])) {
+            h = c2_hsl[0];
+        }
+        else if(!Double.isNaN(c1_hsl[0])) {
+            h = c1_hsl[0];
         }
 
         int[] res = ColorSpaceConverter.CubehelixtoRGB(h, s, l);
