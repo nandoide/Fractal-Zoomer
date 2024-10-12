@@ -1,5 +1,6 @@
 package fractalzoomer.core.interpolation;
 
+import fractalzoomer.utils.ColorCorrection;
 import fractalzoomer.utils.ColorSpaceConverter;
 import fractalzoomer.utils.MathUtils;
 
@@ -21,7 +22,7 @@ public class ColorSpaceInterpolation {
 
         double h;
         double s = method.interpolate(c1_hsb[1], c2_hsb[1], coef);
-        double b = method.interpolate(c1_hsb[2], c2_hsb[2], coef);
+        double b = method.interpolate(c1_hsb[2], c2_hsb[2], ColorCorrection.modifyIntensityCurve(coef));
 
         double d = c2_hsb[0] - c1_hsb[0];
 
@@ -52,16 +53,12 @@ public class ColorSpaceInterpolation {
     }
 
     public static int HSLInterpolation(InterpolationMethod method, double coef, int r1, int g1, int b1, int r2, int g2, int b2, boolean shortPath) {
-        //Todo check those
-        //https://github.com/d3/d3-color/blob/main/src/cubehelix.js
-        //https://github.com/d3/d3-interpolate/blob/main/src/cubehelix.js
-        //https://davidjohnstone.net/lch-lab-colour-gradient-picker
         double[] c1_hsl = ColorSpaceConverter.RGBtoHSL(r1, g1, b1);
         double[] c2_hsl = ColorSpaceConverter.RGBtoHSL(r2, g2, b2);
 
         double h;
         double s = method.interpolate(c1_hsl[1], c2_hsl[1], coef);
-        double l = method.interpolate(c1_hsl[2], c2_hsl[2], coef);
+        double l = method.interpolate(c1_hsl[2], c2_hsl[2], ColorCorrection.modifyIntensityCurve(coef));
 
         double d = c2_hsl[0] - c1_hsl[0];
 
@@ -97,7 +94,7 @@ public class ColorSpaceInterpolation {
 
         double h = Double.NaN;
         double s = Double.NaN;
-        double l = method.interpolate(c1_hsl[2], c2_hsl[2], coef);
+        double l = method.interpolate(c1_hsl[2], c2_hsl[2], ColorCorrection.modifyIntensityCurve(coef));
 
         if(!Double.isNaN(c2_hsl[1]) && !Double.isNaN(c1_hsl[1])) {
             s = method.interpolate(c1_hsl[1], c2_hsl[1], coef);
@@ -212,7 +209,7 @@ public class ColorSpaceInterpolation {
         int[] ycbcr_from = ColorSpaceConverter.RGBtoYCbCr(r1, g1, b1);
         int[] ycbcr_to = ColorSpaceConverter.RGBtoYCbCr(r2, g2, b2);
 
-        int y = method.interpolate(ycbcr_from[0], ycbcr_to[0], coef);
+        int y = method.interpolate(ycbcr_from[0], ycbcr_to[0], ColorCorrection.modifyIntensityCurve(coef));
         int cb = method.interpolate(ycbcr_from[1], ycbcr_to[1], coef);
         int cr = method.interpolate(ycbcr_from[2], ycbcr_to[2], coef);
 
@@ -247,7 +244,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoLAB(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double a = method.interpolate(from[1], to[1], coef);
         double b = method.interpolate(from[2], to[2], coef);
 
@@ -283,7 +280,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoLCH_ab(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double C = method.interpolate(from[1], to[1], coef);
         double H;
 
@@ -401,7 +398,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoLUV(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double a = method.interpolate(from[1], to[1], coef);
         double b = method.interpolate(from[2], to[2], coef);
 
@@ -419,7 +416,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoLCH_uv(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double C = method.interpolate(from[1], to[1], coef);
         double H;
 
@@ -456,7 +453,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoOKLAB(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double a = method.interpolate(from[1], to[1], coef);
         double b = method.interpolate(from[2], to[2], coef);
 
@@ -491,8 +488,8 @@ public class ColorSpaceInterpolation {
         double[] c2_hsb = ColorSpaceConverter.RGBtoHWB(r2, g2, b2);
 
         double h;
-        double s = method.interpolate(c1_hsb[1], c2_hsb[1], coef);
-        double b = method.interpolate(c1_hsb[2], c2_hsb[2], coef);
+        double s = method.interpolate(c1_hsb[1], c2_hsb[1], ColorCorrection.modifyIntensityCurve(coef));
+        double b = method.interpolate(c1_hsb[2], c2_hsb[2], ColorCorrection.modifyIntensityCurve(coef));
 
         double d = c2_hsb[0] - c1_hsb[0];
 
@@ -528,7 +525,7 @@ public class ColorSpaceInterpolation {
 
         double h;
         double s = method.interpolate(c1_hsl[1], c2_hsl[1], coef);
-        double l = method.interpolate(c1_hsl[2], c2_hsl[2], coef);
+        double l = method.interpolate(c1_hsl[2], c2_hsl[2], ColorCorrection.modifyIntensityCurve(coef));
 
         double d = c2_hsl[0] - c1_hsl[0];
 
@@ -564,7 +561,7 @@ public class ColorSpaceInterpolation {
 
         double h;
         double s = method.interpolate(c1_hsl[1], c2_hsl[1], coef);
-        double l = method.interpolate(c1_hsl[2], c2_hsl[2], coef);
+        double l = method.interpolate(c1_hsl[2], c2_hsl[2], ColorCorrection.modifyIntensityCurve(coef));
 
         double d = c2_hsl[0] - c1_hsl[0];
 
@@ -599,7 +596,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoLCH_JzAzBz(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double C = method.interpolate(from[1], to[1], coef);
         double H;
 
@@ -636,7 +633,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoJzAzBz(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double a = method.interpolate(from[1], to[1], coef);
         double b = method.interpolate(from[2], to[2], coef);
 
@@ -654,7 +651,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoLCH_oklab(r2, g2, b2);
 
-        double L = method.interpolate(from[0], to[0], coef);
+        double L = method.interpolate(from[0], to[0], ColorCorrection.modifyIntensityCurve(coef));
         double C = method.interpolate(from[1], to[1], coef);
         double H;
 

@@ -20,7 +20,7 @@ public class DifferenceBlending extends Blending {
         int temp_green = Math.abs(greenB - greenA);
         int temp_blue = Math.abs(blueB - blueA);
         
-        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef);
+        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef, false);
 
     }
     

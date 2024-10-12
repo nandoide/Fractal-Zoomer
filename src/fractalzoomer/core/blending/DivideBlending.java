@@ -30,7 +30,7 @@ public class DivideBlending extends Blending {
         temp_green = temp_green > 255 ? 255 : temp_green;
         temp_blue = temp_blue > 255 ? 255 : temp_blue;
         
-        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef);
+        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef, false);
 
     }
 }

@@ -20,7 +20,7 @@ public class LightenOnlyBlending extends Blending {
         int temp_green = Math.max(greenB, greenA);
         int temp_blue = Math.max(blueB, blueA);
         
-        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef);
+        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef, false);
 
     }
     

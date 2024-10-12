@@ -3175,121 +3175,7 @@ public abstract class TaskRender implements Runnable {
             coef2 = coef2 < 0 ? 0 : coef2;
             coef2 = coef2 * sts.normalMapLightFactor;
 
-            if (sts.normalMapColorMode == 0) { //Lab
-                double[] res = ColorSpaceConverter.RGBtoLAB(r, g, b);
-                int[] rgb = ColorSpaceConverter.LABtoRGB(res[0] * coef + coef2 * 100, res[1], res[2]);
-                output_color = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            } else if (sts.normalMapColorMode == 1) { //HSB
-                double[] res = ColorSpaceConverter.RGBtoHSB(r, g, b);
-
-                double val = res[2] * coef + coef2;
-
-                if (val > 1) {
-                    val = 1;
-                }
-                if (val < 0) {
-                    val = 0;
-                }
-
-                int[] rgb = ColorSpaceConverter.HSBtoRGB(res[0], res[1], val);
-                output_color = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            } else if (sts.normalMapColorMode == 2) { //HSL
-                double[] res = ColorSpaceConverter.RGBtoHSL(r, g, b);
-
-                double val = res[2] * coef + coef2;
-
-                if (val > 1) {
-                    val = 1;
-                }
-                if (val < 0) {
-                    val = 0;
-                }
-
-                int[] rgb = ColorSpaceConverter.HSLtoRGB(res[0], res[1], val);
-                output_color = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            } else if (sts.normalMapColorMode == 3) { //Blending
-                if (coef > 1) {
-                    coef = 1;
-                }
-                if (coef < 0) {
-                    coef = 0;
-                }
-
-                int index = (int) ((1 - coef) * (gradient.length - 1) + 0.5);
-                index = gradient.length - 1 - index;
-
-                int grad_color = getGradientColor(index + gradient_offset);
-
-                int temp_red = (grad_color >> 16) & 0xff;
-                int temp_green = (grad_color >> 8) & 0xff;
-                int temp_blue = grad_color & 0xff;
-
-                int new_color = blending.blend(temp_red, temp_green, temp_blue, r, g, b, 1 - sts.normalMapBlending);
-
-                r = (new_color >> 16) & 0xFF;
-                g = (new_color >> 8) & 0xFF;
-                b = new_color & 0xFF;
-
-                double temp = coef2 * 255;
-                r = (int) (r + temp + 0.5);
-                g = (int) (g + temp + 0.5);
-                b = (int) (b + temp + 0.5);
-
-                if (r > 255) {
-                    r = 255;
-                }
-                if (g > 255) {
-                    g = 255;
-                }
-                if (b > 255) {
-                    b = 255;
-                }
-
-                if (r < 0) {
-                    r = 0;
-                }
-                if (g < 0) {
-                    g = 0;
-                }
-                if (b < 0) {
-                    b = 0;
-                }
-
-                output_color = 0xff000000 | (r << 16) | (g << 8) | b;
-            } else if (sts.normalMapColorMode == 4) { //scaling
-
-                double temp = coef2 * 255;
-                r = (int) (r * coef + temp + 0.5);
-                g = (int) (g * coef + temp + 0.5);
-                b = (int) (b * coef + temp + 0.5);
-
-                if (r > 255) {
-                    r = 255;
-                }
-                if (g > 255) {
-                    g = 255;
-                }
-                if (b > 255) {
-                    b = 255;
-                }
-
-                if (r < 0) {
-                    r = 0;
-                }
-                if (g < 0) {
-                    g = 0;
-                }
-                if (b < 0) {
-                    b = 0;
-                }
-
-                output_color = 0xff000000 | (r << 16) | (g << 8) | b;
-            }
-            else {
-                double[] res = ColorSpaceConverter.RGBtoOKLAB(r, g, b);
-                int[] rgb = ColorSpaceConverter.OKLABtoRGB(res[0] * coef + coef2, res[1], res[2]);
-                output_color = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            }
+            output_color = applyContour(sts.normalMapColorMode, r, g, b, coef, coef2, sts.normalMapBlending);
         }
 
         if(sts.normalMapUseDE && sts.normalMapDEAAEffect) {
@@ -3320,7 +3206,7 @@ public abstract class TaskRender implements Runnable {
                 b2 = dem_color & 0xFF;
             }
 
-            output_color = method.interpolateColors(r1, g1, b1, r2, g2, b2, 1 - nm.getDeCoefficient());
+            output_color = method.interpolateColors(r1, g1, b1, r2, g2, b2, 1 - nm.getDeCoefficient(), true);
         }
 
         return output_color;
@@ -3417,7 +3303,7 @@ public abstract class TaskRender implements Runnable {
             int temp_green1 = !sts.revertRootShading ? sts.rootShadingColor.getGreen()  : 255 - sts.rootShadingColor.getGreen();
             int temp_blue1 = !sts.revertRootShading ? sts.rootShadingColor.getBlue()  : 255 - sts.rootShadingColor.getBlue();
 
-            return method.interpolateColors(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, highlightFactor);
+            return method.interpolateColors(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, highlightFactor, true);
 
         }
 
@@ -3499,34 +3385,64 @@ public abstract class TaskRender implements Runnable {
         int temp_blue = grad_color & 0xff;
 
         if (pbs.merging_type == 0) { //Lab
+            old_red = ColorCorrection.gammaToLinear(old_red);
+            old_green = ColorCorrection.gammaToLinear(old_green);
+            old_blue = ColorCorrection.gammaToLinear(old_blue);
+            temp_red = ColorCorrection.gammaToLinear(temp_red);
+            temp_green = ColorCorrection.gammaToLinear(temp_green);
+            temp_blue = ColorCorrection.gammaToLinear(temp_blue);
             double[] grad = ColorSpaceConverter.RGBtoLAB(temp_red, temp_green, temp_blue);
             double[] res = ColorSpaceConverter.RGBtoLAB(old_red, old_green, old_blue);
             int[] rgb = ColorSpaceConverter.LABtoRGB(grad[0], res[1], res[2]);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         } else if (pbs.merging_type == 1) { //HSB
+            old_red = ColorCorrection.gammaToLinear(old_red);
+            old_green = ColorCorrection.gammaToLinear(old_green);
+            old_blue = ColorCorrection.gammaToLinear(old_blue);
+            temp_red = ColorCorrection.gammaToLinear(temp_red);
+            temp_green = ColorCorrection.gammaToLinear(temp_green);
+            temp_blue = ColorCorrection.gammaToLinear(temp_blue);
             double[] grad = ColorSpaceConverter.RGBtoHSB(temp_red, temp_green, temp_blue);
             double[] res = ColorSpaceConverter.RGBtoHSB(old_red, old_green, old_blue);
             int[] rgb = ColorSpaceConverter.HSBtoRGB(res[0], res[1], grad[2]);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         } else if (pbs.merging_type == 2) { //HSL
+            old_red = ColorCorrection.gammaToLinear(old_red);
+            old_green = ColorCorrection.gammaToLinear(old_green);
+            old_blue = ColorCorrection.gammaToLinear(old_blue);
+            temp_red = ColorCorrection.gammaToLinear(temp_red);
+            temp_green = ColorCorrection.gammaToLinear(temp_green);
+            temp_blue = ColorCorrection.gammaToLinear(temp_blue);
             double[] grad = ColorSpaceConverter.RGBtoHSL(temp_red, temp_green, temp_blue);
             double[] res = ColorSpaceConverter.RGBtoHSL(old_red, old_green, old_blue);
             int[] rgb = ColorSpaceConverter.HSLtoRGB(res[0], res[1], grad[2]);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         } else if (pbs.merging_type == 3) {// blend
             return blending.blend(temp_red, temp_green, temp_blue, old_red, old_green, old_blue, 1 - pbs.palette_blending);
         } else if (pbs.merging_type == 4) { //scale
+            old_red = ColorCorrection.gammaToLinear(old_red);
+            old_green = ColorCorrection.gammaToLinear(old_green);
+            old_blue = ColorCorrection.gammaToLinear(old_blue);
+            temp_red = ColorCorrection.gammaToLinear(temp_red);
+            temp_green = ColorCorrection.gammaToLinear(temp_green);
+            temp_blue = ColorCorrection.gammaToLinear(temp_blue);
             double avg = ((temp_red + temp_green + temp_blue) / 3.0) / 255.0;
             old_red = (int) (old_red * avg + 0.5);
             old_green = (int) (old_green * avg + 0.5);
             old_blue = (int) (old_blue * avg + 0.5);
-            return 0xff000000 | (old_red << 16) | (old_green << 8) | old_blue;
+            return ColorCorrection.linearToGamma(old_red, old_green, old_blue);
         }
         else {
+            old_red = ColorCorrection.gammaToLinear(old_red);
+            old_green = ColorCorrection.gammaToLinear(old_green);
+            old_blue = ColorCorrection.gammaToLinear(old_blue);
+            temp_red = ColorCorrection.gammaToLinear(temp_red);
+            temp_green = ColorCorrection.gammaToLinear(temp_green);
+            temp_blue = ColorCorrection.gammaToLinear(temp_blue);
             double[] grad = ColorSpaceConverter.RGBtoOKLAB(temp_red, temp_green, temp_blue);
             double[] res = ColorSpaceConverter.RGBtoOKLAB(old_red, old_green, old_blue);
             int[] rgb = ColorSpaceConverter.OKLABtoRGB(grad[0], res[1], res[2]);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         }
 
     }
@@ -3661,7 +3577,7 @@ public abstract class TaskRender implements Runnable {
                 }
             }
 
-            trapColor = method.interpolateColors(red, green, blue, trapRed, trapGreen, trapBlue, ots.trapColorInterpolation);
+            trapColor = method.interpolateColors(red, green, blue, trapRed, trapGreen, trapBlue, ots.trapColorInterpolation, true);
 
         }
 
@@ -3687,7 +3603,7 @@ public abstract class TaskRender implements Runnable {
                 coef = 1 - coef;
             }
 
-            trapColor = method.interpolateColors(ots.trapCellularColor.getRed(), ots.trapCellularColor.getGreen(), ots.trapCellularColor.getBlue(), trapRed, trapGreen, trapBlue, 1 - coef);
+            trapColor = method.interpolateColors(ots.trapCellularColor.getRed(), ots.trapCellularColor.getGreen(), ots.trapCellularColor.getBlue(), trapRed, trapGreen, trapBlue, 1 - coef, true);
         }
 
         return trapColor;
@@ -4641,7 +4557,7 @@ public abstract class TaskRender implements Runnable {
                     int temp_green2 = (color2 >> 8) & 0xff;
                     int temp_blue2 = color2 & 0xff;
 
-                    output[m] = method.interpolateColors(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, coef);
+                    output[m] = method.interpolateColors(temp_red1, temp_green1, temp_blue1, temp_red2, temp_green2, temp_blue2, coef, true);
                 }
                 else {
 
@@ -4698,7 +4614,7 @@ public abstract class TaskRender implements Runnable {
                     int temp_green1 = (color1 >> 8) & 0xff;
                     int temp_blue1 = color1 & 0xff;
 
-                    output[m] = method.interpolateColors(temp_red1, temp_green1, temp_blue1, r, g, b, coef);
+                    output[m] = method.interpolateColors(temp_red1, temp_green1, temp_blue1, r, g, b, coef, true);
                 }
                 else {
                     output[m] = color;
@@ -5242,7 +5158,7 @@ public abstract class TaskRender implements Runnable {
             int fc_green = (new_colors[m] >> 8) & 0xFF;
             int fc_blue = new_colors[m] & 0xFF;
 
-            output[m] = method.interpolateColors(fc_red, fc_green, fc_blue, r, g, b, coef);
+            output[m] = method.interpolateColors(fc_red, fc_green, fc_blue, r, g, b, coef, true);
         }
         return output;
 
@@ -5386,7 +5302,7 @@ public abstract class TaskRender implements Runnable {
                 coef = 1 - coef;
             }
 
-            output[m] = method.interpolateColors(fc_red, fc_green, fc_blue, r, g, b, coef);
+            output[m] = method.interpolateColors(fc_red, fc_green, fc_blue, r, g, b, coef, true);
         }
         return output;
 
@@ -8413,121 +8329,7 @@ public abstract class TaskRender implements Runnable {
             int g = (colors[m] >> 8) & 0xFF;
             int b = colors[m] & 0xFF;
 
-            if (ls.colorMode == 0) { //Lab
-                double[] res = ColorSpaceConverter.RGBtoLAB(r, g, b);
-                int[] rgb = ColorSpaceConverter.LABtoRGB(res[0] * coef + coef2 * 100, res[1], res[2]);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            } else if (ls.colorMode == 1) { //HSB
-                double[] res = ColorSpaceConverter.RGBtoHSB(r, g, b);
-
-                double val = res[2] * coef + coef2;
-
-                if (val > 1) {
-                    val = 1;
-                }
-                if (val < 0) {
-                    val = 0;
-                }
-
-                int[] rgb = ColorSpaceConverter.HSBtoRGB(res[0], res[1], val);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            } else if (ls.colorMode == 2) { //HSL
-                double[] res = ColorSpaceConverter.RGBtoHSL(r, g, b);
-
-                double val = res[2] * coef + coef2;
-
-                if (val > 1) {
-                    val = 1;
-                }
-                if (val < 0) {
-                    val = 0;
-                }
-
-                int[] rgb = ColorSpaceConverter.HSLtoRGB(res[0], res[1], val);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            } else if (ls.colorMode == 3) { //Blending
-                if (coef > 1) {
-                    coef = 1;
-                }
-                if (coef < 0) {
-                    coef = 0;
-                }
-
-                int index = (int) ((1 - coef) * (gradient.length - 1) + 0.5);
-                index = gradient.length - 1 - index;
-
-                int grad_color = getGradientColor(index + gradient_offset);
-
-                int temp_red = (grad_color >> 16) & 0xff;
-                int temp_green = (grad_color >> 8) & 0xff;
-                int temp_blue = grad_color & 0xff;
-
-                int new_color = blending.blend(temp_red, temp_green, temp_blue, r, g, b, 1 - ls.light_blending);
-
-                r = (new_color >> 16) & 0xFF;
-                g = (new_color >> 8) & 0xFF;
-                b = new_color & 0xFF;
-
-                double temp = coef2 * 255;
-                r = (int) (r + temp + 0.5);
-                g = (int) (g + temp + 0.5);
-                b = (int) (b + temp + 0.5);
-
-                if (r > 255) {
-                    r = 255;
-                }
-                if (g > 255) {
-                    g = 255;
-                }
-                if (b > 255) {
-                    b = 255;
-                }
-
-                if (r < 0) {
-                    r = 0;
-                }
-                if (g < 0) {
-                    g = 0;
-                }
-                if (b < 0) {
-                    b = 0;
-                }
-
-                output[m] = 0xff000000 | (r << 16) | (g << 8) | b;
-            } else if (ls.colorMode == 4) { //scaling
-
-                double temp = coef2 * 255;
-                r = (int) (r * coef + temp + 0.5);
-                g = (int) (g * coef + temp + 0.5);
-                b = (int) (b * coef + temp + 0.5);
-
-                if (r > 255) {
-                    r = 255;
-                }
-                if (g > 255) {
-                    g = 255;
-                }
-                if (b > 255) {
-                    b = 255;
-                }
-
-                if (r < 0) {
-                    r = 0;
-                }
-                if (g < 0) {
-                    g = 0;
-                }
-                if (b < 0) {
-                    b = 0;
-                }
-
-                output[m] = 0xff000000 | (r << 16) | (g << 8) | b;
-            }
-            else {
-                double[] res = ColorSpaceConverter.RGBtoOKLAB(r, g, b);
-                int[] rgb = ColorSpaceConverter.OKLABtoRGB(res[0] * coef + coef2, res[1], res[2]);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-            }
+            output[m] = applyContour(ls.colorMode, r, g, b, coef, coef2, ls.light_blending);
         }
 
         return output;
@@ -9028,11 +8830,17 @@ public abstract class TaskRender implements Runnable {
             int b = colors[m] & 0xFF;
 
             if (ss.colorMode == 0) { //Lab
+                r = ColorCorrection.gammaToLinear(r);
+                g = ColorCorrection.gammaToLinear(g);
+                b = ColorCorrection.gammaToLinear(b);
                 double[] res = ColorSpaceConverter.RGBtoLAB(r, g, b);
                 double val = diffWasPositive ? (1 - diff) * res[0] : (1 - diff) * res[0] + diff * 100;
                 int[] rgb = ColorSpaceConverter.LABtoRGB(val, res[1], res[2]);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+                output[m] = ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
             } else if (ss.colorMode == 1) { //HSB
+                r = ColorCorrection.gammaToLinear(r);
+                g = ColorCorrection.gammaToLinear(g);
+                b = ColorCorrection.gammaToLinear(b);
                 double[] res = ColorSpaceConverter.RGBtoHSB(r, g, b);
 
                 double val = diffWasPositive ? (1 - diff) * res[2] : (1 - diff) * res[2] + diff;
@@ -9045,8 +8853,11 @@ public abstract class TaskRender implements Runnable {
                 }
 
                 int[] rgb = ColorSpaceConverter.HSBtoRGB(res[0], res[1], val);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+                output[m] = ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
             } else if (ss.colorMode == 2) { //HSL
+                r = ColorCorrection.gammaToLinear(r);
+                g = ColorCorrection.gammaToLinear(g);
+                b = ColorCorrection.gammaToLinear(b);
                 double[] res = ColorSpaceConverter.RGBtoHSL(r, g, b);
 
                 double val = diffWasPositive ? (1 - diff) * res[2] : (1 - diff) * res[2] + diff;
@@ -9059,7 +8870,7 @@ public abstract class TaskRender implements Runnable {
                 }
 
                 int[] rgb = ColorSpaceConverter.HSLtoRGB(res[0], res[1], val);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+                output[m] = ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
             } else if (ss.colorMode == 3) { //Blending
 
                 double val = diffWasPositive ? (1 - diff) : (1 - diff) + diff;
@@ -9073,14 +8884,11 @@ public abstract class TaskRender implements Runnable {
                 int temp_green = (grad_color >> 8) & 0xff;
                 int temp_blue = grad_color & 0xff;
 
-                int new_color = blending.blend(temp_red, temp_green, temp_blue, r, g, b, 1 - ss.slope_blending);
-
-                r = (new_color >> 16) & 0xFF;
-                g = (new_color >> 8) & 0xFF;
-                b = new_color & 0xFF;
-
-                output[m] = 0xff000000 | (r << 16) | (g << 8) | b;
+                output[m] = blending.blend(temp_red, temp_green, temp_blue, r, g, b, 1 - ss.slope_blending);
             } else if (ss.colorMode == 4) { //scaling
+                r = ColorCorrection.gammaToLinear(r);
+                g = ColorCorrection.gammaToLinear(g);
+                b = ColorCorrection.gammaToLinear(b);
                 if(diffWasPositive) {
                     r = (int)((1 - diff)*r + 0.5);
                     g = (int)((1 - diff)*g + 0.5);
@@ -9112,13 +8920,16 @@ public abstract class TaskRender implements Runnable {
                     b = 0;
                 }
 
-                output[m] = 0xff000000 | (r << 16) | (g << 8) | b;
+                output[m] = ColorCorrection.linearToGamma(r, g, b);
             }
             else {
+                r = ColorCorrection.gammaToLinear(r);
+                g = ColorCorrection.gammaToLinear(g);
+                b = ColorCorrection.gammaToLinear(b);
                 double[] res = ColorSpaceConverter.RGBtoOKLAB(r, g, b);
                 double val = diffWasPositive ? (1 - diff) * res[0] : (1 - diff) * res[0] + diff;
                 int[] rgb = ColorSpaceConverter.OKLABtoRGB(val, res[1], res[2]);
-                output[m] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+                output[m] = ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
             }
 
         }
@@ -10578,23 +10389,32 @@ public abstract class TaskRender implements Runnable {
     private int getModifiedColor(int red, int green, int blue, double coef, int colorMethod, double colorBlending, boolean reverseBlending) {
 
         if (colorMethod == 0) { //Lab
+            red = ColorCorrection.gammaToLinear(red);
+            green = ColorCorrection.gammaToLinear(green);
+            blue = ColorCorrection.gammaToLinear(blue);
             double[] res = ColorSpaceConverter.RGBtoLAB(red, green, blue);
             double val = contourFactor * coef * res[0];
             val = val > 100 ? 100 : val;
             int[] rgb = ColorSpaceConverter.LABtoRGB(val, res[1], res[2]);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         } else if (colorMethod == 1) { //HSB
+            red = ColorCorrection.gammaToLinear(red);
+            green = ColorCorrection.gammaToLinear(green);
+            blue = ColorCorrection.gammaToLinear(blue);
             double[] res = ColorSpaceConverter.RGBtoHSB(red, green, blue);
             double val = contourFactor * coef * res[2];
             val = val > 1 ? 1 : val;
             int[] rgb = ColorSpaceConverter.HSBtoRGB(res[0], res[1], val);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         } else if (colorMethod == 2) { //HSL
+            red = ColorCorrection.gammaToLinear(red);
+            green = ColorCorrection.gammaToLinear(green);
+            blue = ColorCorrection.gammaToLinear(blue);
             double[] res = ColorSpaceConverter.RGBtoHSL(red, green, blue);
             double val = contourFactor * coef * res[2];
             val = val > 1 ? 1 : val;
             int[] rgb = ColorSpaceConverter.HSLtoRGB(res[0], res[1], val);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         } else if (colorMethod == 3) {// blend
             int index = (int) (coef * (gradient.length - 1) + 0.5);
 
@@ -10610,20 +10430,26 @@ public abstract class TaskRender implements Runnable {
 
             return blending.blend(temp_red, temp_green, temp_blue, red, green, blue, colorBlending);
         } else if (colorMethod == 4) { //scale
+            red = ColorCorrection.gammaToLinear(red);
+            green = ColorCorrection.gammaToLinear(green);
+            blue = ColorCorrection.gammaToLinear(blue);
             red = (int) (contourFactor * coef * red + 0.5);
             green = (int) (contourFactor * coef * green + 0.5);
             blue = (int) (contourFactor * coef * blue + 0.5);
             red = red > 255 ? 255 : red;
             green = green > 255 ? 255 : green;
             blue = blue > 255 ? 255 : blue;
-            return 0xff000000 | (red << 16) | (green << 8) | blue;
+            return ColorCorrection.linearToGamma(red, green, blue);
         }
         else {
+            red = ColorCorrection.gammaToLinear(red);
+            green = ColorCorrection.gammaToLinear(green);
+            blue = ColorCorrection.gammaToLinear(blue);
             double[] res = ColorSpaceConverter.RGBtoOKLAB(red, green, blue);
             double val = contourFactor * coef * res[0];
             val = val > 1 ? 1 : val;
             int[] rgb = ColorSpaceConverter.OKLABtoRGB(val, res[1], res[2]);
-            return 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
         }
     }
 
@@ -13337,6 +13163,146 @@ public abstract class TaskRender implements Runnable {
         }
 
         return (BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) && !LibMpir.hasError();
+    }
+
+    private int applyContour(int colorMode, int r, int g, int b, double coef, double coef2, double blending_coef) {
+        if (colorMode == 0) { //Lab
+            r = ColorCorrection.gammaToLinear(r);
+            g = ColorCorrection.gammaToLinear(g);
+            b = ColorCorrection.gammaToLinear(b);
+            double[] res = ColorSpaceConverter.RGBtoLAB(r, g, b);
+            int[] rgb = ColorSpaceConverter.LABtoRGB(res[0] * coef + coef2 * 100, res[1], res[2]);
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
+        } else if (colorMode == 1) { //HSB
+            r = ColorCorrection.gammaToLinear(r);
+            g = ColorCorrection.gammaToLinear(g);
+            b = ColorCorrection.gammaToLinear(b);
+            double[] res = ColorSpaceConverter.RGBtoHSB(r, g, b);
+
+            double val = res[2] * coef + coef2;
+
+            if (val > 1) {
+                val = 1;
+            }
+            if (val < 0) {
+                val = 0;
+            }
+
+            int[] rgb = ColorSpaceConverter.HSBtoRGB(res[0], res[1], val);
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
+        } else if (colorMode == 2) { //HSL
+            r = ColorCorrection.gammaToLinear(r);
+            g = ColorCorrection.gammaToLinear(g);
+            b = ColorCorrection.gammaToLinear(b);
+            double[] res = ColorSpaceConverter.RGBtoHSL(r, g, b);
+
+            double val = res[2] * coef + coef2;
+
+            if (val > 1) {
+                val = 1;
+            }
+            if (val < 0) {
+                val = 0;
+            }
+
+            int[] rgb = ColorSpaceConverter.HSLtoRGB(res[0], res[1], val);
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
+        } else if (colorMode == 3) { //Blending
+            if (coef > 1) {
+                coef = 1;
+            }
+            if (coef < 0) {
+                coef = 0;
+            }
+
+            int index = (int) ((1 - coef) * (gradient.length - 1) + 0.5);
+            index = gradient.length - 1 - index;
+
+            int grad_color = getGradientColor(index + gradient_offset);
+
+            int temp_red = (grad_color >> 16) & 0xff;
+            int temp_green = (grad_color >> 8) & 0xff;
+            int temp_blue = grad_color & 0xff;
+
+            temp_red = ColorCorrection.gammaToLinear(temp_red);
+            temp_green = ColorCorrection.gammaToLinear(temp_green);
+            temp_blue = ColorCorrection.gammaToLinear(temp_blue);
+
+            int new_color = blending.blend(temp_red, temp_green, temp_blue, r, g, b, 1 - blending_coef);
+
+            r = (new_color >> 16) & 0xFF;
+            g = (new_color >> 8) & 0xFF;
+            b = new_color & 0xFF;
+
+            r = ColorCorrection.gammaToLinear(r);
+            g = ColorCorrection.gammaToLinear(g);
+            b = ColorCorrection.gammaToLinear(b);
+
+            double temp = coef2 * 255;
+            r = (int) (r + temp + 0.5);
+            g = (int) (g + temp + 0.5);
+            b = (int) (b + temp + 0.5);
+
+            if (r > 255) {
+                r = 255;
+            }
+            if (g > 255) {
+                g = 255;
+            }
+            if (b > 255) {
+                b = 255;
+            }
+
+            if (r < 0) {
+                r = 0;
+            }
+            if (g < 0) {
+                g = 0;
+            }
+            if (b < 0) {
+                b = 0;
+            }
+
+            return ColorCorrection.linearToGamma(r, g, b);
+        } else if (colorMode == 4) { //scaling
+            r = ColorCorrection.gammaToLinear(r);
+            g = ColorCorrection.gammaToLinear(g);
+            b = ColorCorrection.gammaToLinear(b);
+            double temp = coef2 * 255;
+            r = (int) (r * coef + temp + 0.5);
+            g = (int) (g * coef + temp + 0.5);
+            b = (int) (b * coef + temp + 0.5);
+
+            if (r > 255) {
+                r = 255;
+            }
+            if (g > 255) {
+                g = 255;
+            }
+            if (b > 255) {
+                b = 255;
+            }
+
+            if (r < 0) {
+                r = 0;
+            }
+            if (g < 0) {
+                g = 0;
+            }
+            if (b < 0) {
+                b = 0;
+            }
+
+            return ColorCorrection.linearToGamma(r, g, b);
+        }
+        else {
+            r = ColorCorrection.gammaToLinear(r);
+            g = ColorCorrection.gammaToLinear(g);
+            b = ColorCorrection.gammaToLinear(b);
+            double[] res = ColorSpaceConverter.RGBtoOKLAB(r, g, b);
+            int[] rgb = ColorSpaceConverter.OKLABtoRGB(res[0] * coef + coef2, res[1], res[2]);
+            return ColorCorrection.linearToGamma(rgb[0], rgb[1], rgb[2]);
+        }
     }
 
     public static void deleteLibs() {

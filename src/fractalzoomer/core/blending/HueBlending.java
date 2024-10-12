@@ -36,7 +36,7 @@ public class HueBlending extends Blending {
             temp_blue = temp_color & 0xFF;
         }
         
-        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef);
+        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef, false);
 
     }
     

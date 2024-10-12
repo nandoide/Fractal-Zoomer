@@ -41,7 +41,7 @@ public class HardLightBlending extends Blending {
             temp_blue = (int)(2 * blueA * blueB / 256.0 + 0.5);
         }
         
-        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef);
+        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef, false);
 
     }
     

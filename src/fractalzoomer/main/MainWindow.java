@@ -13708,6 +13708,9 @@ public class MainWindow extends JFrame implements Constants {
             }
             catch (Exception ex) {}
 
+            s.color_space = COLOR_SPACE_RGB;
+            ColorCorrection.set(1, 1);
+
             try {
                 ArrayList<Color> primaryCols = new ArrayList<>();
 

@@ -30,7 +30,7 @@ public class BurnBlending extends Blending {
         temp_green = temp_green < 0 ? 0 : temp_green;
         temp_blue = temp_blue < 0 ? 0 : temp_blue;
         
-        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef);
+        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef, false);
 
     }
     

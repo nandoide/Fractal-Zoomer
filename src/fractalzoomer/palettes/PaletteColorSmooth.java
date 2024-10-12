@@ -152,7 +152,7 @@ public class PaletteColorSmooth extends PaletteColor {
 
         double coef = result - (long)result; //fractional part
         
-        return interpolator.interpolateColors(color_red, color_green, color_blue, color2_red, color2_green, color2_blue, coef);
+        return interpolator.interpolateColors(color_red, color_green, color_blue, color2_red, color2_green, color2_blue, coef, true);
 
     }
 
@@ -186,6 +186,6 @@ public class PaletteColorSmooth extends PaletteColor {
 
         double coef = result - (long)result; //fractional part
 
-        return interpolator.interpolateColors(color_red, color_green, color_blue, color2_red, color2_green, color2_blue, coef);
+        return interpolator.interpolateColors(color_red, color_green, color_blue, color2_red, color2_green, color2_blue, coef, true);
     }
 }

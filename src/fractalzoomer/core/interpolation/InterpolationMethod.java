@@ -3,6 +3,7 @@ package fractalzoomer.core.interpolation;
 
 import fractalzoomer.main.Constants;
 import fractalzoomer.main.MainWindow;
+import fractalzoomer.utils.ColorCorrection;
 
 import java.awt.*;
 
@@ -68,11 +69,18 @@ public abstract class InterpolationMethod {
         return null;
     }
 
-    public int interpolateColors(int r1, int g1, int b1, int r2, int g2, int b2, double coef) {
-        if(color_space == Constants.COLOR_SPACE_RGB) {
+    public int interpolateColors(int r1, int g1, int b1, int r2, int g2, int b2, double coef, boolean correction) {
+        if(correction) {
+            if (color_space == Constants.COLOR_SPACE_RGB) {
+                return ColorCorrection.linearToGamma(interpolateColorsInternal(ColorCorrection.gammaToLinear(r1), ColorCorrection.gammaToLinear(g1), ColorCorrection.gammaToLinear(b1), ColorCorrection.gammaToLinear(r2), ColorCorrection.gammaToLinear(g2), ColorCorrection.gammaToLinear(b2), coef));
+            }
+            return ColorCorrection.linearToGamma(interpolateColorsInternal(color_space, this, coef, 0, ColorCorrection.gammaToLinear(r1), ColorCorrection.gammaToLinear(g1), ColorCorrection.gammaToLinear(b1), ColorCorrection.gammaToLinear(r2), ColorCorrection.gammaToLinear(g2), ColorCorrection.gammaToLinear(b2)));
+        }
+
+        if (color_space == Constants.COLOR_SPACE_RGB) {
             return interpolateColorsInternal(r1, g1, b1, r2, g2, b2, coef);
         }
-        return interpolateColors(color_space, this, coef, 0, r1, g1, b1, r2, g2, b2);
+        return interpolateColorsInternal(color_space, this, coef, 0, r1, g1, b1, r2, g2, b2);
     }
     
     protected abstract int interpolateColorsInternal(int r1, int g1, int b1, int r2, int g2, int b2, double coef);
@@ -82,13 +90,17 @@ public abstract class InterpolationMethod {
 
     public Color interpolateColors(Color c1, Color c2, double coef) {
 
-        return new Color(interpolateColorsInternal(c1.getRed(), c1.getGreen(), c1.getBlue(), c2.getRed(), c2.getGreen(), c2.getBlue(), coef));
+        return new Color(interpolateColors(c1.getRed(), c1.getGreen(), c1.getBlue(), c2.getRed(), c2.getGreen(), c2.getBlue(), coef, true));
 
     }
 
     public abstract double getCoef(double coef);
 
     public static int interpolateColors(int color_space, InterpolationMethod method, double coef, int i, int r1, int g1, int b1, int r2, int g2, int b2) {
+        return ColorCorrection.linearToGamma(interpolateColorsInternal(color_space, method, coef, i, ColorCorrection.gammaToLinear(r1), ColorCorrection.gammaToLinear(g1), ColorCorrection.gammaToLinear(b1), ColorCorrection.gammaToLinear(r2), ColorCorrection.gammaToLinear(g2), ColorCorrection.gammaToLinear(b2)));
+    }
+
+    private static int interpolateColorsInternal(int color_space, InterpolationMethod method, double coef, int i, int r1, int g1, int b1, int r2, int g2, int b2) {
         if (color_space == MainWindow.COLOR_SPACE_HSB || color_space == MainWindow.COLOR_SPACE_HSB_LONG) {
             return ColorSpaceInterpolation.HSBInterpolation(method, coef, r1, g1, b1, r2, g2, b2, color_space == MainWindow.COLOR_SPACE_HSB);
         } else if (color_space == MainWindow.COLOR_SPACE_HSL || color_space == MainWindow.COLOR_SPACE_HSL_LONG) {
@@ -155,5 +167,10 @@ public abstract class InterpolationMethod {
             return ColorSpaceInterpolation.LinearRGBInterpolation(method, coef, r1, g1, b1, r2, g2, b2);
         }
         return 0xff000000;
+    }
+
+    public static void main(String[] args) {
+        InterpolationMethod method = InterpolationMethod.create(Constants.INTERPOLATION_LINEAR);
+        interpolateColors(Constants.COLOR_SPACE_CUBEHELIX, method, 0.5, 0, 128, 0, 128, 255, 165, 0);
     }
 }

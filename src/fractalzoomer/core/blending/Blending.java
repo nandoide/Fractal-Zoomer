@@ -2,6 +2,7 @@
 package fractalzoomer.core.blending;
 
 import fractalzoomer.core.interpolation.InterpolationMethod;
+import fractalzoomer.utils.ColorCorrection;
 
 /**
  *
@@ -23,6 +24,14 @@ public abstract class Blending {
     }
     public int blend(int redA, int greenA, int blueA, int redB, int greenB, int blueB, double coef) {
 
+        redA = ColorCorrection.gammaToLinear(redA);
+        greenA = ColorCorrection.gammaToLinear(greenA);
+        blueA = ColorCorrection.gammaToLinear(blueA);
+
+        redB = ColorCorrection.gammaToLinear(redB);
+        greenB = ColorCorrection.gammaToLinear(greenB);
+        blueB = ColorCorrection.gammaToLinear(blueB);
+
         if(reverseColors) {
             int tempRed = redA;
             int tempGreen = greenA;
@@ -37,7 +46,7 @@ public abstract class Blending {
             blueB = tempBlue;
         }
 
-        return blendInternal(redA, greenA, blueA, redB, greenB, blueB, coef);
+        return ColorCorrection.linearToGamma(blendInternal(redA, greenA, blueA, redB, greenB, blueB, coef));
     }
     
     protected abstract int blendInternal(int redA, int greenA, int blueA, int redB, int greenB, int blueB, double coef);

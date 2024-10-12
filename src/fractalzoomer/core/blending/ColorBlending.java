@@ -28,7 +28,7 @@ public class ColorBlending extends Blending {
         int temp_green = (temp_color >> 8) & 0xFF;
         int temp_blue = temp_color & 0xFF;
 
-        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef);
+        return method.interpolateColors(redB, greenB, blueB, temp_red, temp_green, temp_blue, coef, false);
 
     }
 
