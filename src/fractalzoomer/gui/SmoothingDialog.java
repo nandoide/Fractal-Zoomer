@@ -78,7 +78,7 @@ public class SmoothingDialog extends JDialog {
 
         ArrayList<Item> items = new ArrayList<>();
         for(int i = 0; i < Constants.colorSpaces.length; i++) {
-            if(i != Constants.COLOR_SPACE_BEZIER_RGB) {
+            if(i != Constants.COLOR_SPACE_BEZIER_RGB && i != Constants.COLOR_SPACE_BASIS_SPLINE_RGB) {
                 items.add(new Item(Constants.colorSpaces[i], i));
             }
         }

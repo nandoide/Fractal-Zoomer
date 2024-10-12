@@ -77,6 +77,9 @@ public class CustomPalette extends Palette {
         if (color_space == MainWindow.COLOR_SPACE_BEZIER_RGB) {
             ColorSpaceInterpolation.calculateBezierControlPoints(colors);
         }
+        else if (color_space == MainWindow.COLOR_SPACE_BASIS_SPLINE_RGB) {
+            ColorSpaceInterpolation.calculateBasisSplinePoints(colors);
+        }
 
         InterpolationMethod method = InterpolationMethod.create(color_interpolation);
 
@@ -90,7 +93,7 @@ public class CustomPalette extends Palette {
             double coef;
             double step = 1.0 / c1[0];
             for (k = 0, coef = 0; k < c1[0]; coef += step, k++) {
-                palette[(n + k) % palette.length] = InterpolationMethod.interpolateColors(color_space, method, coef, i, c1, c2);
+                palette[(n + k) % palette.length] = InterpolationMethod.interpolateColors(color_space, method, coef, i, c1[1], c1[2], c1[3], c2[1], c2[2], c2[3]);
             }
         }
 
@@ -153,6 +156,9 @@ public class CustomPalette extends Palette {
         if (color_space == MainWindow.COLOR_SPACE_BEZIER_RGB) {
             ColorSpaceInterpolation.calculateBezierControlPoints(colors);
         }
+        else if (color_space == MainWindow.COLOR_SPACE_BASIS_SPLINE_RGB) {
+            ColorSpaceInterpolation.calculateBasisSplinePoints(colors);
+        }
 
         InterpolationMethod method = InterpolationMethod.create(color_interpolation);
 
@@ -174,7 +180,7 @@ public class CustomPalette extends Palette {
                 //(c1[1] * (c1[0] - 1 - j) + c2[1] * j) / (c1[0] - 1),(c1[2] * (c1[0] - 1 - j) + c2[2] * j) / (c1[0] - 1),(c1[3] * (c1[0] - 1 - j) + c2[3] * j) / (c1[0] - 1));
 
 
-                palette[(n + k) % palette.length] = InterpolationMethod.interpolateColors(color_space, method, coef, i, c1, c2);
+                palette[(n + k) % palette.length] = InterpolationMethod.interpolateColors(color_space, method, coef, i, c1[1], c1[2], c1[3], c2[1], c2[2], c2[3]);
                 //System.out.print(palette[(n + k) % palette.length] + ", ");
                 //System.out.println(red + " " + green + " " + blue);
                 //System.out.print("new Color(" +red + ", " + green + ", " + blue + "),");
