@@ -948,6 +948,9 @@ class ColorPoint implements Comparable<ColorPoint> {
                 ArrayList<ColorPoint> blues = new ArrayList<>();
                 int x = 0;
                 for(int i = 0; i < temp_custom_palette.length; i++) {
+                    if(temp_custom_palette[i][0] == 0) {
+                        continue;
+                    }
                     reds.add(new ColorPoint(x, (int)((temp_custom_palette[i][1] / ((double)255)) * height + 0.5), i == 0, true));
                     greens.add(new ColorPoint(x, (int)((temp_custom_palette[i][2] / ((double)255)) * height + 0.5), i == 0, true));
                     blues.add(new ColorPoint(x, (int)((temp_custom_palette[i][3] / ((double)255)) * height + 0.5), i == 0, true));

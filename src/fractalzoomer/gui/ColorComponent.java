@@ -279,36 +279,21 @@ public class ColorComponent extends JPanel {
         else {
             g2d.setStroke(new BasicStroke(1.5f));
 
-            //int offset = editor.getOffset();
             int[] palette = editor.getPalette(true);
 
-//            int[] final_palette = new int[palette.length];
-//            if(editor.isReversed()) {
-//                for (int j = 0; j < final_palette.length; j++) {
-//                    final_palette[j] = palette[(palette.length - 1 - j + offset) % palette.length];
-//                }
-//            }
-//            else {
-//                for (int j = 0; j < final_palette.length; j++) {
-//                    final_palette[j] = palette[(j + offset) % palette.length];
-//                }
-//            }
-
-            for(int i = 0; i < maxX - 1; i++) {
-                int x1 = palette[i];
-                int x2 = palette[i + 1];
+            for(int i = 0; i < maxX; i++) {
                 int v1, v2;
                 if(name.equals("R")) {
-                    v1 = (x1 >> 16) & 0xFF;
-                    v2 = (x2 >> 16) & 0xFF;
+                    v1 = (palette[i] >> 16) & 0xFF;
+                    v2 = i < maxX - 1 ? (palette[i + 1] >> 16) & 0xFF : (int)((colorPoints.get(colorPoints.size() - 1).getY() / (double)height) * 255 + 0.5);
                 }
                 else if(name.equals("G")) {
-                    v1 = (x1 >> 8) & 0xFF;
-                    v2 = (x2 >> 8) & 0xFF;
+                    v1 = (palette[i] >> 8) & 0xFF;
+                    v2 = i < maxX - 1 ? (palette[i + 1] >> 8) & 0xFF : (int)((colorPoints.get(colorPoints.size() - 1).getY() / (double)height) * 255 + 0.5);
                 }
                 else {
-                    v1 = x1 & 0xFF;
-                    v2 = x2 & 0xFF;
+                    v1 = palette[i] & 0xFF;
+                    v2 = i < maxX - 1 ? palette[i + 1] & 0xFF : (int)((colorPoints.get(colorPoints.size() - 1).getY() / (double)height) * 255 + 0.5);
                 }
                 g.drawLine(i, height - (int) ((v1 / 255.0) * height + 0.5), i + 1, height - (int) ((v2 / 255.0) * height + 0.5));
             }
@@ -359,46 +344,7 @@ public class ColorComponent extends JPanel {
     }
 
     private static double getCoef(double coef, int interpolation_method) {
-
-        switch (interpolation_method) {
-            case 0:
-                return LinearInterpolation.getCoefficient(coef);
-            case 1:
-                return CosineInterpolation.getCoefficient(coef);
-            case 2:
-                return AccelerationInterpolation.getCoefficient(coef);
-            case 3:
-                return DecelerationInterpolation.getCoefficient(coef);
-            case 4:
-                return ExponentialInterpolation.getCoefficient(coef);
-            case 5:
-                return CatmullRomInterpolation.getCoefficient(coef);
-            case 6:
-                return CatmullRom2Interpolation.getCoefficient(coef);
-            case 7:
-                return SigmoidInterpolation.getCoefficient(coef);
-            case 8:
-                return SineInterpolation.getCoefficient(coef);
-            case 9:
-                return SqrtInterpolation.getCoefficient(coef);
-            case 10:
-                return ThirdPolynomialInterpolation.getCoefficient(coef);
-            case 11:
-                return FifthPolynomialInterpolation.getCoefficient(coef);
-            case 12:
-                return Exponential2Interpolation.getCoefficient(coef);
-            case 13:
-                return CbrtInterpolation.getCoefficient(coef);
-            case 14:
-                return FrthrootInterpolation.getCoefficient(coef);
-            case 15:
-                return SmoothTransitionFunctionInterpolation.getCoefficient(coef);
-            case 16:
-                return QuarterSinInterpolation.getCoefficient(coef);
-            default:
-                return coef;
-
-        }
+        return InterpolationMethod.create(interpolationMethodMapping(interpolation_method)).getCoef(coef);
     }
 
     public static int interpolationMethodMapping(int interpolation_method) {
