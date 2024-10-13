@@ -2834,7 +2834,7 @@ public class MainWindow extends JFrame implements Constants {
 
     }
 
-    public void defaultFractalSettings(boolean resetImage) {
+    public void defaultFractalSettings(boolean resetImage, boolean resetBailout) {
 
         if(!Settings.hasFunctionParameterization(s.fns.function)) {
             toolbar.getCurrentFunction().setEnabled(false);
@@ -2849,7 +2849,7 @@ public class MainWindow extends JFrame implements Constants {
 
         Fractal.clearReferences(true, true);
 
-        s.defaultFractalSettings();
+        s.defaultFractalSettings(resetBailout);
 
         if (s.size.compareTo(new MyApfloat(0.05)) < 0) {
             tools_menu.getBoundaries().setEnabled(false);
@@ -2980,7 +2980,7 @@ public class MainWindow extends JFrame implements Constants {
 
     public void setJuliaSeedPost() {
         first_seed = false;
-        defaultFractalSettings(true);
+        defaultFractalSettings(true, false);
     }
 
     public void goToJulia() {
@@ -4782,7 +4782,7 @@ public class MainWindow extends JFrame implements Constants {
 
                 main_panel.repaint();
 
-                defaultFractalSettings(true);
+                defaultFractalSettings(true, false);
                 return;
             }
         } else {
@@ -5037,7 +5037,7 @@ public class MainWindow extends JFrame implements Constants {
                 fractal_functions[INERTIA_GRAVITY].setEnabled(true);
             }
             if (!first_seed) {
-                defaultFractalSettings(true);
+                defaultFractalSettings(true, false);
                 main_panel.repaint();
             } else {
                 setOptions(true);
@@ -6101,7 +6101,7 @@ public class MainWindow extends JFrame implements Constants {
             s.pps.sts.statisticGroup = 0;
         }
 
-        defaultFractalSettings(true);
+        defaultFractalSettings(true, true);
 
     }
 
@@ -6289,7 +6289,7 @@ public class MainWindow extends JFrame implements Constants {
         }
 
         if (s.fns.function <= 9 || s.fns.function == MANDELPOLY || s.fns.function == MANDELBROTWTH) {
-            defaultFractalSettings(true);
+            defaultFractalSettings(true, true);
         }
 
     }
@@ -7108,7 +7108,7 @@ public class MainWindow extends JFrame implements Constants {
             new InflectionsPlaneDialog(ptr, s, oldSelected, planes);
         }
         else {
-            defaultFractalSettings(true);
+            defaultFractalSettings(true, false);
         }
     }
 
@@ -8352,7 +8352,7 @@ public class MainWindow extends JFrame implements Constants {
             }
         }
 
-        defaultFractalSettings(true);
+        defaultFractalSettings(true, false);
 
     }
 
@@ -8393,7 +8393,7 @@ public class MainWindow extends JFrame implements Constants {
             }
         }
 
-        defaultFractalSettings(true);
+        defaultFractalSettings(true, false);
 
     }
 
@@ -9234,7 +9234,7 @@ public class MainWindow extends JFrame implements Constants {
 
         Plane.FLIP_REAL = s.flip_real;
 
-        defaultFractalSettings(true);
+        defaultFractalSettings(true, false);
     }
 
     public void FlipImaginary() {
@@ -9248,7 +9248,7 @@ public class MainWindow extends JFrame implements Constants {
 
         Plane.FLIP_IMAGINARY = s.flip_imaginary;
 
-        defaultFractalSettings(true);
+        defaultFractalSettings(true, false);
     }
 
     public void setApplyPlaneOnWholeJulia() {
@@ -9262,7 +9262,7 @@ public class MainWindow extends JFrame implements Constants {
         }
 
         if (s.fns.julia || s.julia_map) {
-            defaultFractalSettings(true);
+            defaultFractalSettings(true, false);
         }
 
     }
@@ -9278,7 +9278,7 @@ public class MainWindow extends JFrame implements Constants {
         }
 
         if (s.fns.julia || s.julia_map) {
-            defaultFractalSettings(true);
+            defaultFractalSettings(true, false);
         }
 
     }
@@ -12988,7 +12988,7 @@ public class MainWindow extends JFrame implements Constants {
             }
         }
 
-        ptr.defaultFractalSettings(true);
+        ptr.defaultFractalSettings(true, false);
     }
 
     public void setPlaneInfluence(int plane_influence) {
@@ -13004,7 +13004,7 @@ public class MainWindow extends JFrame implements Constants {
             return;
         }
 
-        ptr.defaultFractalSettings(true);
+        ptr.defaultFractalSettings(true, false);
     }
 
     public void clickCurrentFunction() {

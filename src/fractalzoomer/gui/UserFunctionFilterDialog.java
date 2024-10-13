@@ -192,7 +192,7 @@ public class UserFunctionFilterDialog extends JDialog {
                                 ffs.user_function_filter_condition_formula[2] = field_formula_cond3.getText();
                             }
 
-                            ptra.defaultFractalSettings(true);
+                            ptra.defaultFractalSettings(true, false);
                         } catch (ParserException ex) {
                             JOptionPane.showMessageDialog(ptra, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                             return;

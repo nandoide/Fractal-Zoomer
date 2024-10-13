@@ -279,24 +279,24 @@ public class ColorComponent extends JPanel {
         else {
             g2d.setStroke(new BasicStroke(1.5f));
 
-            int offset = editor.getOffset();
-            int[] palette = editor.getPalette();
+            //int offset = editor.getOffset();
+            int[] palette = editor.getPalette(true);
 
-            int[] final_palette = new int[palette.length];
-            if(editor.isReversed()) {
-                for (int j = 0; j < final_palette.length; j++) {
-                    final_palette[j] = palette[(palette.length - 1 - j + offset) % palette.length];
-                }
-            }
-            else {
-                for (int j = 0; j < final_palette.length; j++) {
-                    final_palette[j] = palette[(j + offset) % palette.length];
-                }
-            }
+//            int[] final_palette = new int[palette.length];
+//            if(editor.isReversed()) {
+//                for (int j = 0; j < final_palette.length; j++) {
+//                    final_palette[j] = palette[(palette.length - 1 - j + offset) % palette.length];
+//                }
+//            }
+//            else {
+//                for (int j = 0; j < final_palette.length; j++) {
+//                    final_palette[j] = palette[(j + offset) % palette.length];
+//                }
+//            }
 
             for(int i = 0; i < maxX - 1; i++) {
-                int x1 = final_palette[i];
-                int x2 = final_palette[i + 1];
+                int x1 = palette[i];
+                int x2 = palette[i + 1];
                 int v1, v2;
                 if(name.equals("R")) {
                     v1 = (x1 >> 16) & 0xFF;
@@ -886,8 +886,11 @@ public class ColorComponent extends JPanel {
         colorPoints.add(new ColorPoint(x, (int)((y / 255.0) * height + 0.5), x == 0, true));
     }
 
-    public void update() {
+    public void sort() {
         Collections.sort(colorPoints);
+    }
+
+    public void update() {
         repaint();
         editor.paintPalette();
     }

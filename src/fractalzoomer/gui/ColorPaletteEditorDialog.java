@@ -66,7 +66,7 @@ public class ColorPaletteEditorDialog extends JDialog {
 
             dispose();
 
-            ptra2.setPalette(MainWindow.DIRECT_PALETTE_ID, p.getPalette(), outcoloring_mode ? 0 : 1);
+            ptra2.setPalette(MainWindow.DIRECT_PALETTE_ID, p.getPalette(false), outcoloring_mode ? 0 : 1);
             palettes[MainWindow.DIRECT_PALETTE_ID].setSelected(true);
 
 

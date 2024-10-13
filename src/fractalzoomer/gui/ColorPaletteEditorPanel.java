@@ -789,7 +789,7 @@ class ColorPoint implements Comparable<ColorPoint> {
 
                     if (extension.equalsIgnoreCase("map")) {
 
-                        int[] palette = getPalette();
+                        int[] palette = getPalette(false);
 
                         PrintWriter writer;
                         try {
@@ -859,9 +859,19 @@ class ColorPoint implements Comparable<ColorPoint> {
                     ObjectMapper objectMapper = new ObjectMapper();
                     try {
                         ColorDataPoints dp = objectMapper.readValue(file, ColorDataPoints.class);
+
+                        linkedPoints.setSelected(dp.isLinked());
+                        combo_box_color_space.setSelectedIndex(dp.getColor_space());
+
+                        combo_box_color_space.setEnabled(linkedPoints.isSelected());
+
                         redComponent.setColorPoints(dp.getDataPointsRed(height, width));
                         greenComponent.setColorPoints(dp.getDataPointsGreen(height, width));
                         blueComponent.setColorPoints(dp.getDataPointsBlue(height, width));
+
+                        if(linkedPoints.isSelected()) {
+                            linkedSanitization();
+                        }
 
                         boolean hasLastAnchor = redComponent.hasLastAnchor() && greenComponent.hasLastAnchor() && blueComponent.hasLastAnchor();
 
@@ -881,11 +891,6 @@ class ColorPoint implements Comparable<ColorPoint> {
                         else {
                             offset_textfield.setValue(0);
                         }
-
-                        linkedPoints.setSelected(dp.isLinked());
-                        combo_box_color_space.setSelectedIndex(dp.getColor_space());
-
-                        combo_box_color_space.setEnabled(linkedPoints.isSelected());
 
                         if(dp.getInterpolation() < interpolationMode.getItemCount()) {
                             interpolationMode.setSelectedIndex(dp.getInterpolation());
@@ -915,10 +920,6 @@ class ColorPoint implements Comparable<ColorPoint> {
 
                         if(dp.getContrastMerging() >= 0 && dp.getContrastMerging() <= 1) {
                             contrast_merging = dp.getContrastMerging();
-                        }
-
-                        if(linkedPoints.isSelected()) {
-                            linkedSanitization();
                         }
 
                         colorChanged();
@@ -960,6 +961,10 @@ class ColorPoint implements Comparable<ColorPoint> {
                 redComponent.setColorPoints(reds);
                 greenComponent.setColorPoints(greens);
                 blueComponent.setColorPoints(blues);
+
+                if(linkedPoints.isSelected()) {
+                    linkedSanitization();
+                }
 
                 boolean hasLastAnchor = redComponent.hasLastAnchor() && greenComponent.hasLastAnchor() && blueComponent.hasLastAnchor();
 
@@ -1041,6 +1046,14 @@ class ColorPoint implements Comparable<ColorPoint> {
                         blueComponent.addWithFirstAnchor(x, rgb.get(3));
                         x += rgb.get(0);
                     }
+                }
+
+                redComponent.sort();
+                greenComponent.sort();
+                blueComponent.sort();
+
+                if(linkedPoints.isSelected()) {
+                    linkedSanitization();
                 }
 
                 redComponent.update();
@@ -1286,7 +1299,7 @@ class ColorPoint implements Comparable<ColorPoint> {
             g.setColor(new Color(240, 240, 240));
             g.fillRect(0, 0, palette_preview.getWidth(), palette_preview.getHeight());
             
-            int[] palette = getPalette();
+            int[] palette = getPalette(false);
 
             if(total <= palette_preview.getWidth()) {
                 for (int j = 0; j < palette.length; j++) {
@@ -1359,7 +1372,7 @@ class ColorPoint implements Comparable<ColorPoint> {
             return offset;
         }
 
-        public int[] getPalette() {
+        public int[] getPalette(boolean original) {
             int total = getTotalColors();
 
             checkData();
@@ -1382,7 +1395,7 @@ class ColorPoint implements Comparable<ColorPoint> {
                 }
             }
 
-            if(use_contrast) {
+            if(!original && use_contrast) {
 
                 double contrast_step = contrast_period / palette.length;
 
@@ -1410,15 +1423,18 @@ class ColorPoint implements Comparable<ColorPoint> {
 
             }
 
-            int[] final_palette = new int[palette.length];
-            if(check_box_reveres_palette.isSelected()) {
-                for (int j = 0; j < total; j++) {
-                    final_palette[(total - 1 - j + offset) % final_palette.length] = palette[j];
-                }
-            }
-            else {
-                for (int j = 0; j < total; j++) {
-                    final_palette[(j + offset) % final_palette.length] = palette[j];
+
+            int[] final_palette = palette;
+            if(!original) {
+                final_palette = new int[palette.length];
+                if (check_box_reveres_palette.isSelected()) {
+                    for (int j = 0; j < total; j++) {
+                        final_palette[(total - 1 - j + offset) % final_palette.length] = palette[j];
+                    }
+                } else {
+                    for (int j = 0; j < total; j++) {
+                        final_palette[(j + offset) % final_palette.length] = palette[j];
+                    }
                 }
             }
 
@@ -1515,6 +1531,9 @@ class ColorPoint implements Comparable<ColorPoint> {
             redComponent.add(x, color.getRed());
             greenComponent.add(x, color.getGreen());
             blueComponent.add(x, color.getBlue());
+            redComponent.sort();
+            greenComponent.sort();
+            blueComponent.sort();
             redComponent.update();
             greenComponent.update();
             blueComponent.update();
@@ -1523,31 +1542,37 @@ class ColorPoint implements Comparable<ColorPoint> {
         public void moveHorizontalAll(int x, int old_x, int index) {
             if(redComponent.getColorPoints().get(index).getX() == old_x) {
                 redComponent.getColorPoints().get(index).setX(x);
-                redComponent.update();
             }
             if(greenComponent.getColorPoints().get(index).getX() == old_x) {
                 greenComponent.getColorPoints().get(index).setX(x);
-                greenComponent.update();
             }
             if(blueComponent.getColorPoints().get(index).getX() == old_x) {
                 blueComponent.getColorPoints().get(index).setX(x);
-                blueComponent.update();
             }
+            redComponent.sort();
+            greenComponent.sort();
+            blueComponent.sort();
+            redComponent.update();
+            greenComponent.update();
+            blueComponent.update();
         }
 
         public void removeFromAll(int x, int index) {
             if(redComponent.getColorPoints().get(index).getX() == x) {
                 redComponent.getColorPoints().remove(index);
-                redComponent.update();
             }
             if(greenComponent.getColorPoints().get(index).getX() == x) {
                 greenComponent.getColorPoints().remove(index);
-                greenComponent.update();
             }
             if(blueComponent.getColorPoints().get(index).getX() == x) {
                 blueComponent.getColorPoints().remove(index);
-                blueComponent.update();
             }
+            redComponent.sort();
+            greenComponent.sort();
+            blueComponent.sort();
+            redComponent.update();
+            greenComponent.update();
+            blueComponent.update();
         }
 
         public int getBackgroundMode() {

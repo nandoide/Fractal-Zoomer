@@ -2589,7 +2589,7 @@ public class Settings implements Constants {
         pps.sts.user_statistic_init_value = "0.0";
     }
 
-    public void defaultFractalSettings() {
+    public void defaultFractalSettings(boolean resetBailout) {
 
         switch (fns.function) {
             case MANDEL_NEWTON:
@@ -2598,7 +2598,7 @@ public class Settings implements Constants {
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(24);
-                fns.bailout = fns.bailout < 8 ? 8 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 8 ? 8 : fns.bailout;
                 break;
             case MAGNET1:
             case MAGNET13:
@@ -2607,12 +2607,12 @@ public class Settings implements Constants {
                     xCenter = new MyApfloat(0.0);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(28);
-                    fns.bailout = fns.bailout < 13 ? 13 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 13 ? 13 : fns.bailout;
                 } else {
                     xCenter = new MyApfloat(1.35);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(8);
-                    fns.bailout = fns.bailout < 13 ? 13 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 13 ? 13 : fns.bailout;
                 }
                 break;
             case MAGNET2:
@@ -2622,12 +2622,12 @@ public class Settings implements Constants {
                     xCenter = new MyApfloat(0.0);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(56);
-                    fns.bailout = fns.bailout < 13 ? 13 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 13 ? 13 : fns.bailout;
                 } else {
                     xCenter = new MyApfloat(1.0);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(7);
-                    fns.bailout = fns.bailout < 13 ? 13 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 13 ? 13 : fns.bailout;
                 }
                 break;
             case BARNSLEY1:
@@ -2635,13 +2635,13 @@ public class Settings implements Constants {
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(7);
-                fns.bailout = fns.bailout < 2 ? 2 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 2 ? 2 : fns.bailout;
                 break;
             case SIERPINSKI_GASKET:
                 xCenter = new MyApfloat(0.5);
                 yCenter = new MyApfloat(0.5);
                 size = new MyApfloat(3);
-                fns.bailout = fns.bailout < 100 ? 100 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 100 ? 100 : fns.bailout;
                 break;
             case KLEINIAN:
                 xCenter = new MyApfloat(0.0);
@@ -2671,7 +2671,7 @@ public class Settings implements Constants {
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(6);
-                fns.bailout = fns.bailout < 8 ? 8 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 8 ? 8 : fns.bailout;
                 break;
             case FORMULA2:
             case FORMULA13:
@@ -2683,7 +2683,7 @@ public class Settings implements Constants {
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(6);
-                fns.bailout = fns.bailout < 4 ? 4 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 4 ? 4 : fns.bailout;
                 break;
             case FORMULA3:
             case FORMULA9:
@@ -2691,45 +2691,45 @@ public class Settings implements Constants {
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(3);
-                fns.bailout = fns.bailout < 4 ? 4 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 4 ? 4 : fns.bailout;
                 break;
             case FORMULA4:
             case FORMULA5:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(1.5);
-                fns.bailout = fns.bailout < 4 ? 4 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 4 ? 4 : fns.bailout;
                 break;
             case FORMULA7:
             case FORMULA12:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(12);
-                fns.bailout = fns.bailout < 8 ? 8 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 8 ? 8 : fns.bailout;
                 break;
             case FORMULA8:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(3);
-                fns.bailout = fns.bailout < 16 ? 16 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 16 ? 16 : fns.bailout;
                 break;
             case FORMULA11:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(1.5);
-                fns.bailout = fns.bailout < 100 ? 100 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 100 ? 100 : fns.bailout;
                 break;
             case FORMULA27:
                 if (fns.julia) {
                     xCenter = new MyApfloat(-2);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(6);
-                    fns.bailout = fns.bailout < 8 ? 8 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 8 ? 8 : fns.bailout;
                 } else {
                     xCenter = new MyApfloat(0.0);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(3);
-                    fns.bailout = fns.bailout < 8 ? 8 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 8 ? 8 : fns.bailout;
                 }
                 break;
             case FORMULA28:
@@ -2738,12 +2738,12 @@ public class Settings implements Constants {
                     xCenter = new MyApfloat(0.0);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(12);
-                    fns.bailout = fns.bailout < 16 ? 16 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 16 ? 16 : fns.bailout;
                 } else {
                     xCenter = new MyApfloat(0.0);
                     yCenter = new MyApfloat(0.0);
                     size = new MyApfloat(3);
-                    fns.bailout = fns.bailout < 16 ? 16 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 16 ? 16 : fns.bailout;
                 }
                 break;
             case FORMULA32:
@@ -2754,32 +2754,32 @@ public class Settings implements Constants {
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(6);
-                fns.bailout = fns.bailout < 16 ? 16 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 16 ? 16 : fns.bailout;
                 break;
             case FORMULA38:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(1.5);
-                fns.bailout = fns.bailout < 2 ? 2 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 2 ? 2 : fns.bailout;
                 break;
             case FORMULA42:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(12);
-                fns.bailout = fns.bailout < 12 ? 12 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 12 ? 12 : fns.bailout;
                 break;
             case FORMULA43:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(24);
-                fns.bailout = fns.bailout < 12 ? 12 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 12 ? 12 : fns.bailout;
                 break;
             case FORMULA44:
             case FORMULA45:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(24);
-                fns.bailout = fns.bailout < 16 ? 16 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 16 ? 16 : fns.bailout;
                 break;
             case FORMULA46:
             case MAGNET_PATAKI2:
@@ -2791,20 +2791,20 @@ public class Settings implements Constants {
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(6);
-                fns.bailout = fns.bailout < 100 ? 100 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 100 ? 100 : fns.bailout;
                 break;
             case LYAPUNOV:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(24);
-                fns.bailout = fns.bailout < 100 ? 100 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 100 ? 100 : fns.bailout;
                 break;
             case SZEGEDI_BUTTERFLY1:
             case SZEGEDI_BUTTERFLY2:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(12);
-                fns.bailout = fns.bailout < 4 ? 4 : fns.bailout;
+                fns.bailout = resetBailout && fns.bailout < 4 ? 4 : fns.bailout;
                 break;
             default:
                 xCenter = new MyApfloat(0.0);
@@ -2812,14 +2812,16 @@ public class Settings implements Constants {
                 size = new MyApfloat(6);
 
                 if(!isRootSolvingMethod(fns.function) && fns.function != NOVA && fns.function != MAGNETIC_PENDULUM) {
-                    fns.bailout = fns.bailout < 2 ? 2 : fns.bailout;
+                    fns.bailout = resetBailout && fns.bailout < 2 ? 2 : fns.bailout;
                 }
                 break;
         }
 
         fns.period = 0;
-        fns.convergent_bailout = 0;
-        TaskRender.USER_CONVERGENT_BAILOUT = 0;
+        if(resetBailout) {
+            fns.convergent_bailout = 0;
+            TaskRender.USER_CONVERGENT_BAILOUT = 0;
+        }
     }
 
     public void createPoly() {
