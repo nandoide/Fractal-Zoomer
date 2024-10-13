@@ -14,7 +14,7 @@ public class ColorPaletteEditorDialog extends JDialog {
     private MainWindow ptra2;
     private ColorPaletteEditorPanel p;
 
-    public ColorPaletteEditorDialog(MainWindow ptra, boolean outcoloring_mode, JRadioButtonMenuItem[] palettes, int color_space) {
+    public ColorPaletteEditorDialog(MainWindow ptra, boolean outcoloring_mode, JRadioButtonMenuItem[] palettes) {
         super();
 
         ptra2 = ptra;
@@ -30,7 +30,7 @@ public class ColorPaletteEditorDialog extends JDialog {
         setSize(filters_options_window_width, filters_options_window_height);
         setLocation((int)(ptra2.getLocation().getX() + ptra2.getSize().getWidth() / 2) - (filters_options_window_width / 2), (int)(ptra2.getLocation().getY() + ptra2.getSize().getHeight() / 2) - (filters_options_window_height / 2));
 
-        p = new ColorPaletteEditorPanel(width, height, color_space, this);
+        p = new ColorPaletteEditorPanel(width, height, this);
         p.setBackground(MainWindow.bg_color);
         p.setPreferredSize(new Dimension(width + 40, 600));
 

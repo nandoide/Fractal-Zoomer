@@ -1946,7 +1946,7 @@ public class MainWindow extends JFrame implements Constants {
 
         file_chooser.addChoosableFileFilter(new FileNameExtensionFilter("Fractal Zoomer Settings (*.fzs)", "fzs"));
 
-        String name = "fractal " + DateTimeFormatter.ofPattern("yyyy-MM-dd HH;mm;ss").format(LocalDateTime.now()) + ".fzs";
+        String name = "fractal zoomer " + DateTimeFormatter.ofPattern("yyyy-MM-dd HH;mm;ss").format(LocalDateTime.now()) + ".fzs";
 
         file_chooser.setSelectedFile(new File(name));
 
@@ -13060,7 +13060,7 @@ public class MainWindow extends JFrame implements Constants {
     }
 
     public void setCustomDirectPalette(boolean outcoloring_mode) {
-       new ColorPaletteEditorDialog(ptr, outcoloring_mode, outcoloring_mode ? options_menu.getOutColoringPalette() : options_menu.getInColoringPalette(), outcoloring_mode ? s.ps.color_space : s.ps2.color_space);
+       new ColorPaletteEditorDialog(ptr, outcoloring_mode, outcoloring_mode ? options_menu.getOutColoringPalette() : options_menu.getInColoringPalette());
     }
 
     public void setJitterPost() {

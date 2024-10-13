@@ -310,10 +310,15 @@ import java.util.ArrayList;
     }
 
     private static double PQ_inv(double X) {
+        if(X < 0) {
+            X = 0;
+        }
         double XX = Math.pow(X, 7.460772656268214e-03);
-        return 1e4 * Math.pow(
-                (0.8359375 - XX) / (18.6875*XX - 18.8515625),
-                6.277394636015326);
+        double v = (0.8359375 - XX) / (18.6875*XX - 18.8515625);
+        if(v < 0) {
+            v = 0;
+        }
+        return 1e4 * Math.pow(v, 6.277394636015326);
     }
 
 
@@ -928,10 +933,15 @@ import java.util.ArrayList;
 
 
     private static double PQ(double X) {
+        if(X < 0) {
+            X = 0;
+        }
         double XX = Math.pow(X*1e-4, 0.1593017578125);
-          return Math.pow(
-                  (0.8359375 + 18.8515625*XX) / (1 + 18.6875*XX),
-                  134.034375);
+        double v = (0.8359375 + 18.8515625*XX) / (1 + 18.6875*XX);
+        if(v < 0) {
+            v = 0;
+        }
+        return Math.pow(v, 134.034375);
     }
 
       public static double[] XYZtoJzAzBz(double X, double Y, double Z) {

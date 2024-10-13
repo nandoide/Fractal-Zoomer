@@ -4,6 +4,7 @@ package fractalzoomer.gui;
 import fractalzoomer.main.Constants;
 import fractalzoomer.main.MainWindow;
 import fractalzoomer.main.app_settings.Settings;
+import fractalzoomer.utils.Item;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -20,20 +21,6 @@ public class SmoothingDialog extends JDialog {
 
     private MainWindow ptra;
     private JOptionPane optionPane;
-
-    class Item {
-        public String label;
-        public int value;
-        public Item(String label, int value) {
-            this.label = label;
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return label;
-        }
-    }
 
     public SmoothingDialog(MainWindow ptr, Settings s) {
         

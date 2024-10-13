@@ -143,7 +143,7 @@ public class ColorSpaceInterpolation {
     }
 
     public static int RGBInterpolation(InterpolationMethod method, double coef, int r1, int g1, int b1, int r2, int g2, int b2) {
-        return method.interpolateColorsInternal(r1, g1, b1, r2, g2, b2, coef);
+        return method.interpolateColorsInternal(r1, g1, b1, r2, g2, b2, ColorCorrection.modifyIntensityCurve(coef));
     }
 
     public static int ExpInterpolation(InterpolationMethod method, double coef, int r1, int g1, int b1, int r2, int g2, int b2) {
@@ -164,6 +164,7 @@ public class ColorSpaceInterpolation {
         double to_b = Math.log(c2_3);
         double from_b = Math.log(c1_3);
 
+        coef = ColorCorrection.modifyIntensityCurve(coef);
         int red = (int) (Math.exp(method.interpolate(from_r, to_r, coef)));
         int green = (int) (Math.exp(method.interpolate(from_g, to_g, coef)));
         int blue = (int) (Math.exp(method.interpolate(from_b, to_b, coef)));
@@ -181,6 +182,7 @@ public class ColorSpaceInterpolation {
         double to_b = Math.sqrt(b2);
         double from_b = Math.sqrt(b1);
 
+        coef = ColorCorrection.modifyIntensityCurve(coef);
         int red = (int) (Math.pow(method.interpolate(from_r, to_r, coef), 2));
         int green = (int) (Math.pow(method.interpolate(from_g, to_g, coef), 2));
         int blue = (int) (Math.pow(method.interpolate(from_b, to_b, coef), 2));
@@ -198,6 +200,7 @@ public class ColorSpaceInterpolation {
         double to_b = b2 * b2;
         double from_b = b1 * b1;
 
+        coef = ColorCorrection.modifyIntensityCurve(coef);
         int red = (int) (Math.sqrt(method.interpolate(from_r, to_r, coef)));
         int green = (int) (Math.sqrt(method.interpolate(from_g, to_g, coef)));
         int blue = (int) (Math.sqrt(method.interpolate(from_b, to_b, coef)));
@@ -226,6 +229,7 @@ public class ColorSpaceInterpolation {
         double[] ryb_from = ColorSpaceConverter.RGBtoRYB(r1, g1, b1);
         double[] ryb_to = ColorSpaceConverter.RGBtoRYB(r2, g2, b2);
 
+        coef = ColorCorrection.modifyIntensityCurve(coef);
         double r = method.interpolate(ryb_from[0], ryb_to[0], coef);
         double y = method.interpolate(ryb_from[1], ryb_to[1], coef);
         double b = method.interpolate(ryb_from[2], ryb_to[2], coef);
@@ -262,6 +266,7 @@ public class ColorSpaceInterpolation {
 
         double[] to = ColorSpaceConverter.RGBtoXYZ(r2, g2, b2);
 
+        coef = ColorCorrection.modifyIntensityCurve(coef);
         double X = method.interpolate(from[0], to[0], coef);
         double Y = method.interpolate(from[1], to[1], coef);
         double Z = method.interpolate(from[2], to[2], coef);
@@ -376,6 +381,7 @@ public class ColorSpaceInterpolation {
     }
 
     public static int BezierRGBInterpolation(InterpolationMethod method, int i, double coef, int r1, int g1, int b1, int r2, int g2, int b2) {
+        coef = ColorCorrection.modifyIntensityCurve(coef);
         double a = method.getCoef(coef);
         int red = ColorSpaceConverter.clamp((int) evaluateBezier(a, r1, bezierControlPoints_red[0][i].y, bezierControlPoints_red[1][i].y, r2));
         int green = ColorSpaceConverter.clamp((int) evaluateBezier(a, g1, bezierControlPoints_green[0][i].y, bezierControlPoints_green[1][i].y, g2));
@@ -385,6 +391,7 @@ public class ColorSpaceInterpolation {
     }
 
     public static int BasisSplineRGBInterpolation(InterpolationMethod method, int i, double coef, int r1, int g1, int b1, int r2, int g2, int b2) {
+        coef = ColorCorrection.modifyIntensityCurve(coef);
         double a = method.getCoef(coef);
         int red = ColorSpaceConverter.clamp((int) evaluateBasisSpline(a, basis_spline_red[i][0], r1, r2, basis_spline_red[i][1]));
         int green = ColorSpaceConverter.clamp((int) evaluateBasisSpline(a, basis_spline_green[i][0], g1, g2, basis_spline_green[i][1]));
@@ -467,12 +474,13 @@ public class ColorSpaceInterpolation {
     }
 
     public static int LinearRGBInterpolation(InterpolationMethod method, double coef, int r1, int g1, int b1, int r2, int g2, int b2) {
-        double[] ryb_from = ColorSpaceConverter.RGBtoLinearRGB(r1, g1, b1);
-        double[] ryb_to = ColorSpaceConverter.RGBtoLinearRGB(r2, g2, b2);
+        double[] rgb_from = ColorSpaceConverter.RGBtoLinearRGB(r1, g1, b1);
+        double[] rgb_to = ColorSpaceConverter.RGBtoLinearRGB(r2, g2, b2);
 
-        double r = method.interpolate(ryb_from[0], ryb_to[0], coef);
-        double y = method.interpolate(ryb_from[1], ryb_to[1], coef);
-        double b = method.interpolate(ryb_from[2], ryb_to[2], coef);
+        coef = ColorCorrection.modifyIntensityCurve(coef);
+        double r = method.interpolate(rgb_from[0], rgb_to[0], coef);
+        double y = method.interpolate(rgb_from[1], rgb_to[1], coef);
+        double b = method.interpolate(rgb_from[2], rgb_to[2], coef);
 
         int[] rgb = ColorSpaceConverter.LinearRGBtoRGB(r, y, b);
 

@@ -775,7 +775,7 @@ public class CustomPaletteEditorDialog extends JDialog {
         options_panel.setLayout(new FlowLayout());
         options_panel.setBackground(MainWindow.bg_color);
 
-        check_box_reveres_palette = new JCheckBox("Reverse Palette");
+        check_box_reveres_palette = new JCheckBox("Reversed");
         check_box_reveres_palette.setSelected(reversed_palette);
         check_box_reveres_palette.setFocusable(false);
         check_box_reveres_palette.setToolTipText("Reverses the current palette.");
@@ -802,7 +802,7 @@ public class CustomPaletteEditorDialog extends JDialog {
 
         options_panel.add(check_box_reveres_palette);
 
-        JLabel offset_label = new JLabel(" Palette Offset");
+        JLabel offset_label = new JLabel(" Offset");
 
         options_panel.add(offset_label);
 

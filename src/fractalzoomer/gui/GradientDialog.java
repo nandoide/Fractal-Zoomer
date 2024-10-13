@@ -374,7 +374,7 @@ public class GradientDialog extends JDialog {
 
         gp.add(gradient_label);
 
-        JLabel offset_label = new JLabel(" Gradient Offset");
+        JLabel offset_label = new JLabel(" Offset");
 
         color_panel.add(offset_label);
 
