@@ -1490,13 +1490,13 @@ class ColorPoint implements Comparable<ColorPoint> {
             ArrayList<Integer> unionList = new ArrayList<>(unionSet);
             for(Integer v : unionList) {
                 if(!redComponent.hasPoint(v)) {
-                    redComponent.add(v, -1);
+                    redComponent.addColor(v, -1);
                 }
                 if(!greenComponent.hasPoint(v)) {
-                    greenComponent.add(v, -1);
+                    greenComponent.addColor(v, -1);
                 }
                 if(!blueComponent.hasPoint(v)) {
-                    blueComponent.add(v, -1);
+                    blueComponent.addColor(v, -1);
                 }
             }
             redComponent.fixMissing();
@@ -1531,9 +1531,9 @@ class ColorPoint implements Comparable<ColorPoint> {
         }
 
         public void doAdd(int x, Color color) {
-            redComponent.add(x, color.getRed());
-            greenComponent.add(x, color.getGreen());
-            blueComponent.add(x, color.getBlue());
+            redComponent.addColor(x, color.getRed());
+            greenComponent.addColor(x, color.getGreen());
+            blueComponent.addColor(x, color.getBlue());
             redComponent.sort();
             greenComponent.sort();
             blueComponent.sort();

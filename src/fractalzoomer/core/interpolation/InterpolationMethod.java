@@ -71,14 +71,7 @@ public abstract class InterpolationMethod {
 
     public int interpolateColors(int r1, int g1, int b1, int r2, int g2, int b2, double coef, boolean correction) {
         if(correction) {
-            if (color_space == Constants.COLOR_SPACE_RGB) {
-                return ColorCorrection.linearToGamma(interpolateColorsInternal(ColorCorrection.gammaToLinear(r1), ColorCorrection.gammaToLinear(g1), ColorCorrection.gammaToLinear(b1), ColorCorrection.gammaToLinear(r2), ColorCorrection.gammaToLinear(g2), ColorCorrection.gammaToLinear(b2), coef));
-            }
             return ColorCorrection.linearToGamma(interpolateColorsInternal(color_space, this, coef, 0, ColorCorrection.gammaToLinear(r1), ColorCorrection.gammaToLinear(g1), ColorCorrection.gammaToLinear(b1), ColorCorrection.gammaToLinear(r2), ColorCorrection.gammaToLinear(g2), ColorCorrection.gammaToLinear(b2)));
-        }
-
-        if (color_space == Constants.COLOR_SPACE_RGB) {
-            return interpolateColorsInternal(r1, g1, b1, r2, g2, b2, coef);
         }
         return interpolateColorsInternal(color_space, this, coef, 0, r1, g1, b1, r2, g2, b2);
     }
@@ -88,9 +81,9 @@ public abstract class InterpolationMethod {
     public abstract int interpolate(int a, int b, double coef);
 
 
-    public Color interpolateColors(Color c1, Color c2, double coef) {
+    public Color interpolateColors(Color c1, Color c2, double coef, boolean correction) {
 
-        return new Color(interpolateColors(c1.getRed(), c1.getGreen(), c1.getBlue(), c2.getRed(), c2.getGreen(), c2.getBlue(), coef, true));
+        return new Color(interpolateColors(c1.getRed(), c1.getGreen(), c1.getBlue(), c2.getRed(), c2.getGreen(), c2.getBlue(), coef, correction));
 
     }
 

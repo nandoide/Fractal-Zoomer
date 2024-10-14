@@ -7276,6 +7276,8 @@ public class MainWindow extends JFrame implements Constants {
     }
 
     public void setSmoothingPost(boolean recalculate) {
+        ColorCorrection.set(s.gamma, s.intesity_exponent);
+
         if (s.ps.color_choice == CUSTOM_PALETTE_ID) {
             TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
         } else {
@@ -13709,7 +13711,8 @@ public class MainWindow extends JFrame implements Constants {
             catch (Exception ex) {}
 
             s.color_space = COLOR_SPACE_RGB;
-            ColorCorrection.set(1, 1);
+            s.gamma = 1;
+            s.intesity_exponent = 1;
 
             try {
                 ArrayList<Color> primaryCols = new ArrayList<>();
@@ -13758,7 +13761,7 @@ public class MainWindow extends JFrame implements Constants {
                         p = (int) temp;
                         int pn = (p + 1) % m_nParts;
                         temp -= p;
-                        finalCols.add(lerp.interpolateColors(primaryCols.get(p), primaryCols.get(pn), temp));
+                        finalCols.add(lerp.interpolateColors(primaryCols.get(p), primaryCols.get(pn), temp, false));
                     }
 
                     s.ps.color_choice = DIRECT_PALETTE_ID;

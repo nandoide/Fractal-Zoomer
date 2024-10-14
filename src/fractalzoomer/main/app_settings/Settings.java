@@ -23,6 +23,7 @@ import fractalzoomer.parser.ParserException;
 import fractalzoomer.planes.Plane;
 import fractalzoomer.settings.*;
 import fractalzoomer.utils.ColorAlgorithm;
+import fractalzoomer.utils.ColorCorrection;
 import org.apfloat.Apfloat;
 
 import javax.swing.*;
@@ -94,6 +95,8 @@ public class Settings implements Constants {
     public double lchab_constant_c;
     public double lchuv_constant_l;
     public double lchuv_constant_c;
+    public double gamma;
+    public double intesity_exponent;
 
 
     public Settings() {
@@ -117,6 +120,9 @@ public class Settings implements Constants {
 
         flip_real = false;
         flip_imaginary = false;
+
+        gamma = 1;
+        intesity_exponent = 1;
 
         hsb_constant_b = 1;
         hsb_constant_s = 1;
@@ -3203,6 +3209,7 @@ public class Settings implements Constants {
     }
 
     public void applyStaticSettings() {
+        ColorCorrection.set(gamma, intesity_exponent);
 
         if (ps.color_choice == CUSTOM_PALETTE_ID) {
             TaskRender.palette_outcoloring = new CustomPalette(ps.custom_palette, ps.color_interpolation, ps.color_space, ps.reversed_palette, ps.scale_factor_palette_val, ps.processing_alg, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();

@@ -63,7 +63,7 @@ public class ColorComponent extends JPanel {
             colorPoints.add(new ColorPoint(data[i][0], (int)((data[i][1] / 255.0) * height + 0.5), i == 0 && data[i][0] == 0, true));
         }
 
-        Collections.sort(colorPoints);
+        sort();
 
 
         selectedIndex = -1;
@@ -108,7 +108,7 @@ public class ColorComponent extends JPanel {
                     }
                 }
 
-                Collections.sort(colorPoints);
+                sort();
 
                 repaint();
                 editor.paintPalette();
@@ -153,7 +153,7 @@ public class ColorComponent extends JPanel {
                     }
 
                     if (moved) {
-                        Collections.sort(colorPoints);
+                        sort();
                     }
 
                     editor.colorChanged();
@@ -784,7 +784,7 @@ public class ColorComponent extends JPanel {
             }
         }
 
-        Collections.sort(colorPoints);
+        sort();
     }
 
     public void setData(int[][] data) {
@@ -803,7 +803,7 @@ public class ColorComponent extends JPanel {
             colorPoints.add(new ColorPoint(data[i][0], (int)((data[i][1] / 255.0) * height + 0.5), i == 0 && data[i][0] == 0, true));
         }
 
-        Collections.sort(colorPoints);
+        sort();
         repaint();
     }
 
@@ -819,12 +819,12 @@ public class ColorComponent extends JPanel {
         colorPoints.clear();
     }
 
-    public void add(int x, int y) {
-        if(y < 0) {
-            colorPoints.add(new ColorPoint(x, y, false, true));
+    public void addColor(int x, int color_val) {
+        if(color_val < 0) {
+            addOnClick(x, color_val);
         }
         else {
-            colorPoints.add(new ColorPoint(x, (int) ((y / 255.0) * height + 0.5), false, true));
+            addOnClick(x, (int) ((color_val / 255.0) * height + 0.5));
         }
     }
 
@@ -867,7 +867,7 @@ public class ColorComponent extends JPanel {
     }
 
     public void fixMissing() {
-        Collections.sort(colorPoints);
+        sort();
         for(int i = 0; i < colorPoints.size(); i++) {
             if(colorPoints.get(i).getY() < 0) {
                 if(i > 0 && i < colorPoints.size() - 1) {

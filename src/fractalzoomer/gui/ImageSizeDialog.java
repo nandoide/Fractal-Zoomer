@@ -121,8 +121,8 @@ public class ImageSizeDialog extends JDialog {
             ar_fractional.setEnabled(true);
         }
         else {
-            field.setEnabled(false);
-            field2.setEnabled(false);
+            field.setEnabled(templates.getSelectedIndex() == 0);
+            field2.setEnabled(templates.getSelectedIndex() == 0);
             ar1.setEnabled(false);
             ar2.setEnabled(false);
             ar_fractional.setEnabled(false);

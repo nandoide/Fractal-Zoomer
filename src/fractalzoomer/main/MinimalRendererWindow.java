@@ -513,6 +513,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
         common = new CommonFunctions(ptr);
 
+        repaint();
+
     }
 
     public Settings getSettings() {

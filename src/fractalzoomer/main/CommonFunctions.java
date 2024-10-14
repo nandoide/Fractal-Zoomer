@@ -2112,8 +2112,9 @@ public class CommonFunctions implements Constants {
             overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br>";
             overview += tab + "Color Space = " + colorSpaces[s.color_space] + "<br><br>";
 
-
-            overview += "<b><font color='red'>Contour Factor:</font></b> " + s.contourFactor + "<br><br>";
+            overview += "<b><font color='red'>Contour Factor:</font></b> " + s.contourFactor + "<br>";
+            overview += "<b><font color='red'>Gamma:</font></b> " + s.gamma + "<br>";
+            overview += "<b><font color='red'>Intensity Exponent:</font></b> " + s.intesity_exponent + "<br><br>";
         }
 
         if (s.ds.domain_coloring && !s.useDirectColor) {

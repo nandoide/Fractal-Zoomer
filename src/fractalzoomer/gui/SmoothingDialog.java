@@ -102,6 +102,11 @@ public class SmoothingDialog extends JDialog {
             fractional_transfer.setEnabled(false);
         }
 
+        JTextField gamma_field = new JTextField();
+        gamma_field.setText("" + s.gamma);
+        JTextField intensity_exponent_field = new JTextField();
+        intensity_exponent_field.setText("" + s.intesity_exponent);
+
         Object[] message = {
             " ",
             enable_smoothing,
@@ -120,13 +125,17 @@ public class SmoothingDialog extends JDialog {
             "Escaping:", escaping_alg_combo,
             "Converging:", converging_alg_combo,
             " ",
-            "Set the color interpolation method.",
+            "Set the color interpolation method and color space.",
                 "Interpolation Method:",
             combo_box_color_interp,
-                " ",
-                "Set the color space.",
                 "Color Space:",
                 combo_box_color_space,
+                " ",
+                "Set the gamma and the intensity exponent.",
+                "Gamma:",
+                gamma_field,
+                "Intensity Exponent:",
+                intensity_exponent_field,
             " ",};
 
         optionPane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
@@ -174,6 +183,16 @@ public class SmoothingDialog extends JDialog {
                             ) {
                                 recalculate = true;
                             }
+
+                            double temp = Double.parseDouble(gamma_field.getText());
+                            double temp2 = Double.parseDouble(intensity_exponent_field.getText());
+
+                            if(temp <= 0 || temp2 <= 0) {
+                                JOptionPane.showMessageDialog(ptra, "The gamma/intensity exponent values must be greater than 0.", "Error!", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                            s.gamma = temp;
+                            s.intesity_exponent = temp2;
 
                            // s.fns.apply_offset_in_smoothing = apply_offset_of_1.isSelected();
                             s.fns.smoothing_color_selection = color_selection.getSelectedIndex();
