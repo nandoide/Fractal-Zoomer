@@ -1650,8 +1650,8 @@ public class StatisticsColoringDialog extends JDialog {
             try {
                 s.parser.parse(field_formula.getText());
 
-                if(s.parser.foundR() || s.parser.foundTrap()) {
-                    JOptionPane.showMessageDialog(ptra, "The variables: r, trap cannot be used in the value formula.", "Error!", JOptionPane.ERROR_MESSAGE);
+                if(s.parser.foundNF() || s.parser.foundR() || s.parser.foundTrap()) {
+                    JOptionPane.showMessageDialog(ptra, "The variables: nf, r, trap cannot be used in the value formula.", "Error!", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -1668,8 +1668,8 @@ public class StatisticsColoringDialog extends JDialog {
 
                 s.parser.parse(field_formula_init.getText());
 
-                if (s.parser.foundN() || s.parser.foundP() || s.parser.foundS() || s.parser.foundC0() || s.parser.foundZ() || s.parser.foundPP() || s.parser.foundBail() || s.parser.foundCbail() || s.parser.foundR() || s.parser.foundStat() || s.parser.foundTrap()) {
-                    JOptionPane.showMessageDialog(ptra, "The variables: z, n, s, c0, p, pp, bail, cbail, r, stat, trap cannot be used in the value(0) formula.", "Error!", JOptionPane.ERROR_MESSAGE);
+                if (s.parser.foundNF() || s.parser.foundN() || s.parser.foundP() || s.parser.foundS() || s.parser.foundC0() || s.parser.foundZ() || s.parser.foundPP() || s.parser.foundBail() || s.parser.foundCbail() || s.parser.foundR() || s.parser.foundStat() || s.parser.foundTrap()) {
+                    JOptionPane.showMessageDialog(ptra, "The variables: z, n, s, c0, p, pp, nf, bail, cbail, r, stat, trap cannot be used in the value(0) formula.", "Error!", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
