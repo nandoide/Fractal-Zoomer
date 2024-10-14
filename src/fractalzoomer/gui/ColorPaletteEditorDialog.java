@@ -30,7 +30,7 @@ public class ColorPaletteEditorDialog extends JDialog {
         setSize(filters_options_window_width, filters_options_window_height);
         setLocation((int)(ptra2.getLocation().getX() + ptra2.getSize().getWidth() / 2) - (filters_options_window_width / 2), (int)(ptra2.getLocation().getY() + ptra2.getSize().getHeight() / 2) - (filters_options_window_height / 2));
 
-        p = new ColorPaletteEditorPanel(width, height, this);
+        p = new ColorPaletteEditorPanel(width, height, this, outcoloring_mode);
         p.setBackground(MainWindow.bg_color);
         p.setPreferredSize(new Dimension(width + 40, 600));
 

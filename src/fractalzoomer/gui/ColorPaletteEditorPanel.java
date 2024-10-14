@@ -417,32 +417,53 @@ class ColorPoint implements Comparable<ColorPoint> {
 
         private ColorPaletteEditorDialog frame;
         private int height;
+        private int width;
         private void reset() {
-            addAnchorAtTheEnd.setSelected(false);
-            check_box_reveres_palette.setSelected(false);
-            offset_textfield.setValue(0);
-            combo_box_color_space.setSelectedIndex(0);
-            interpolationMode.setSelectedIndex(0);
-            interpolationColorMode.setSelectedIndex(0);
-            customColorLabel.setBackground(Color.BLACK);
-            linkedPoints.setSelected(false);
-            combo_box_color_space.setEnabled(linkedPoints.isSelected());
-            wrapAround.setSelected(false);
-            redComponent.setWrapAround(false);
-            greenComponent.setWrapAround(false);
-            blueComponent.setWrapAround(false);
+            resetBasicOptions();
             redComponent.setData(reds);
             greenComponent.setData(greens);
             blueComponent.setData(blues);
+            paintPalette();
+        }
 
-            use_contrast = false;
-            contrast_range_min = 0;
-            contrast_range_max = 1;
-            contrast_period = 3;
-            contrast_offset = 0;
-            contrast_merging = 1;
-            contrast_algorithm = 0;
+        private void importActivePalette(boolean outcoloring_mode) {
+            resetBasicOptions();
+            int[] colors = null;
+            if(outcoloring_mode) {
+                colors = TaskRender.palette_outcoloring.getPalette();
+            }
+            else {
+                colors = TaskRender.palette_incoloring.getPalette();
+            }
 
+            double step = colors.length > width ? colors.length / (double)width : 1;
+
+            ArrayList<ColorPoint> reds = new ArrayList<>();
+            ArrayList<ColorPoint> greens = new ArrayList<>();
+            ArrayList<ColorPoint> blues = new ArrayList<>();
+
+            for (double x = 0; x < width && (int)x < colors.length; x += step) {
+                int color = colors[(int)x];
+                int red = (color >> 16) & 0xFF;
+                int green = (color >> 8) & 0xFF;
+                int blue = color & 0xFF;
+
+                reds.add(new ColorPoint((int)x, (int)((red / ((double)255)) * height + 0.5), x == 0, true));
+                greens.add(new ColorPoint((int)x, (int)((green / ((double)255)) * height + 0.5), x == 0, true));
+                blues.add(new ColorPoint((int)x, (int)((blue / ((double)255)) * height + 0.5), x == 0, true));
+            }
+
+            redComponent.setColorPoints(reds);
+            greenComponent.setColorPoints(greens);
+            blueComponent.setColorPoints(blues);
+
+            if(linkedPoints.isSelected()) {
+                linkedSanitization();
+            }
+
+            boolean hasLastAnchor = redComponent.hasLastAnchor() && greenComponent.hasLastAnchor() && blueComponent.hasLastAnchor();
+
+            addAnchorAtTheEnd.setSelected(hasLastAnchor);
             paintPalette();
         }
 
@@ -475,13 +496,14 @@ class ColorPoint implements Comparable<ColorPoint> {
             JOptionPane.showMessageDialog(this, message, "Help", JOptionPane.QUESTION_MESSAGE);
         }
 
-        public ColorPaletteEditorPanel(int width, int height, ColorPaletteEditorDialog frame) {
+        public ColorPaletteEditorPanel(int width, int height, ColorPaletteEditorDialog frame, boolean outcoloring_mode) {
 
             grab_cursor = Toolkit.getDefaultToolkit().createCustomCursor(MainWindow.getIcon("cursor_grab.gif").getImage(), new Point(16, 16), "grab");
             grabbing_cursor = Toolkit.getDefaultToolkit().createCustomCursor(MainWindow.getIcon("cursor_grabbing.gif").getImage(), new Point(16, 16), "grabbing");
 
 
             this.height = height;
+            this.width = width;
             this.frame = frame;
             if(redComponent == null) {
                 redComponent = new ColorComponent(Color.RED, new Color(110, 70, 70), "R", width, height, reds, this);
@@ -710,12 +732,23 @@ class ColorPoint implements Comparable<ColorPoint> {
 
             JButton reset = new MyButton();
             reset.setIcon(MainWindow.getIcon("palette_reset.png"));
+            reset.setToolTipText("Resets the palette.");
             reset.setFocusable(false);
             reset.setPreferredSize(new Dimension(28, 28));
 
             reset.addActionListener( e-> reset());
 
             tools_in.add(reset);
+
+            JButton importActive = new MyButton();
+            importActive.setIcon(MainWindow.getIcon("palette_import.png"));
+            importActive.setFocusable(false);
+            importActive.setToolTipText("Imports the current active palette.");
+            importActive.setPreferredSize(new Dimension(28, 28));
+
+            importActive.addActionListener( e-> importActivePalette(outcoloring_mode));
+
+            tools_in.add(importActive);
 
 
             JButton clear_palette = new MyButton();
@@ -1343,11 +1376,19 @@ class ColorPoint implements Comparable<ColorPoint> {
         public static int getMaxX() {
             int maxX = Math.max(Math.max(redComponent.getMaxX(), greenComponent.getMaxX()), blueComponent.getMaxX());
 
-            if (maxX != 0) {
+            if (maxX > 0) {
                 return maxX;
             }
 
             return Math.max(Math.max(redComponent.getColorPoints().size(), greenComponent.getColorPoints().size()), blueComponent.getColorPoints().size());
+        }
+
+        public static int getBaseColorLength() {
+            int max = Math.max(Math.max(redComponent.getMaxX(), greenComponent.getMaxX()), blueComponent.getMaxX());
+            if(max < 0) {
+                return 0;
+            }
+            return max + 1;
         }
 
         public int getTotalColors() {
@@ -1358,10 +1399,10 @@ class ColorPoint implements Comparable<ColorPoint> {
             }
 
             if(wrapAround.isSelected()) {
-                return getWrapStep() + getMaxX();
+                return getWrapStep() + getBaseColorLength();
             }
             else {
-                return getMaxX();
+                return getBaseColorLength();
             }
         }
 
@@ -1592,6 +1633,30 @@ class ColorPoint implements Comparable<ColorPoint> {
             greenComponent.repaint();
             blueComponent.repaint();
             paintPalette();
+        }
+
+        private void resetBasicOptions() {
+            addAnchorAtTheEnd.setSelected(false);
+            check_box_reveres_palette.setSelected(false);
+            offset_textfield.setValue(0);
+            combo_box_color_space.setSelectedIndex(0);
+            interpolationMode.setSelectedIndex(0);
+            interpolationColorMode.setSelectedIndex(0);
+            customColorLabel.setBackground(Color.BLACK);
+            linkedPoints.setSelected(false);
+            combo_box_color_space.setEnabled(linkedPoints.isSelected());
+            wrapAround.setSelected(false);
+            redComponent.setWrapAround(false);
+            greenComponent.setWrapAround(false);
+            blueComponent.setWrapAround(false);
+
+            use_contrast = false;
+            contrast_range_min = 0;
+            contrast_range_max = 1;
+            contrast_period = 3;
+            contrast_offset = 0;
+            contrast_merging = 1;
+            contrast_algorithm = 0;
         }
 
         public void setProceduralPalettePost(int length, CosinePaletteSettings iqps, int step) {
