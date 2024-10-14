@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -427,7 +428,7 @@ class ColorPoint implements Comparable<ColorPoint> {
         }
 
         private void importActivePalette(boolean outcoloring_mode) {
-            resetBasicOptions();
+
             int[] colors = null;
             if(outcoloring_mode) {
                 colors = TaskRender.palette_outcoloring.getPalette();
@@ -436,8 +437,37 @@ class ColorPoint implements Comparable<ColorPoint> {
                 colors = TaskRender.palette_incoloring.getPalette();
             }
 
-            double step = colors.length > width ? colors.length / (double)width : 1;
+            JTextField length_field = new JTextField();
+            length_field.setText("" + colors.length);
 
+            Object[] message = {
+                    "Set the import length.",
+                    "Length:",
+            length_field};
+
+            JOptionPane.showMessageDialog(this, message, "Import Active Palette", JOptionPane.INFORMATION_MESSAGE);
+
+            int custom_length = colors.length;
+            try {
+                custom_length = Integer.parseInt(length_field.getText());
+            }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if(custom_length <= 0) {
+                JOptionPane.showMessageDialog(this, "The length value must be greater than 0.", "Error!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            resetBasicOptions();
+
+            int final_length = custom_length > width ? width : custom_length;
+
+            double step = final_length != colors.length ? final_length / (double)width : 1;
+
+            double scale_factor = (final_length / (double)colors.length);
             ArrayList<ColorPoint> reds = new ArrayList<>();
             ArrayList<ColorPoint> greens = new ArrayList<>();
             ArrayList<ColorPoint> blues = new ArrayList<>();
@@ -448,9 +478,9 @@ class ColorPoint implements Comparable<ColorPoint> {
                 int green = (color >> 8) & 0xFF;
                 int blue = color & 0xFF;
 
-                reds.add(new ColorPoint((int)x, (int)((red / ((double)255)) * height + 0.5), x == 0, true));
-                greens.add(new ColorPoint((int)x, (int)((green / ((double)255)) * height + 0.5), x == 0, true));
-                blues.add(new ColorPoint((int)x, (int)((blue / ((double)255)) * height + 0.5), x == 0, true));
+                reds.add(new ColorPoint((int)(x * scale_factor), (int)((red / ((double)255)) * height + 0.5), x == 0, true));
+                greens.add(new ColorPoint((int)(x * scale_factor), (int)((green / ((double)255)) * height + 0.5), x == 0, true));
+                blues.add(new ColorPoint((int)(x * scale_factor), (int)((blue / ((double)255)) * height + 0.5), x == 0, true));
             }
 
             redComponent.setColorPoints(reds);
