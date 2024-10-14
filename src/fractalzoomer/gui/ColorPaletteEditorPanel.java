@@ -8,6 +8,7 @@ import fractalzoomer.main.CommonFunctions;
 import fractalzoomer.main.Constants;
 import fractalzoomer.main.MainWindow;
 import fractalzoomer.main.app_settings.CosinePaletteSettings;
+import fractalzoomer.main.app_settings.Settings;
 import fractalzoomer.utils.ColorSpaceConverter;
 import fractalzoomer.utils.Item;
 
@@ -427,15 +428,10 @@ class ColorPoint implements Comparable<ColorPoint> {
             paintPalette();
         }
 
-        private void importActivePalette(boolean outcoloring_mode) {
+        private void importActivePalette(boolean outcoloring_mode, Settings ss) {
 
-            int[] colors = null;
-            if(outcoloring_mode) {
-                colors = TaskRender.palette_outcoloring.getPalette();
-            }
-            else {
-                colors = TaskRender.palette_incoloring.getPalette();
-            }
+            int[] colors = outcoloring_mode ? TaskRender.palette_outcoloring.getPalette() : TaskRender.palette_incoloring.getPalette();
+            int offset = outcoloring_mode ? ss.ps.color_cycling_location : ss.ps2.color_cycling_location;
 
             JTextField length_field = new JTextField();
             length_field.setText("" + colors.length);
@@ -473,7 +469,7 @@ class ColorPoint implements Comparable<ColorPoint> {
             ArrayList<ColorPoint> blues = new ArrayList<>();
 
             for (double x = 0; x < width && (int)x < colors.length; x += step) {
-                int color = colors[(int)x];
+                int color = colors[((int)x + offset) % colors.length];
                 int red = (color >> 16) & 0xFF;
                 int green = (color >> 8) & 0xFF;
                 int blue = color & 0xFF;
@@ -526,7 +522,7 @@ class ColorPoint implements Comparable<ColorPoint> {
             JOptionPane.showMessageDialog(this, message, "Help", JOptionPane.QUESTION_MESSAGE);
         }
 
-        public ColorPaletteEditorPanel(int width, int height, ColorPaletteEditorDialog frame, boolean outcoloring_mode) {
+        public ColorPaletteEditorPanel(int width, int height, ColorPaletteEditorDialog frame, boolean outcoloring_mode, Settings ss) {
 
             grab_cursor = Toolkit.getDefaultToolkit().createCustomCursor(MainWindow.getIcon("cursor_grab.gif").getImage(), new Point(16, 16), "grab");
             grabbing_cursor = Toolkit.getDefaultToolkit().createCustomCursor(MainWindow.getIcon("cursor_grabbing.gif").getImage(), new Point(16, 16), "grabbing");
@@ -724,7 +720,7 @@ class ColorPoint implements Comparable<ColorPoint> {
 
             JPanel tools_in = new JPanel();
             tools_in.setBackground(MainWindow.bg_color);
-            tools_in.setLayout(new GridLayout(1, 8));
+            tools_in.setLayout(new GridLayout(1, 9));
 
 
             if(paletteLength == null) {
@@ -776,7 +772,7 @@ class ColorPoint implements Comparable<ColorPoint> {
             importActive.setToolTipText("Imports the current active palette.");
             importActive.setPreferredSize(new Dimension(28, 28));
 
-            importActive.addActionListener( e-> importActivePalette(outcoloring_mode));
+            importActive.addActionListener( e-> importActivePalette(outcoloring_mode, ss));
 
             tools_in.add(importActive);
 

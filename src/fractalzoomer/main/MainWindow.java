@@ -8021,10 +8021,10 @@ public class MainWindow extends JFrame implements Constants {
 
         if (outcoloring_mode) {
             resetOrbit();
-            new CustomPaletteEditorDialog(ptr, options_menu.getOutColoringPalette(), s.fns.smoothing, palette_id, s.ps.color_choice, s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.temp_color_cycling_location, s.ps.scale_factor_palette_val, s.ps.processing_alg, outcoloring_mode);
+            new CustomPaletteEditorDialog(ptr, options_menu.getOutColoringPalette(), s.fns.smoothing, palette_id, s.ps.color_choice, s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.temp_color_cycling_location, s.ps.scale_factor_palette_val, s.ps.processing_alg, outcoloring_mode, s.ps.color_cycling_location, s.ps2.color_cycling_location);
         } else {
             resetOrbit();
-            new CustomPaletteEditorDialog(ptr, options_menu.getInColoringPalette(), s.fns.smoothing, palette_id, s.ps2.color_choice, s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.temp_color_cycling_location_second_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, outcoloring_mode);
+            new CustomPaletteEditorDialog(ptr, options_menu.getInColoringPalette(), s.fns.smoothing, palette_id, s.ps2.color_choice, s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.temp_color_cycling_location_second_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, outcoloring_mode, s.ps.color_cycling_location, s.ps2.color_cycling_location);
         }
 
     }
@@ -13062,7 +13062,7 @@ public class MainWindow extends JFrame implements Constants {
     }
 
     public void setCustomDirectPalette(boolean outcoloring_mode) {
-       new ColorPaletteEditorDialog(ptr, outcoloring_mode, outcoloring_mode ? options_menu.getOutColoringPalette() : options_menu.getInColoringPalette());
+       new ColorPaletteEditorDialog(ptr, outcoloring_mode, s, outcoloring_mode ? options_menu.getOutColoringPalette() : options_menu.getInColoringPalette());
     }
 
     public void setJitterPost() {
