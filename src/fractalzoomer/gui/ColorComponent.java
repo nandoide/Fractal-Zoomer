@@ -130,20 +130,17 @@ public class ColorComponent extends JPanel {
                             if(x > colorPoints.get(selectedIndex - 1).getX() &&
                                     x < colorPoints.get(selectedIndex + 1).getX()) {
                                 old_x = colorPoints.get(selectedIndex).getX();
-                                colorPoints.get(selectedIndex).setX(x);
-                                moved = true;
+                                moved = colorPoints.get(selectedIndex).setX(x);
                             }
                         }
                         else {
                             old_x = colorPoints.get(selectedIndex).getX();
-                            colorPoints.get(selectedIndex).setX(x);
-                            moved = true;
+                            moved = colorPoints.get(selectedIndex).setX(x);
                         }
                     }
                     else {
                         old_x = colorPoints.get(selectedIndex).getX();
-                        colorPoints.get(selectedIndex).setX(x);
-                        moved = true;
+                        moved = colorPoints.get(selectedIndex).setX(x);
                     }
 
                     colorPoints.get(selectedIndex).setY(y);
@@ -333,7 +330,7 @@ public class ColorComponent extends JPanel {
                 g.drawOval(- circleSize / 2, (height - colorPoints.get(0).getY()) - circleSize / 2, circleSize, circleSize);
             }
 
-            if(colorPoints.get(colorPoints.size() - 1).getX() != 0 && colorPoints.get(colorPoints.size() - 1).getX() != maxX) {
+            if( colorPoints.get(colorPoints.size() - 1).getX() != maxX) {
                 g.setColor(Color.ORANGE);
                 g.fillOval(maxX - circleSize / 2, (height - colorPoints.get(colorPoints.size() - 1).getY()) - circleSize / 2, circleSize, circleSize);
                 g.setColor(lineColor);
@@ -870,7 +867,15 @@ public class ColorComponent extends JPanel {
         sort();
         for(int i = 0; i < colorPoints.size(); i++) {
             if(colorPoints.get(i).getY() < 0) {
-                if(i > 0 && i < colorPoints.size() - 1) {
+                if(i == 0) {
+                    if(i + 1 < colorPoints.size()) {
+                        colorPoints.get(i).setY(colorPoints.get(i + 1).getY());
+                    }
+                    else {
+                        colorPoints.get(i).setY(0);
+                    }
+                }
+                else if(i > 0 && i < colorPoints.size() - 1) {
                     double xp = colorPoints.get(i - 1).getX();
                     double x1 = colorPoints.get(i + 1).getX();
                     double yp = colorPoints.get(i - 1).getY();

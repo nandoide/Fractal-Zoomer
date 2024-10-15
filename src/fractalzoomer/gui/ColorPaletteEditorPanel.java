@@ -62,11 +62,12 @@ class ColorPoint implements Comparable<ColorPoint> {
         return x;
     }
 
-    public void setX(int x) {
+    public boolean setX(int x) {
         if(anchor) {
-            return;
+            return false;
         }
         this.x = x;
+        return true;
     }
 
     public boolean isAnchor() {
@@ -920,7 +921,13 @@ class ColorPoint implements Comparable<ColorPoint> {
                         ColorDataPoints dp = objectMapper.readValue(file, ColorDataPoints.class);
 
                         linkedPoints.setSelected(dp.isLinked());
-                        combo_box_color_space.setSelectedIndex(dp.getColor_space());
+
+                        if(dp.getColor_space() < combo_box_color_space.getItemCount()) {
+                            combo_box_color_space.setSelectedIndex(dp.getColor_space());
+                        }
+                        else {
+                            combo_box_color_space.setSelectedIndex(0);
+                        }
 
                         combo_box_color_space.setEnabled(linkedPoints.isSelected());
 
@@ -954,14 +961,23 @@ class ColorPoint implements Comparable<ColorPoint> {
                         if(dp.getInterpolation() < interpolationMode.getItemCount()) {
                             interpolationMode.setSelectedIndex(dp.getInterpolation());
                         }
+                        else {
+                            interpolationMode.setSelectedIndex(0);
+                        }
                         if(dp.getInterpolationColorMode() < interpolationColorMode.getItemCount()) {
                             interpolationColorMode.setSelectedIndex(dp.getInterpolationColorMode());
+                        }
+                        else {
+                            interpolationColorMode.setSelectedIndex(0);
                         }
 
                         customColorLabel.setBackground(dp.getIntermediateColor());
 
                         if(dp.getContrastAlgorithm() < 2) {
                             contrast_algorithm = dp.getContrastAlgorithm();
+                        }
+                        else {
+                            contrast_algorithm = 0;
                         }
                         use_contrast = dp.getUseContrast();
 
@@ -975,6 +991,9 @@ class ColorPoint implements Comparable<ColorPoint> {
                         if(dp.getContrastPeriod() > 0) {
                             contrast_period = dp.getContrastPeriod();
                         }
+                        else {
+                            contrast_period = 3;
+                        }
                         contrast_offset = dp.getContrastOffset();
 
                         if(dp.getContrastMerging() >= 0 && dp.getContrastMerging() <= 1) {
@@ -982,6 +1001,8 @@ class ColorPoint implements Comparable<ColorPoint> {
                         }
 
                         colorChanged();
+
+                        MainWindow.SaveSettingsPath = file.getParent();
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(this, "Error while loading the file.", "Error!", JOptionPane.ERROR_MESSAGE);
                     }
@@ -1406,15 +1427,7 @@ class ColorPoint implements Comparable<ColorPoint> {
                 return maxX;
             }
 
-            return Math.max(Math.max(redComponent.getColorPoints().size(), greenComponent.getColorPoints().size()), blueComponent.getColorPoints().size());
-        }
-
-        public static int getBaseColorLength() {
-            int max = Math.max(Math.max(redComponent.getMaxX(), greenComponent.getMaxX()), blueComponent.getMaxX());
-            if(max < 0) {
-                return 0;
-            }
-            return max + 1;
+            return 0;
         }
 
         public int getTotalColors() {
@@ -1425,10 +1438,10 @@ class ColorPoint implements Comparable<ColorPoint> {
             }
 
             if(wrapAround.isSelected()) {
-                return getWrapStep() + getBaseColorLength();
+                return getWrapStep() + getMaxX() + 1;
             }
             else {
-                return getBaseColorLength();
+                return getMaxX() + 1;
             }
         }
 
@@ -1610,14 +1623,21 @@ class ColorPoint implements Comparable<ColorPoint> {
         }
 
         public void moveHorizontalAll(int x, int old_x, int index) {
-            if(redComponent.getColorPoints().get(index).getX() == old_x) {
-                redComponent.getColorPoints().get(index).setX(x);
+            if(redComponent.getColorPoints().get(index).isAnchor() || greenComponent.getColorPoints().get(index).isAnchor() || blueComponent.getColorPoints().get(index).isAnchor()) {
+                redComponent.getColorPoints().get(index).setX(old_x);
+                greenComponent.getColorPoints().get(index).setX(old_x);
+                blueComponent.getColorPoints().get(index).setX(old_x);
             }
-            if(greenComponent.getColorPoints().get(index).getX() == old_x) {
-                greenComponent.getColorPoints().get(index).setX(x);
-            }
-            if(blueComponent.getColorPoints().get(index).getX() == old_x) {
-                blueComponent.getColorPoints().get(index).setX(x);
+            else {
+                if (redComponent.getColorPoints().get(index).getX() == old_x) {
+                    redComponent.getColorPoints().get(index).setX(x);
+                }
+                if (greenComponent.getColorPoints().get(index).getX() == old_x) {
+                    greenComponent.getColorPoints().get(index).setX(x);
+                }
+                if (blueComponent.getColorPoints().get(index).getX() == old_x) {
+                    blueComponent.getColorPoints().get(index).setX(x);
+                }
             }
             redComponent.sort();
             greenComponent.sort();
@@ -1628,6 +1648,10 @@ class ColorPoint implements Comparable<ColorPoint> {
         }
 
         public void removeFromAll(int x, int index) {
+            if(!redComponent.getColorPoints().get(index).canBeDeleted() || !greenComponent.getColorPoints().get(index).canBeDeleted() || !blueComponent.getColorPoints().get(index).canBeDeleted()) {
+                return;
+            }
+
             if(redComponent.getColorPoints().get(index).getX() == x) {
                 redComponent.getColorPoints().remove(index);
             }

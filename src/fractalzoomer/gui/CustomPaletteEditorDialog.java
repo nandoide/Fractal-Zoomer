@@ -2295,6 +2295,8 @@ public class CustomPaletteEditorDialog extends JDialog {
                 }
             } catch (Exception ex) {
             }
+
+            MainWindow.SaveSettingsPath = file.getParent();
         }
 
     }
