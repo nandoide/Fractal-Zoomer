@@ -21,6 +21,7 @@ public class MpfrBigNum {
     public static long precision = TaskRender.BIGNUM_PRECISION;
 
     public static int THREADS_THRESHOLD = 3820; // bits of precision
+    public static int THREADS_THRESHOLD_WITH_MPIR = 4400; // bits of precision
 
     private static int use_threads = 0;
     private static int algorithm = 1; //1 is the best if we use mpfr+mpir, 0 is best if we use mpfr+gmp
@@ -78,7 +79,7 @@ public class MpfrBigNum {
         }
 
         algorithm = LibMpfr.getAlgorithm();
-        use_threads = LibMpfr.hasThreadSupport() && TaskRender.USE_THREADS_IN_BIGNUM_LIBS && precision >= THREADS_THRESHOLD && Runtime.getRuntime().availableProcessors() >= 2 ? 1 : 0;
+        use_threads = LibMpfr.hasThreadSupport() && TaskRender.USE_THREADS_IN_BIGNUM_LIBS && precision >= LibMpfr.getThreadThreshold() && Runtime.getRuntime().availableProcessors() >= 2 ? 1 : 0;
     }
 
     private MpfrMemory mpfrMemory;

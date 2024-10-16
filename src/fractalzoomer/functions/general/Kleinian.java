@@ -48,7 +48,7 @@ public class Kleinian extends FractalWithoutConstant {
             StatisticFactory(sts, plane_transform_center);
         }
 
-        bailout_algorithm = new CircleBailoutCondition(4, false);
+        bailout_algorithm = new CircleBailoutCondition(4, false, this);
 
     }
 

@@ -1697,14 +1697,14 @@ public class MainWindow extends JFrame implements Constants {
 
             if (thread_grouping == 0) {
                 tasks = new TaskRender[n][n];
-                TaskRender.resetTaskData(n * n, createFullImageAfterPreview);
+                TaskRender.resetTaskData(n * n, createFullImageAfterPreview, s.size);
             } else if (thread_grouping == 1 || thread_grouping == 2){
                 tasks = new TaskRender[1][n];
-                TaskRender.resetTaskData(n, createFullImageAfterPreview);
+                TaskRender.resetTaskData(n, createFullImageAfterPreview, s.size);
             }
             else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
                 tasks = new TaskRender[m][n];
-                TaskRender.resetTaskData(m * n, createFullImageAfterPreview);
+                TaskRender.resetTaskData(m * n, createFullImageAfterPreview, s.size);
             }
 
 
@@ -1938,7 +1938,6 @@ public class MainWindow extends JFrame implements Constants {
 
         resetOrbit();
 
-
         file_chooser = new JFileChooser(SaveSettingsPath.isEmpty() ? "." : SaveSettingsPath);
 
         file_chooser.setAcceptAllFileFilterUsed(false);
@@ -1962,7 +1961,13 @@ public class MainWindow extends JFrame implements Constants {
 
             SaveSettingsPath = file.getParent();
 
-            s.save(file.toString());
+            String fileName = file.toString();
+
+            if(!fileName.toLowerCase().endsWith(".fzs")) {
+                fileName = fileName + ".fzs";
+            }
+
+            s.save(fileName);
         }
 
         main_panel.repaint();
@@ -6646,14 +6651,14 @@ public class MainWindow extends JFrame implements Constants {
         synchronized (this) {
             if (thread_grouping == 0) {
                 tasks = new TaskRender[n][n];
-                TaskRender.resetTaskData(n * n, false);
+                TaskRender.resetTaskData(n * n, false, s.size);
             } else if (thread_grouping == 1 || thread_grouping == 2){
                 tasks = new TaskRender[1][n];
-                TaskRender.resetTaskData(n, false);
+                TaskRender.resetTaskData(n, false, s.size);
             }
             else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
                 tasks = new TaskRender[m][n];
-                TaskRender.resetTaskData(m * n, false);
+                TaskRender.resetTaskData(m * n, false, s.size);
             }
 
             Parser.usesUserCode = false;
@@ -6867,14 +6872,14 @@ public class MainWindow extends JFrame implements Constants {
         synchronized (this) {
             if (thread_grouping == 0) {
                 tasks = new TaskRender[n][n];
-                TaskRender.resetTaskData(n * n, false);
+                TaskRender.resetTaskData(n * n, false, s.size);
             } else if (thread_grouping == 1 || thread_grouping == 2){
                 tasks = new TaskRender[1][n];
-                TaskRender.resetTaskData(n, false);
+                TaskRender.resetTaskData(n, false, s.size);
             }
             else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
                 tasks = new TaskRender[m][n];
-                TaskRender.resetTaskData(m * n, false);
+                TaskRender.resetTaskData(m * n, false, s.size);
             }
 
             int taskId = 0;
@@ -6924,14 +6929,14 @@ public class MainWindow extends JFrame implements Constants {
         synchronized (this) {
             if (thread_grouping == 0) {
                 tasks = new TaskRender[n][n];
-                TaskRender.resetTaskData(n * n, false);
+                TaskRender.resetTaskData(n * n, false, s.size);
             } else if (thread_grouping == 1 || thread_grouping == 2){
                 tasks = new TaskRender[1][n];
-                TaskRender.resetTaskData(n, false);
+                TaskRender.resetTaskData(n, false, s.size);
             }
             else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
                 tasks = new TaskRender[m][n];
-                TaskRender.resetTaskData(m * n, false);
+                TaskRender.resetTaskData(m * n, false, s.size);
             }
 
             int taskId = 0;
@@ -6981,14 +6986,14 @@ public class MainWindow extends JFrame implements Constants {
         synchronized (this) {
             if (thread_grouping == 0) {
                 tasks = new TaskRender[n][n];
-                TaskRender.resetTaskData(n * n, false);
+                TaskRender.resetTaskData(n * n, false, s.size);
             } else if (thread_grouping == 1 || thread_grouping == 2){
                 tasks = new TaskRender[1][n];
-                TaskRender.resetTaskData(n, false);
+                TaskRender.resetTaskData(n, false, s.size);
             }
             else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
                 tasks = new TaskRender[m][n];
-                TaskRender.resetTaskData(m * n, false);
+                TaskRender.resetTaskData(m * n, false, s.size);
             }
 
             int taskId = 0;
@@ -7007,14 +7012,14 @@ public class MainWindow extends JFrame implements Constants {
         synchronized (this) {
             if (thread_grouping == 0) {
                 tasks = new TaskRender[n][n];
-                TaskRender.resetTaskData(n * n, false);
+                TaskRender.resetTaskData(n * n, false, s.size);
             } else if (thread_grouping == 1 || thread_grouping == 2){
                 tasks = new TaskRender[1][n];
-                TaskRender.resetTaskData(n, false);
+                TaskRender.resetTaskData(n, false, s.size);
             }
             else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
                 tasks = new TaskRender[m][n];
-                TaskRender.resetTaskData(m * n, false);
+                TaskRender.resetTaskData(m * n, false, s.size);
             }
 
             int tile = s.d3s.detail <= 60 ? 1 : TaskRender.TILE_SIZE;
@@ -7036,14 +7041,14 @@ public class MainWindow extends JFrame implements Constants {
         synchronized (this) {
             if (thread_grouping == 0) {
                 tasks = new TaskRender[n][n];
-                TaskRender.resetTaskData(n * n, false);
+                TaskRender.resetTaskData(n * n, false, s.size);
             } else if (thread_grouping == 1 || thread_grouping == 2) {
                 tasks = new TaskRender[1][n];
-                TaskRender.resetTaskData(n, false);
+                TaskRender.resetTaskData(n, false, s.size);
             }
             else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
                 tasks = new TaskRender[m][n];
-                TaskRender.resetTaskData(m * n, false);
+                TaskRender.resetTaskData(m * n, false, s.size);
             }
 
             int taskId = 0;
@@ -8055,7 +8060,7 @@ public class MainWindow extends JFrame implements Constants {
         synchronized (this) {
             tasks = new TaskRender[julia_grid_first_dimension][julia_grid_first_dimension];
 
-            TaskRender.resetTaskData(julia_grid_first_dimension * julia_grid_first_dimension, false);
+            TaskRender.resetTaskData(julia_grid_first_dimension * julia_grid_first_dimension, false, s.size);
             Parser.usesUserCode = false;
 
             int n = julia_grid_first_dimension;

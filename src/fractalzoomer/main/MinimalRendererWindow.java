@@ -678,14 +678,14 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
         if (thread_grouping == 0) {
             tasks = new TaskRender[n][n];
-            TaskRender.resetTaskData(n * n, false);
+            TaskRender.resetTaskData(n * n, false, s.size);
         } else if (thread_grouping == 1 || thread_grouping == 2){
             tasks = new TaskRender[1][n];
-            TaskRender.resetTaskData(n, false);
+            TaskRender.resetTaskData(n, false, s.size);
         }
         else if(thread_grouping == 3 || thread_grouping == 4 || thread_grouping == 5) {
             tasks = new TaskRender[m][n];
-            TaskRender.resetTaskData(m * n, false);
+            TaskRender.resetTaskData(m * n, false, s.size);
         }
 
         try {

@@ -381,10 +381,9 @@ public class Location {
             exponent = MantExp.ZERO.getExp();
         }
         else {
-            Apfloat exp = MyApfloat.fp.multiply(new MyApfloat(c.scale() - 1), MyApfloat.RECIPROCAL_LOG_TWO_BASE_TEN);
             long long_exp = 0;
 
-            double double_exp = exp.doubleValue();
+            double double_exp = (c.scale() - 1) * MyApfloat.log10base2;
 
             if(double_exp < 0) {
                 long_exp = (long)(double_exp - 0.5);
@@ -425,10 +424,9 @@ public class Location {
             exponent = MantExp.ZERO.getExp();
         }
         else {
-            BigDecNum exp = BigDecNum.RECIPROCAL_LOG_TWO_BASE_TEN.mult(c.scale());
             int long_exp = 0;
 
-            double double_exp = exp.doubleValue();
+            double double_exp = c.scale() * MyApfloat.log10base2;
 
             if(double_exp < 0) {
                 long_exp = (int)(double_exp - 0.5);

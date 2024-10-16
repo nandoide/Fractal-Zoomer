@@ -82,15 +82,31 @@ public class LibMpfr {
     }
 
     public static int getAlgorithm() {
+        return isMPIRBased() ? 1 : 0;
+    }
+
+    public static boolean isMPIRBased() {
         if(!Platform.isWindows()) {
-            return 0;
+            return false;
         }
 
         if(!Platform.is64Bit()) {
-            return 0;
+            return false;
         }
 
-        return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.equals(TaskRender.generalArchitecture) ? 1 : 0;
+        return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.equals(TaskRender.generalArchitecture);
+    }
+
+    public static int getThreadThreshold() {
+        if(!Platform.isWindows()) {
+            return MpfrBigNum.THREADS_THRESHOLD;
+        }
+
+        if(!Platform.is64Bit()) {
+            return MpfrBigNum.THREADS_THRESHOLD;
+        }
+
+        return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.equals(TaskRender.generalArchitecture) ? MpfrBigNum.THREADS_THRESHOLD_WITH_MPIR : MpfrBigNum.THREADS_THRESHOLD;
     }
 
 

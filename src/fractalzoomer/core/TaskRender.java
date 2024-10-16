@@ -734,6 +734,7 @@ public abstract class TaskRender implements Runnable {
     public static boolean LOAD_RENDERING_ALGORITHM_FROM_SAVES = false;
     public static int MANTEXPCOMPLEX_FORMAT = 0;
     public static long SEED = 0;
+    private static Apfloat current_size;
 
     public static boolean SMOOTH_DATA = false;
     public static ThreadPoolExecutor approximation_thread_executor;
@@ -10185,8 +10186,9 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    public static void resetTaskData(int num_tasks, boolean createFullImageAfterPreview) {
+    public static void resetTaskData(int num_tasks, boolean createFullImageAfterPreview, Apfloat size) {
 
+        current_size = size;
         TOTAL_NUM_TASKS = num_tasks;
         STOP_RENDERING = false;
         DONE = false;
@@ -12683,12 +12685,23 @@ public abstract class TaskRender implements Runnable {
                 return Constants.ARBITRARY_DOUBLEDOUBLE;
             }
 
-            if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
-                return Constants.ARBITRARY_MPIR;
-            }
+            if(LibMpfr.isMPIRBased()) {
+                if (!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1100 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
+                    return Constants.ARBITRARY_MPFR;
+                }
 
-            if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
-                return Constants.ARBITRARY_MPFR;
+                if (!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
+                    return Constants.ARBITRARY_MPIR;
+                }
+            }
+            else {
+                if (!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
+                    return Constants.ARBITRARY_MPIR;
+                }
+
+                if (!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
+                    return Constants.ARBITRARY_MPFR;
+                }
             }
 
             if(f.supportsBignum()) {
@@ -12812,41 +12825,34 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.BIGNUM_APFLOAT;
         }
-        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC) {
-            if(f.supportsDouble() && dsize > f.getDoubleLimit()) {
-                return Constants.BIGNUM_DOUBLE;
+        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) {
+            if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC) {
+                if (f.supportsDouble() && dsize > f.getDoubleLimit()) {
+                    return Constants.BIGNUM_DOUBLE;
+                }
+
+                if (f.supportsDoubleDouble() && dsize > f.getDoubleDoubleLimit()) {
+                    return Constants.BIGNUM_DOUBLEDOUBLE;
+                }
             }
 
-            if(f.supportsDoubleDouble() && dsize > f.getDoubleDoubleLimit()) {
-                return Constants.BIGNUM_DOUBLEDOUBLE;
-            }
+            if(LibMpfr.isMPIRBased()) {
+                if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1100 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+                    return Constants.BIGNUM_MPFR;
+                }
 
-            //Todo windows mpfr with mpir is better
-            if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
-                return Constants.BIGNUM_MPIR;
+                if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+                    return Constants.BIGNUM_MPIR;
+                }
             }
+            else {
+                if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+                    return Constants.BIGNUM_MPIR;
+                }
 
-            if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
-                return Constants.BIGNUM_MPFR;
-            }
-
-            if(f.supportsBignum()) {
-                return Constants.BIGNUM_BUILT_IN;
-            }
-
-            if(f.supportsBigIntnum()) {
-                return Constants.BIGNUM_BIGINT;
-            }
-
-            return Constants.BIGNUM_APFLOAT;
-        }
-        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) {
-            if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
-                return Constants.BIGNUM_MPIR;
-            }
-
-            if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
-                return Constants.BIGNUM_MPFR;
+                if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+                    return Constants.BIGNUM_MPFR;
+                }
             }
 
             if(f.supportsBignum()) {
@@ -13153,20 +13159,31 @@ public abstract class TaskRender implements Runnable {
         return action == DOMAIN || action == DOMAIN_POLAR || action == DOMAIN_MINIMAL_RENDERER || action == DOMAIN_POLAR_MINIMAL_RENDERER;
     }
 
-    public static boolean allocateMPFR() {
+    public static boolean allocateMPFR(Fractal f) {
+        if(f == null) {
+            return false;
+        }
         if(HIGH_PRECISION_CALCULATION) {
-            return (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPFR || (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_AUTOMATIC && LibMpir.mpirHasError())) && !LibMpfr.mpfrHasError();
+            int hp = getHighPrecisionImplementation(current_size, f);
+            return hp == Constants.ARBITRARY_MPFR;
         }
 
-        return (BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPFR || ((BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) && LibMpir.mpirHasError())) && !LibMpfr.mpfrHasError();
+        int bn = getBignumImplementation(current_size, f);
+        return bn == Constants.BIGNUM_MPFR;
     }
 
-    public static boolean allocateMPIR() {
-        if(HIGH_PRECISION_CALCULATION) {
-            return (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPIR || HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_AUTOMATIC) && !LibMpir.mpirHasError();
+    public static boolean allocateMPIR(Fractal f) {
+        if(f == null) {
+            return false;
         }
 
-        return (BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) && !LibMpir.mpirHasError();
+        if(HIGH_PRECISION_CALCULATION) {
+            int hp = getHighPrecisionImplementation(current_size, f);
+            return hp == Constants.ARBITRARY_MPIR;
+        }
+
+        int bn = getBignumImplementation(current_size, f);
+        return bn == Constants.BIGNUM_MPIR;
     }
 
     private int applyContour(int colorMode, int r, int g, int b, double coef, double coef2, double blending_coef) {
