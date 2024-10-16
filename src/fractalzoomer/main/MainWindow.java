@@ -9555,8 +9555,10 @@ public class MainWindow extends JFrame implements Constants {
             writer.println("use_custom_floatexp_requirement " + TaskRender.USE_CUSTOM_FLOATEXP_REQUIREMENT);
             writer.println("load_mpfr " + TaskRender.LOAD_MPFR);
             writer.println("load_mpir " + TaskRender.LOAD_MPIR);
-            writer.println("#available libs: " + String.join(", ", TaskRender.mpirWinLibs));
-            writer.println("mpir_lib " + TaskRender.MPIR_LIB);
+            writer.println("#available architectures: " + String.join(", ", TaskRender.mpirWinArchitecture));
+            writer.println("mpir_win_architecture " + TaskRender.MPIR_WINDOWS_ARCHITECTURE);
+            writer.println("#available architectures: " + String.join(", ", TaskRender.mpfrWinArchitecture));
+            writer.println("mpfr_win_architecture " + TaskRender.MPFR_WINDOWS_ARCHITECTURE);
             writer.println("period_detection_algorithm " + TaskRender.PERIOD_DETECTION_ALGORITHM);
             writer.println("pattern_compare_alg " + TaskRender.PATTERN_COMPARE_ALG);
             writer.println("pattern_revert_alg " + TaskRender.PATTERN_REVERT_ALG);
@@ -11561,12 +11563,20 @@ public class MainWindow extends JFrame implements Constants {
                             TaskRender.LOAD_RENDERING_ALGORITHM_FROM_SAVES = true;
                         }
                     }
-                    else if(token.equals("mpir_lib") && tokenizer.countTokens() == 1) {
+                    else if(token.equals("mpir_win_architecture") && tokenizer.countTokens() == 1) {
 
                         token = tokenizer.nextToken();
 
-                        if(Arrays.asList(TaskRender.mpirWinLibs).contains(token)) {
-                            TaskRender.MPIR_LIB = token;
+                        if(Arrays.asList(TaskRender.mpirWinArchitecture).contains(token)) {
+                            TaskRender.MPIR_WINDOWS_ARCHITECTURE = token;
+                        }
+                    }
+                    else if(token.equals("mpfr_win_architecture") && tokenizer.countTokens() == 1) {
+
+                        token = tokenizer.nextToken();
+
+                        if(Arrays.asList(TaskRender.mpfrWinArchitecture).contains(token)) {
+                            TaskRender.MPFR_WINDOWS_ARCHITECTURE = token;
                         }
                     }
                     else if(token.equals("built_in_bignum_implementation") && tokenizer.countTokens() == 1) {

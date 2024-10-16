@@ -718,8 +718,11 @@ public abstract class TaskRender implements Runnable {
     public static boolean RENDER_IMAGE_PREVIEW = false;
     public static boolean LOAD_MPFR = true;
     public static boolean LOAD_MPIR = true;
-    public static String MPIR_LIB = "mpir_skylake_avx2.dll";
-    public static final String[] mpirWinLibs = {"mpir_skylake_avx2.dll", "mpir_haswell_avx2.dll", "mpir_sandybridge_ivybridge.dll"};
+    public static final String generalArchitecture = "general";
+    public static String MPIR_WINDOWS_ARCHITECTURE = "skylake_avx2";
+    public static String MPFR_WINDOWS_ARCHITECTURE = "skylake_avx2";
+    public static final String[] mpirWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge"};
+    public static final String[] mpfrWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge", generalArchitecture};
     public static Random generator;
     public static int D3_APPLY_AVERAGE_TO_TRIANGLE_COLORS = 1;
     public static int PATTERN_COMPARE_ALG = 0;
@@ -12620,7 +12623,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.ARBITRARY_APFLOAT;
         }
-        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPFR && !LibMpfr.hasError()) {
+        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPFR && !LibMpfr.mpfrHasError()) {
             if(f.supportsMpfrBignum()) {
                 return Constants.ARBITRARY_MPFR;
             }
@@ -12631,7 +12634,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.ARBITRARY_APFLOAT;
         }
-        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPFR && LibMpfr.hasError()) {
+        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPFR && LibMpfr.mpfrHasError()) {
 
             if(size.doubleValue() > f.getDoubleDoubleLimit()) {
                 return Constants.ARBITRARY_DOUBLEDOUBLE;
@@ -12647,7 +12650,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.ARBITRARY_APFLOAT;
         }
-        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPIR && !LibMpir.hasError()) {
+        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPIR && !LibMpir.mpirHasError()) {
             if(f.supportsMpirBignum()) {
                 return Constants.ARBITRARY_MPIR;
             }
@@ -12658,7 +12661,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.ARBITRARY_APFLOAT;
         }
-        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPIR && LibMpir.hasError()) {
+        else if(TaskRender.HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPIR && LibMpir.mpirHasError()) {
 
             if(size.doubleValue() > f.getDoubleDoubleLimit()) {
                 return Constants.ARBITRARY_DOUBLEDOUBLE;
@@ -12680,11 +12683,11 @@ public abstract class TaskRender implements Runnable {
                 return Constants.ARBITRARY_DOUBLEDOUBLE;
             }
 
-            if(!LibMpir.hasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
+            if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
                 return Constants.ARBITRARY_MPIR;
             }
 
-            if(!LibMpfr.hasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
+            if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) {
                 return Constants.ARBITRARY_MPFR;
             }
 
@@ -12741,7 +12744,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.BIGNUM_APFLOAT;
         }
-        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPFR && !LibMpfr.hasError()) {
+        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPFR && !LibMpfr.mpfrHasError()) {
             if(f.supportsMpfrBignum()) {
                 return Constants.BIGNUM_MPFR;
             }
@@ -12756,7 +12759,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.BIGNUM_APFLOAT;
         }
-        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPFR && LibMpfr.hasError()) {
+        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPFR && LibMpfr.mpfrHasError()) {
             if(f.supportsDouble() && dsize > f.getDoubleLimit()) {
                 return Constants.BIGNUM_DOUBLE;
             }
@@ -12775,7 +12778,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.BIGNUM_APFLOAT;
         }
-        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR && !LibMpir.hasError()) {
+        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR && !LibMpir.mpirHasError()) {
             if(f.supportsMpirBignum()) {
                 return Constants.BIGNUM_MPIR;
             }
@@ -12790,7 +12793,7 @@ public abstract class TaskRender implements Runnable {
 
             return Constants.BIGNUM_APFLOAT;
         }
-        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR && LibMpir.hasError()) {
+        else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR && LibMpir.mpirHasError()) {
             if(f.supportsDouble() && dsize > f.getDoubleLimit()) {
                 return Constants.BIGNUM_DOUBLE;
             }
@@ -12818,11 +12821,12 @@ public abstract class TaskRender implements Runnable {
                 return Constants.BIGNUM_DOUBLEDOUBLE;
             }
 
-            if(!LibMpir.hasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+            //Todo windows mpfr with mpir is better
+            if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
                 return Constants.BIGNUM_MPIR;
             }
 
-            if(!LibMpfr.hasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+            if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
                 return Constants.BIGNUM_MPFR;
             }
 
@@ -12837,11 +12841,11 @@ public abstract class TaskRender implements Runnable {
             return Constants.BIGNUM_APFLOAT;
         }
         else if(TaskRender.BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) {
-            if(!LibMpir.hasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+            if(!LibMpir.mpirHasError() && f.supportsMpirBignum() && (MpirBigNum.precision >= 1200 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
                 return Constants.BIGNUM_MPIR;
             }
 
-            if(!LibMpfr.hasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
+            if(!LibMpfr.mpfrHasError() && f.supportsMpfrBignum() && (MpfrBigNum.precision >= 1350 || (!f.supportsBigIntnum() && !f.supportsBignum()))) { //(f.supportsPeriod() && DETECT_PERIOD && MpfrBigNum.precision >= 450)
                 return Constants.BIGNUM_MPFR;
             }
 
@@ -13151,18 +13155,18 @@ public abstract class TaskRender implements Runnable {
 
     public static boolean allocateMPFR() {
         if(HIGH_PRECISION_CALCULATION) {
-            return (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPFR || (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_AUTOMATIC && LibMpir.hasError())) && !LibMpfr.hasError();
+            return (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPFR || (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_AUTOMATIC && LibMpir.mpirHasError())) && !LibMpfr.mpfrHasError();
         }
 
-        return (BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPFR || ((BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) && LibMpir.hasError())) && !LibMpfr.hasError();
+        return (BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPFR || ((BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) && LibMpir.mpirHasError())) && !LibMpfr.mpfrHasError();
     }
 
     public static boolean allocateMPIR() {
         if(HIGH_PRECISION_CALCULATION) {
-            return (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPIR || HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_AUTOMATIC) && !LibMpir.hasError();
+            return (HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_MPIR || HIGH_PRECISION_IMPLEMENTATION == Constants.ARBITRARY_AUTOMATIC) && !LibMpir.mpirHasError();
         }
 
-        return (BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) && !LibMpir.hasError();
+        return (BIGNUM_IMPLEMENTATION == Constants.BIGNUM_MPIR || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC || BIGNUM_IMPLEMENTATION == Constants.BIGNUM_AUTOMATIC_ONLY_BIGNUM) && !LibMpir.mpirHasError();
     }
 
     private int applyContour(int colorMode, int r, int g, int b, double coef, double coef2, double blending_coef) {

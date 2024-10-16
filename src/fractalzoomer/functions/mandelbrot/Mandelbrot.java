@@ -1364,10 +1364,10 @@ public class Mandelbrot extends Julia {
                 else {
                     if(isMpfrComplex) {
                         if (burning_ship) {
-                            z = z.abs_mutable().square_plus_c_mutable_with_reduction(c, workSpaceData.temp1, workSpaceData.temp2, deepZoom, cz, mcz);
+                            z = z.abs_mutable().square_plus_c_mutable_with_reduction(c, workSpaceData.temp1, workSpaceData.temp2, workSpaceData.temp3, deepZoom, cz, mcz);
                         }
                         else {
-                            z = z.square_plus_c_mutable_with_reduction(c, workSpaceData.temp1, workSpaceData.temp2, deepZoom, cz, mcz);
+                            z = z.square_plus_c_mutable_with_reduction(c, workSpaceData.temp1, workSpaceData.temp2, workSpaceData.temp3, deepZoom, cz, mcz);
                         }
                     }
                     else if(isMpirComplex) {
@@ -1539,10 +1539,10 @@ public class Mandelbrot extends Julia {
         else {
             if(z instanceof MpfrBigNumComplex) {
                 if (burning_ship) {
-                    z = z.abs_mutable().square_plus_c_mutable(c, workSpaceData.temp1, workSpaceData.temp2);
+                    z = z.abs_mutable().square_plus_c_mutable(c, workSpaceData.temp1, workSpaceData.temp2, workSpaceData.temp3);
                 }
                 else {
-                    z = z.square_plus_c_mutable(c, workSpaceData.temp1, workSpaceData.temp2);
+                    z = z.square_plus_c_mutable(c, workSpaceData.temp1, workSpaceData.temp2, workSpaceData.temp3);
                 }
             }
             else if(z instanceof MpirBigNumComplex) {
@@ -2250,10 +2250,10 @@ public class Mandelbrot extends Julia {
 
         if(complex[0] instanceof MpfrBigNumComplex) {
             if(not_burning_ship) {
-                complex[0] = complex[0].square_plus_c_mutable(complex[1], workSpaceData.temp1, workSpaceData.temp2);
+                complex[0] = complex[0].square_plus_c_mutable_no_threads(complex[1], workSpaceData.temp1, workSpaceData.temp2, workSpaceData.temp3);
             }
             else {
-                complex[0] = complex[0].abs_mutable().square_plus_c_mutable(complex[1], workSpaceData.temp1, workSpaceData.temp2);
+                complex[0] = complex[0].abs_mutable().square_plus_c_mutable_no_threads(complex[1], workSpaceData.temp1, workSpaceData.temp2, workSpaceData.temp3);
             }
         }
         else if(complex[0] instanceof MpirBigNumComplex) {
