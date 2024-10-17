@@ -3,12 +3,14 @@ package fractalzoomer.utils;
 public class ColorCorrection {
     static double gamma = 1;
     static double inv_gamma = 1 / gamma;
-    static double intensity_power = 1;
+    static double intensity_exponent = 1;
+    static double interpolation_exponent = 1;
 
-    public static void set(double g, double i) {
+    public static void set(double g, double intensity_e, double interpolation_e) {
         gamma = g;
         inv_gamma = 1 / gamma;
-        intensity_power = i;
+        intensity_exponent = intensity_e;
+        interpolation_exponent = interpolation_e;
     }
 
     public static int gammaToLinear(int v) {
@@ -43,9 +45,16 @@ public class ColorCorrection {
     }
 
     public static double modifyIntensityCurve(double v) {
-        if(intensity_power == 1) {
+        if(intensity_exponent == 1) {
             return v;
         }
-        return Math.pow(v, intensity_power);
+        return Math.pow(v, intensity_exponent);
+    }
+
+    public static double modifyInterpolationCurve(double v) {
+        if(interpolation_exponent == 1) {
+            return v;
+        }
+        return Math.pow(v, interpolation_exponent);
     }
 }

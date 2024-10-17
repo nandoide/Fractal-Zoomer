@@ -97,6 +97,7 @@ public class Settings implements Constants {
     public double lchuv_constant_c;
     public double gamma;
     public double intesity_exponent;
+    public double interpolation_exponent;
 
 
     public Settings() {
@@ -123,6 +124,7 @@ public class Settings implements Constants {
 
         gamma = 1;
         intesity_exponent = 1;
+        interpolation_exponent = 1;
 
         hsb_constant_b = 1;
         hsb_constant_s = 1;
@@ -3209,7 +3211,7 @@ public class Settings implements Constants {
     }
 
     public void applyStaticSettings() {
-        ColorCorrection.set(gamma, intesity_exponent);
+        ColorCorrection.set(gamma, intesity_exponent, interpolation_exponent);
 
         if (ps.color_choice == CUSTOM_PALETTE_ID) {
             TaskRender.palette_outcoloring = new CustomPalette(ps.custom_palette, ps.color_interpolation, ps.color_space, ps.reversed_palette, ps.scale_factor_palette_val, ps.processing_alg, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();

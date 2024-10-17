@@ -2114,6 +2114,7 @@ public class CommonFunctions implements Constants {
 
             overview += "<b><font color='red'>Contour Factor:</font></b> " + s.contourFactor + "<br>";
             overview += "<b><font color='red'>Gamma:</font></b> " + s.gamma + "<br>";
+            overview += "<b><font color='red'>Interpolation Exponent:</font></b> " + s.interpolation_exponent + "<br>";
             overview += "<b><font color='red'>Intensity Exponent:</font></b> " + s.intesity_exponent + "<br><br>";
         }
 
