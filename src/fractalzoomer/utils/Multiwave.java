@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class Multiwave {
@@ -1167,9 +1166,14 @@ public class Multiwave {
 
     }
 
-    static String getJson(WaveColorParams[] params) throws JsonProcessingException {
+    static String paramsToJson(WaveColorParams[] params) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(params);
+    }
+
+    static WaveColorParams[] jsonToParams(String json) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, WaveColorParams[].class);
     }
 
     public static void main(String[] args) throws Exception {

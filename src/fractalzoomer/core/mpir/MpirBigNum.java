@@ -1,6 +1,7 @@
 package fractalzoomer.core.mpir;
 
 
+import com.sun.jna.Platform;
 import fractalzoomer.core.*;
 import fractalzoomer.core.mpfr.LibMpfr;
 import fractalzoomer.core.mpfr.MpfrBigNum;
@@ -36,9 +37,11 @@ public class MpirBigNum {
                 a = SQRT_TWO.divide(10000);
             }
             else {
-                int index = Arrays.asList(TaskRender.mpirWinArchitecture).indexOf(TaskRender.MPIR_WINDOWS_ARCHITECTURE);
-                if(index != -1) {//Try to fallback to another for the next load
-                    TaskRender.MPIR_WINDOWS_ARCHITECTURE = TaskRender.mpirWinArchitecture[(index + 1) % TaskRender.mpirWinArchitecture.length];
+                if(Platform.isWindows() && Platform.is64Bit()) {
+                    int index = Arrays.asList(TaskRender.mpirWinArchitecture).indexOf(TaskRender.MPIR_WINDOWS_ARCHITECTURE);
+                    if (index != -1) {//Try to fallback to another for the next load
+                        TaskRender.MPIR_WINDOWS_ARCHITECTURE = TaskRender.mpirWinArchitecture[(index + 1) % TaskRender.mpirWinArchitecture.length];
+                    }
                 }
             }
         }
@@ -47,9 +50,11 @@ public class MpirBigNum {
             MPIR_LOAD_ERROR = new Exception(ex.getMessage());
             System.out.println("Cannot load mpir: " + MPIR_LOAD_ERROR.getMessage());
 
-            int index = Arrays.asList(TaskRender.mpirWinArchitecture).indexOf(TaskRender.MPIR_WINDOWS_ARCHITECTURE);
-            if(index != -1) {//Try to fallback to another for the next load
-                TaskRender.MPIR_WINDOWS_ARCHITECTURE = TaskRender.mpirWinArchitecture[(index + 1) % TaskRender.mpirWinArchitecture.length];
+            if(Platform.isWindows() && Platform.is64Bit()) {
+                int index = Arrays.asList(TaskRender.mpirWinArchitecture).indexOf(TaskRender.MPIR_WINDOWS_ARCHITECTURE);
+                if (index != -1) {//Try to fallback to another for the next load
+                    TaskRender.MPIR_WINDOWS_ARCHITECTURE = TaskRender.mpirWinArchitecture[(index + 1) % TaskRender.mpirWinArchitecture.length];
+                }
             }
         }
     }
