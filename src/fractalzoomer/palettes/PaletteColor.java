@@ -80,11 +80,26 @@ public abstract class PaletteColor {
         double value = (Math.abs(result) + color_cycling_location) % cycle;
         switch (id) {
             case 0:
-                return Multiwave.multiwave_default(value);
+                try {
+                    return Multiwave.multiwave_default(value);
+                }
+                catch (Exception ex) {
+                    return 0;
+                }
             case 1:
-                return Multiwave.g_spdz2(value);
+                try {
+                    return Multiwave.g_spdz2(value);
+                }
+                catch (Exception ex) {
+                    return 0;
+                }
             case 2:
-                return Multiwave.g_spdz2_custom(value);
+                try {
+                    return Multiwave.g_spdz2_custom(value);
+                }
+                catch (Exception ex) {
+                    return 0;
+                }
             case 3://Inigo Quilez
                 double t = value / cycle;
                 int red = (int)(255.0 * (iqps.redA + iqps.redB * Math.cos( twoPi * (iqps.redC * t + iqps.redD) + iqps.redG)) + 0.5);

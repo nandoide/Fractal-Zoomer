@@ -1,20 +1,32 @@
 package fractalzoomer.utils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class Multiwave {
+    static WaveColorParams[] g_spdz2_params;
+    static WaveColorParams[] default_params;
+    static WaveColorParams[] g_spdz2_custom_params;
 
-    public static final int HSL_BIAS = 0;
-    public static final int HSL_BIAS_UFCOMPAT = 1;
+    enum Blend {
+        HSL_BIAS,
+        HSL_BIAS_UFCOMPAT
+    }
 
-
-    public static final int MAPPING_NORMAL = 0;
-    public static final int MAPPING_SQUARE = 1;
-    public static final int MAPPING_SQRT = 2;
-    public static final int MAPPING_LOG = 3;
+    enum Mapping {
+        MAPPING_NORMAL,
+        MAPPING_SQUARE,
+        MAPPING_SQRT,
+        MAPPING_LOG,
+    }
 
     private static double huefrac(double a, double b) {
 
@@ -443,7 +455,18 @@ public class Multiwave {
     }
 
     private static class LinearRGB {
+        @JsonProperty("x")
         double x;
+
+        public double getX() {
+            return x;
+        }
+
+        public int[] getRgb() {
+            return rgb;
+        }
+
+        @JsonProperty("rgb")
         int[] rgb;
 
         public LinearRGB(double x, int[] rgb) {
@@ -453,7 +476,18 @@ public class Multiwave {
     }
 
     private static class LinearHSL {
+        @JsonProperty("x")
         double x;
+
+        public double getX() {
+            return x;
+        }
+
+        public double[] getHsl() {
+            return hsl;
+        }
+
+        @JsonProperty("hsl")
         double[] hsl;
 
         public LinearHSL(double x, double[] hsl) {
@@ -462,7 +496,7 @@ public class Multiwave {
         }
     }
 
-    private static double[] linearGradientHslNp(double fval, LinearHSL[] input) throws Exception {
+    private static double[] linearGradientHslNp(double fval, LinearHSL[] input) {
 
         LinearRGB[] converted = new LinearRGB[input.length];
 
@@ -520,7 +554,10 @@ public class Multiwave {
         return rgbToHsl2(temp);
     }
 
-    private static double[] metaTricubicGradientRgb(double fval, int[][][] rgbs, double period1, double period2) {
+    private static double[] metaTricubicGradientRgb(double fval, MetaTricubicRGB o) {
+        double period1 = o.period1;
+        double period2 = o.period2;
+        int[][][] rgbs = o.colors;
 
         double fval1 = (fval % period1) / period1;
         double fval2 = (fval % period2) / period2;
@@ -535,7 +572,10 @@ public class Multiwave {
 
     }
 
-    private static double[] metaTricubicGradientHsl(double fval, double[][][] hsls, double period1, double period2) {
+    private static double[] metaTricubicGradientHsl(double fval, MetaTricubicHSL o) {
+        double period1 = o.period1;
+        double period2 = o.period2;
+        double[][][] hsls = o.colors;
 
         double fval1 = (fval % period1) / period1;
         double fval2 = (fval % period2) / period2;
@@ -550,8 +590,8 @@ public class Multiwave {
 
     }
 
-    private static double[] blend(int blend, double[] hsl1, double[] hsl2) {
-        if(blend == HSL_BIAS) {
+    private static double[] blend(Blend blend, double[] hsl1, double[] hsl2) {
+        if(blend == Blend.HSL_BIAS) {
             return hslBias(hsl1, hsl2);
         }
         return hslBiasUfcompat(hsl1, hsl2);
@@ -571,22 +611,271 @@ public class Multiwave {
 
     }
 
+    public static class MetaTricubicRGB {
+        public int[][][] getColors() {
+            return colors;
+        }
+
+        public double getPeriod1() {
+            return period1;
+        }
+
+        public double getPeriod2() {
+            return period2;
+        }
+
+        int[][][] colors;
+        double period1;
+        double period2;
+
+        public MetaTricubicRGB(int[][][] colors, double period1, double period2) {
+            this.colors = colors;
+            this.period1 = period1;
+            this.period2 = period2;
+        }
+    }
+
+    public static class MetaTricubicHSL {
+        public double[][][] getColors() {
+            return colors;
+        }
+
+        public double getPeriod1() {
+            return period1;
+        }
+
+        public double getPeriod2() {
+            return period2;
+        }
+
+        double[][][] colors;
+        double period1;
+        double period2;
+
+        public MetaTricubicHSL(double[][][] colors, double period1, double period2) {
+            this.colors = colors;
+            this.period1 = period1;
+            this.period2 = period2;
+        }
+    }
+
+    @JsonPropertyOrder({"attribute", "*"})
+    public static class WaveColorParams {
+        @JsonProperty("period")
+        public Double period;
+        @JsonProperty("mapping")
+        public Mapping mapping;
+        @JsonProperty("start")
+        public Double start;
+        @JsonProperty("end")
+        public Double end;
+        @JsonProperty("blend")
+        public Blend blend;
+
+        @JsonProperty("attribute")
+        public String getName() {
+            return "color_wave";
+        }
+
+        public Double getPeriod() {
+            return period;
+        }
+
+        public Mapping getMapping() {
+            return mapping;
+        }
+
+        public Double getStart() {
+            return start;
+        }
+
+        public Double getEnd() {
+            return end;
+        }
+
+        public Blend getBlend() {
+            return blend;
+        }
+
+        public int[][] getTricubic_rgb() {
+            return tricubic_rgb;
+        }
+
+        public double[][] getTricubic_hsl() {
+            return tricubic_hsl;
+        }
+
+        public LinearRGB[] getLinear_rgb() {
+            return linear_rgb;
+        }
+
+        public LinearHSL[] getLinear_hsl() {
+            return linear_hsl;
+        }
+
+        public MetaTricubicRGB getMeta_tricubic_rgb() {
+            return meta_tricubic_rgb;
+        }
+
+        public MetaTricubicHSL getMeta_tricubic_hsl() {
+            return meta_tricubic_hsl;
+        }
+
+        @JsonProperty("tricubic_rgb")
+        public int[][] tricubic_rgb;
+
+        @JsonProperty("tricubic_hsl")
+        public double[][] tricubic_hsl;
+        @JsonProperty("linear_rgb")
+        public LinearRGB[] linear_rgb;
+
+        @JsonProperty("linear_hsl")
+        public LinearHSL[] linear_hsl;
+
+        @JsonProperty("meta_tricubic_rgb")
+        public MetaTricubicRGB meta_tricubic_rgb;
+
+        @JsonProperty("meta_tricubic_hsl")
+        public MetaTricubicHSL meta_tricubic_hsl;
+
+        public WaveColorParams(Double period, Mapping mapping, Double start, Double end, Blend blend) {
+            this.period = period;
+            this.mapping = mapping;
+            this.start = start;
+            this.end = end;
+            this.blend = blend;
+        }
+
+        public void setTricubicRGB(int[][] vals) {
+            tricubic_rgb = vals;
+        }
+
+        public void setTricubicHSL(double[][] vals) {
+            tricubic_hsl = vals;
+        }
+
+        public void setLinearRGB(LinearRGB[] vals) {
+            linear_rgb = vals;
+        }
+
+        public void setLinearRGB(LinearHSL[] vals) {
+            linear_hsl = vals;
+        }
+
+        public void setMetaTricubicRGB(MetaTricubicRGB o) {
+            meta_tricubic_rgb = o;
+        }
+
+        public void setMetaTricubicHsl(MetaTricubicHSL o) {
+            meta_tricubic_hsl = o;
+        }
+
+        public static WaveColor[] build(WaveColorParams[] params, double n) throws Exception {
+            WaveColor[] waves = new WaveColor[params.length];
+            for(int i = 0; i < waves.length; i++) {
+                params[i].validate();
+                waves[i] = new WaveColor(params[i], n);
+            }
+            return waves;
+        }
+
+        public void validate() throws Exception {
+            if(period != null && period <= 0) {
+                throw new Exception("Period must be greater than zero.");
+            }
+            if(start != null && start < 0) {
+                throw new Exception("Start must be greater or equal to zero.");
+            }
+            if(end != null && end < 0) {
+                throw new Exception("End must be greater or equal to zero.");
+            }
+            if(start != null && end != null && end < start) {
+                throw new Exception("End must be greater than start.");
+            }
+            int definitions = 0;
+            if(meta_tricubic_rgb != null) {
+                definitions++;
+            }
+            if(meta_tricubic_hsl != null) {
+                definitions++;
+            }
+            if(tricubic_rgb != null) {
+                definitions++;
+            }
+            if(tricubic_hsl != null) {
+                definitions++;
+            }
+            if(linear_rgb != null) {
+                definitions++;
+            }
+            if(linear_hsl != null) {
+                definitions++;
+            }
+            if(definitions != 1) {
+                throw new Exception("Each color wave definition must contain one definition from the list (tricubic_rgb, tricubic_hsl, meta_tricubic_rgb, meta_tricubic_hsl, linear_rgb, linear_hsl)");
+            }
+
+            if(linear_rgb != null) {
+                for(int i = 0; i < linear_rgb.length; i++) {
+                    if(linear_rgb[i].x < 0 || linear_rgb[i].x > 1) {
+                        throw new Exception("The linear coefficients must be between 0 and 1.");
+                    }
+                }
+                for(int i = 0; i < linear_rgb.length - 1; i++) {
+                    if(linear_rgb[i + 1].x < linear_rgb[i].x) {
+                        throw new Exception("The linear coefficients must in ascending order.");
+                    }
+                }
+            }
+
+            if(linear_hsl != null) {
+                for(int i = 0; i < linear_hsl.length; i++) {
+                    if(linear_hsl[i].x < 0 || linear_hsl[i].x > 1) {
+                        throw new Exception("The linear coefficients must be between 0 and 1.");
+                    }
+                }
+                for(int i = 0; i < linear_hsl.length - 1; i++) {
+                    if(linear_hsl[i + 1].x < linear_hsl[i].x) {
+                        throw new Exception("The linear coefficients must in ascending order.");
+                    }
+                }
+            }
+
+            if(meta_tricubic_rgb != null) {
+                if(meta_tricubic_rgb.period1 <= 0 || meta_tricubic_rgb.period2 <= 0) {
+                    throw new Exception("Meta Tricubic Periods must be greater than zero.");
+                }
+            }
+
+            if(meta_tricubic_hsl != null) {
+                if(meta_tricubic_hsl.period1 <= 0 || meta_tricubic_hsl.period2 <= 0) {
+                    throw new Exception("Meta Tricubic Periods must be greater than zero.");
+                }
+            }
+        }
+
+    }
+
 
     public static class WaveColor {
         protected double[] gradient;
-        protected Integer blend;
-        protected Integer mapping;
+        protected Blend blend;
+        protected Mapping mapping;
         protected Double period;
         protected Double start;
         protected Double start2;
         protected Double end;
 
-
-        public WaveColor(Double periodIn, Integer mappingIn, Double startIn, Double endIn, Integer blend) {
+        public WaveColor(WaveColorParams params, double n) {
+            Mapping mappingIn = params.mapping;
+            Double startIn = params.start;
+            Double endIn = params.end;
+            Double periodIn = params.period;
+            Blend blend = params.blend;
 
             mapping = mappingIn;
             if(mapping == null) {
-                mapping = MAPPING_NORMAL;
+                mapping = Mapping.MAPPING_NORMAL;
             }
 
             start = startIn;
@@ -616,33 +905,48 @@ public class Multiwave {
             }
 
             this.blend = blend;
-            if(this.blend  == null) {
-                this.blend  = HSL_BIAS;
+            if(this.blend == null) {
+                this.blend = Blend.HSL_BIAS;
             }
-        }
 
-        public void setGradient(double[] gradient) {
-            this.gradient = gradient;
+            if(params.tricubic_rgb != null) {
+                gradient = tricubicGradientRgbNp(getFval(n), params.tricubic_rgb);
+            }
+            else if(params.linear_rgb != null) {
+                gradient = linearGradientRgbNp(getFval(n), params.linear_rgb);
+            }
+            else if(params.linear_hsl != null) {
+                gradient = linearGradientHslNp(getFval(n), params.linear_hsl);
+            }
+            else if(params.meta_tricubic_rgb != null) {
+                gradient = metaTricubicGradientRgb(getFval(n), params.meta_tricubic_rgb);
+            }
+            else if(params.meta_tricubic_hsl != null) {
+                gradient = metaTricubicGradientHsl(getFval(n), params.meta_tricubic_hsl);
+            }
+            else {
+                gradient = new double[0];
+            }
         }
 
         public double[] getGradient() {
             return gradient;
         }
 
-        public double getFval(double fval) {
+        private double getFval(double fval) {
             double fval2 = mapping(fval, mapping);
             fval2 = Math.max(start, Math.min(end, fval2));
             return fastRem(fval2 - start2, period) / period;
         }
 
-        private static double mapping(double x, Integer mapping) {
-            if(mapping == MAPPING_NORMAL) {
+        private static double mapping(double x, Mapping mapping) {
+            if(mapping == Mapping.MAPPING_NORMAL) {
                 return x;
             }
-            else if(mapping == MAPPING_SQUARE) {
+            else if(mapping == Mapping.MAPPING_SQUARE) {
                 return x * x;
             }
-            else if (mapping == MAPPING_SQRT) {
+            else if (mapping == Mapping.MAPPING_SQRT) {
                 return Math.sqrt(x);
             } else {
                 return Math.log(x);
@@ -650,76 +954,82 @@ public class Multiwave {
         }
     }
 
-    public static int multiwave_simple(double n) {
+    public static int multiwave_simple(double n) throws Exception {
 
+        WaveColorParams p1 = new WaveColorParams(100.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS);
+        p1.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, -5, -5}, {6.5, 0, 0}, {7.5, 5, 5}});
 
-        WaveColor a1 = new WaveColor(100.0, MAPPING_NORMAL, null, null, HSL_BIAS);
-        a1.setGradient(tricubicGradientHslNp( a1.getFval(n), new double[][] {{0, 0, 0}, {7.5, -5, -5}, {6.5, 0, 0}, {7.5, 5, 5}}));
-
-        WaveColor[] waves = {
-                a1
+        WaveColorParams[] params = {
+                p1
         };
-        int[] rgb = hslToRgb(multiwaveColor(waves));
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
-    public static int multiwave_default(double n) {
-
-
-        WaveColor a1 = new WaveColor(1000.0, MAPPING_NORMAL, null, null, HSL_BIAS);
-        a1.setGradient(tricubicGradientHslNp( a1.getFval(n), new double[][] {{0, 0, 0}, {7.5, 0, -3}, {6.5, -3, 0}, {7.5, 0, 3}}));
-
-        WaveColor a2 = new WaveColor(30.0, MAPPING_NORMAL, null, null, HSL_BIAS);
-        a2.setGradient(tricubicGradientHslNp( a2.getFval(n), new double[][] {{0, 0, 0}, {7.5, -2, -2}, {0.5, 2, 2}}));
-
-        WaveColor a3 = new WaveColor(120.0, MAPPING_NORMAL, null, null, HSL_BIAS);
-        a3.setGradient(tricubicGradientHslNp( a3.getFval(n), new double[][] {{0, 0, 0}, {0, -1, -2}, {0, 0, 0}, {0, 1, 2}}));
-
-        WaveColor a4 = new WaveColor(1e6, MAPPING_NORMAL, null, null, HSL_BIAS);
-        a4.setGradient(tricubicGradientHslNp( a4.getFval(n), new double[][] {{0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {3, 0, 0}, {4, 0, 0}, {5, 0, 0}, {6, 0, 0}, {7, 0, 0},}));
-
-        WaveColor a5 = new WaveColor(3500.0, MAPPING_NORMAL, null, null, HSL_BIAS);
-        a5.setGradient(tricubicGradientHslNp( a5.getFval(n), new double[][] {{0, 0, 0}, {2.5, 3, -5}, {3.5, 5, -2}, {2, -4, 4}, {0.5, 4, 2}}));
-
-        WaveColor[] waves = {
-                a1,
-                a2,
-                a3,
-                a4,
-                a5
-        };
-        int[] rgb = hslToRgb(multiwaveColor(waves));
+    public static int multiwave_default(double n) throws Exception {
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(default_params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
-    public static int g_spdz2(double n) {
+    static {
+        create_default_params();
+        create_g_spdz2_params();
+        create_g_spdz2_custom_params();
+    }
 
-        WaveColor a0 = new WaveColor(1175000.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a0.setGradient(metaTricubicGradientRgb(a0.getFval(n), new int[][][]{
+    static void create_default_params() {
+        WaveColorParams p1 = new WaveColorParams(1000.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS);
+        p1.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, 0, -3}, {6.5, -3, 0}, {7.5, 0, 3}});
+
+        WaveColorParams p2 = new WaveColorParams(30.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS);
+        p2.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, -2, -2}, {0.5, 2, 2}});
+
+        WaveColorParams p3 = new WaveColorParams(120.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS);
+        p3.setTricubicHSL(new double[][] {{0, 0, 0}, {0, -1, -2}, {0, 0, 0}, {0, 1, 2}});
+
+        WaveColorParams p4 = new WaveColorParams(1e6, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS);
+        p4.setTricubicHSL(new double[][] {{0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {3, 0, 0}, {4, 0, 0}, {5, 0, 0}, {6, 0, 0}, {7, 0, 0},});
+
+        WaveColorParams p5 = new WaveColorParams(3500.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS);
+        p5.setTricubicHSL(new double[][] {{0, 0, 0}, {2.5, 3, -5}, {3.5, 5, -2}, {2, -4, 4}, {0.5, 4, 2}});
+
+        WaveColorParams[] params = {
+                p1,
+                p2,
+                p3,
+                p4,
+                p5
+        };
+        default_params = params;
+    }
+
+    static void create_g_spdz2_custom_params() {
+        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        p0.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
                 ,{{74, 186, 77}, {73, 0, 92}, {195, 130, 234}, {151, 149, 189}, {175, 199, 196}}
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColor a1 = new WaveColor(5000.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a1.setGradient(tricubicGradientRgbNp(a1.getFval(n), new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}}));
+        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p1.setTricubicRGB(new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}});
 
-        WaveColor a2 = new WaveColor(10.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a2.setGradient(tricubicGradientRgbNp(a2.getFval(n), new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}}));
+        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p2.setTricubicRGB(new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}});
 
-        WaveColor a3 = new WaveColor(17.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a3.setGradient(tricubicGradientRgbNp(a3.getFval(n), new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}}));
+        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p3.setTricubicRGB(new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}});
 
-        WaveColor a4 = new WaveColor(2544.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a4.setGradient(tricubicGradientRgbNp(a4.getFval(n), new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}}));
+        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p4.setTricubicRGB(new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}});
 
-        WaveColor a5 = new WaveColor(235.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a5.setGradient(tricubicGradientRgbNp(a5.getFval(n), new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}}));
+        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p5.setTricubicRGB(new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}});
 
-        WaveColor a6 = new WaveColor(null, MAPPING_LOG, 1.0, 16777216.0, HSL_BIAS_UFCOMPAT);
+        WaveColorParams p6 = new WaveColorParams(Math.pow(2, 16), Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
 
-        LinearRGB[] linear_rgbs = new LinearRGB[] {
+        p6.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, new int[] {11, 25, 12}),
                 new LinearRGB(0.375, new int[] {192, 64, 64}),
                 new LinearRGB(0.5875, new int[] {192, 64, 64}),
@@ -733,52 +1043,47 @@ public class Multiwave {
                 new LinearRGB(0.7875, new int[] {216, 194, 195}),
                 new LinearRGB(0.8325, new int[] {183, 154, 61}),
                 new LinearRGB(1.0, new int[] {243, 227, 234}),
-        };
-        a6.setGradient(linearGradientRgbNp(a6.getFval(n), linear_rgbs));
+        });
 
-
-        WaveColor[] waves = {
-                a0,
-                a1,
-                a2,
-                a3,
-                a4,
-                a5,
-                a6
+        WaveColorParams[] params = {
+                p0,
+                p1,
+                p2,
+                p3,
+                p4,
+                p5,
+                p6
         };
 
-        int[] rgb = hslToRgb(multiwaveColor(waves));
-        return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
+        g_spdz2_custom_params = params;
     }
 
-    public static int g_spdz2_custom(double n) {
-
-        WaveColor a0 = new WaveColor(1175000.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a0.setGradient(metaTricubicGradientRgb(a0.getFval(n), new int[][][]{
+    static void create_g_spdz2_params() {
+        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        p0.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
                 ,{{74, 186, 77}, {73, 0, 92}, {195, 130, 234}, {151, 149, 189}, {175, 199, 196}}
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColor a1 = new WaveColor(5000.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a1.setGradient(tricubicGradientRgbNp(a1.getFval(n), new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}}));
+        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        p1.setTricubicRGB(new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}});
 
-        WaveColor a2 = new WaveColor(10.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a2.setGradient(tricubicGradientRgbNp(a2.getFval(n), new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}}));
+        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        p2.setTricubicRGB(new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}});
 
-        WaveColor a3 = new WaveColor(17.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a3.setGradient(tricubicGradientRgbNp(a3.getFval(n), new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}}));
+        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p3.setTricubicRGB(new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}});
 
-        WaveColor a4 = new WaveColor(2544.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a4.setGradient(tricubicGradientRgbNp(a4.getFval(n), new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}}));
+        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p4.setTricubicRGB(new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}});
 
-        WaveColor a5 = new WaveColor(235.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a5.setGradient(tricubicGradientRgbNp(a5.getFval(n), new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}}));
+        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        p5.setTricubicRGB(new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}});
 
-        WaveColor a6 = new WaveColor(Math.pow(2, 16), MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-
-        LinearRGB[] linear_rgbs = new LinearRGB[] {
+        WaveColorParams p6 = new WaveColorParams(null, Mapping.MAPPING_LOG, 1.0, 16777216.0,  Blend.HSL_BIAS_UFCOMPAT);
+        p6.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, new int[] {11, 25, 12}),
                 new LinearRGB(0.375, new int[] {192, 64, 64}),
                 new LinearRGB(0.5875, new int[] {192, 64, 64}),
@@ -792,30 +1097,35 @@ public class Multiwave {
                 new LinearRGB(0.7875, new int[] {216, 194, 195}),
                 new LinearRGB(0.8325, new int[] {183, 154, 61}),
                 new LinearRGB(1.0, new int[] {243, 227, 234}),
-        };
-        a6.setGradient(linearGradientRgbNp(a6.getFval(n), linear_rgbs));
+        });
 
-
-        WaveColor[] waves = {
-                a0,
-                a1,
-                a2,
-                a3,
-                a4,
-                a5,
-                a6
+        WaveColorParams[] params = {
+                p0,
+                p1,
+                p2,
+                p3,
+                p4,
+                p5,
+                p6
         };
 
-        int[] rgb = hslToRgb(multiwaveColor(waves));
+        g_spdz2_params = params;
+    }
+    public static int g_spdz2(double n) throws Exception {
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(g_spdz2_params, n)));
+        return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
+    }
+
+    public static int g_spdz2_custom(double n) throws Exception {
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(g_spdz2_custom_params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
     public static int linear_only(double n) throws Exception {
 
 
-        WaveColor a1 = new WaveColor(Math.pow(2, 16), MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-
-        LinearRGB[] linear_rgbs = new LinearRGB[] {
+        WaveColorParams p1 = new WaveColorParams(Math.pow(2, 16), Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        p1.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, new int[] {11, 25, 12}),
                 new LinearRGB(0.375, new int[] {192, 64, 64}),
                 new LinearRGB(0.5875, new int[] {192, 64, 64}),
@@ -830,34 +1140,36 @@ public class Multiwave {
                 new LinearRGB(0.8325, new int[] {183, 154, 61}),
                 new LinearRGB(1.0, new int[] {243, 227, 234}),
 
+        });
+
+        WaveColorParams[] params = {
+                p1
         };
-        a1.setGradient(linearGradientRgbNp(a1.getFval(n), linear_rgbs));
-
-
-
-        WaveColor[] waves = {
-                a1
-        };
-        int[] rgb = hslToRgb(multiwaveColor(waves));
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
-    public static int meta_tricubic_gradient_only(double n) {
+    public static int meta_tricubic_gradient_only(double n) throws Exception {
 
-        WaveColor a1 = new WaveColor(1175000.0, MAPPING_NORMAL, null, null, HSL_BIAS_UFCOMPAT);
-        a1.setGradient(metaTricubicGradientRgb(a1.getFval(n), new int[][][]{
+        WaveColorParams p1 = new WaveColorParams(1175000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        p1.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
                 ,{{74, 186, 77}, {73, 0, 92}, {195, 130, 234}, {151, 149, 189}, {175, 199, 196}}
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColor[] waves = {
-                a1
+        WaveColorParams[] params = {
+                p1
         };
-        int[] rgb = hslToRgb(multiwaveColor(waves));
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
 
+    }
+
+    static String getJson(WaveColorParams[] params) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(params);
     }
 
     public static void main(String[] args) throws Exception {
