@@ -73,10 +73,10 @@ public abstract class PaletteColor {
         
     }
 
-    public abstract int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps);
+    public abstract int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring);
 
     private static double twoPi = Math.PI * 2;
-    protected static int getGeneratedColor(double result, int id, int color_cycling_location, int cycle, CosinePaletteSettings iqps) {
+    public static int getGeneratedColor(double result, int id, int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring) {
         double value = (Math.abs(result) + color_cycling_location) % cycle;
         switch (id) {
             case 0:
@@ -84,21 +84,21 @@ public abstract class PaletteColor {
                     return Multiwave.multiwave_default(value);
                 }
                 catch (Exception ex) {
-                    return 0;
+                    return 0xff000000;
                 }
             case 1:
                 try {
                     return Multiwave.g_spdz2(value);
                 }
                 catch (Exception ex) {
-                    return 0;
+                    return 0xff000000;
                 }
             case 2:
                 try {
                     return Multiwave.g_spdz2_custom(value);
                 }
                 catch (Exception ex) {
-                    return 0;
+                    return 0xff000000;
                 }
             case 3://Inigo Quilez
                 double t = value / cycle;
@@ -109,6 +109,13 @@ public abstract class PaletteColor {
                 green = ColorSpaceConverter.clamp(green);
                 blue = ColorSpaceConverter.clamp(blue);
                 return 0xff000000 | (red << 16) | (green << 8) | blue;
+            case 4:
+                try {
+                    return Multiwave.general_palette(value, outcoloring ? Multiwave.user_params_out : Multiwave.user_params_in);
+                }
+                catch (Exception ex) {
+                    return 0xff000000;
+                }
         }
 
         return 0;

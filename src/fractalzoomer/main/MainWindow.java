@@ -12751,10 +12751,26 @@ public class MainWindow extends JFrame implements Constants {
         return ZOOM_TO_THE_SELECTED_AREA && !s.d3s.d3 && !s.polar_projection && !color_cycling && !(s.fns.julia && first_seed) && !orbit;
     }
 
-    public void setGeneratedPalettePost() {
+    public void setGeneratedPalettePost(boolean outcoloring) {
 
         TaskRender.palette_outcoloring.setGeneratedPaletteSettings(true, s.gps);
         TaskRender.palette_incoloring.setGeneratedPaletteSettings(false, s.gps);
+
+        try {
+            if (outcoloring) {
+                Multiwave.user_params_out = Multiwave.jsonToParams(s.gps.outcoloring_multiwave_user_palette);
+            } else {
+                Multiwave.user_params_in = Multiwave.jsonToParams(s.gps.incoloring_multiwave_user_palette);
+            }
+        }
+        catch (Exception ex) {
+            if(outcoloring) {
+                Multiwave.user_params_out = Multiwave.empty;
+            }
+            else {
+                Multiwave.user_params_in = Multiwave.empty;
+            }
+        }
 
         if(s.gps.useGeneratedPaletteOutColoring && !(s.ds.domain_coloring && s.ds.domain_coloring_mode != 1)) {
             infobar.getOutColoringPalettePreview().setVisible(false);

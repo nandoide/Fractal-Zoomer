@@ -24,6 +24,7 @@ import fractalzoomer.planes.Plane;
 import fractalzoomer.settings.*;
 import fractalzoomer.utils.ColorAlgorithm;
 import fractalzoomer.utils.ColorCorrection;
+import fractalzoomer.utils.Multiwave;
 import org.apfloat.Apfloat;
 
 import javax.swing.*;
@@ -3223,6 +3224,19 @@ public class Settings implements Constants {
             TaskRender.palette_incoloring = new CustomPalette(ps2.custom_palette, ps2.color_interpolation, ps2.color_space, ps2.reversed_palette, ps2.scale_factor_palette_val, ps2.processing_alg, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();
         } else {
             TaskRender.palette_incoloring = new PresetPalette(ps2.color_choice, ps2.direct_palette, fns.smoothing, special_color, color_smoothing_method, special_use_palette_color, fns.smoothing_fractional_transfer_method, color_space).getRawPalette();
+        }
+
+        try {
+            Multiwave.user_params_out = Multiwave.jsonToParams(gps.outcoloring_multiwave_user_palette);
+        }
+        catch (Exception ex) {
+            Multiwave.user_params_out = Multiwave.empty;
+        }
+        try {
+            Multiwave.user_params_in = Multiwave.jsonToParams(gps.incoloring_multiwave_user_palette);
+        }
+        catch (Exception ex) {
+            Multiwave.user_params_in = Multiwave.empty;
         }
 
         NNormDistanceBailoutCondition.A = fns.cbs.norm_a;

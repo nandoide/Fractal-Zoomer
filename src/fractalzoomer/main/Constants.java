@@ -97,7 +97,8 @@ public interface Constants {
     public static final String[] atomNormTypes = {"Norm", "Rhombus-Norm", "Square-Norm", "N-Norm"};
     public static final String[] histogramMapping = {"Histogram", "Linear", "Square Root", "Cube Root", "Fourth Root", "Logarithmic", "Rank Order"};
 
-    public static final String[] generatedPalettes = {"Multiwave: default", "Multiwave: g_spdz2", "Multiwave: g_spdz2_custom", "IQ: A + B * cos(2 * pi * (C * t + D) + G)"};
+    public static final String[] multiwavePalettes = {"", "default", "g_spdz2", "g_spdz2_custom"};
+    public static final String[] generatedPalettes = {"Multiwave: default", "Multiwave: g_spdz2", "Multiwave: g_spdz2_custom", "IQ: A + B * cos(2 * pi * (C * t + D) + G)", "Multiwave: User Selected"};
     public static final String[] blend_algorithms = {"Normal", "Multiply", "Divide", "Addition", "Subtraction", "Difference", "Value (HSV)", "Soft Light", "Screen", "Dodge", "Burn", "Darken Only", "Lighten Only", "Hard Light", "Grain Extract", "Grain Merge", "Saturation (HSV)", "Color (HSV)", "Hue (HSV)", "Exclusion", "Pin Light", "Linear Light", "Vivid Light", "Overlay", "Chroma (LCH)", "Color (LCH)", "Hue (LCH)", "Lightness (LCH)", "Luminance", "Linear Burn"};
     /**
      * ** FUNCTION ***

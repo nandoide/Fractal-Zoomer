@@ -157,23 +157,23 @@ public class PaletteColorSmooth extends PaletteColor {
     }
 
     @Override
-    public int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps) {
+    public int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring) {
 
         result = fractional_transfer(result, fractional_transfer_method);
 
         if((paletteId == 3) && interpolator instanceof LinearInterpolation) {
-            return getGeneratedColor(result, paletteId, color_cycling_location, cycle, iqps);
+            return getGeneratedColor(result, paletteId, color_cycling_location, cycle, iqps, outcoloring);
         }
 
         int color;
         int color2;
 
         if(result == 0) {
-            color = color2 = getGeneratedColor(0, paletteId, color_cycling_location, cycle, iqps);
+            color = color2 = getGeneratedColor(0, paletteId, color_cycling_location, cycle, iqps, outcoloring);
         }
         else {
-            color = getGeneratedColor(((long)result - 1), paletteId, color_cycling_location, cycle, iqps);
-            color2 = getGeneratedColor(((long)result), paletteId, color_cycling_location, cycle, iqps);
+            color = getGeneratedColor(((long)result - 1), paletteId, color_cycling_location, cycle, iqps, outcoloring);
+            color2 = getGeneratedColor(((long)result), paletteId, color_cycling_location, cycle, iqps, outcoloring);
         }
 
         int color_red = (color >> 16) & 0xff;

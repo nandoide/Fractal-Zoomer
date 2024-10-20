@@ -142,7 +142,7 @@ public abstract class DomainColoring {
             return palette.getPaletteColor(result + color_cycling_location);
         }
         else {
-            return palette.calculateColor(result, gps.generatedPaletteOutColoringId, color_cycling_location, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ);
+            return palette.calculateColor(result, gps.generatedPaletteOutColoringId, color_cycling_location, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, false);
         }
 
     }

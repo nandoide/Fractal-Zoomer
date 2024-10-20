@@ -1,21 +1,23 @@
 package fractalzoomer.utils;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.HashMap;
 
 public class Multiwave {
-    static WaveColorParams[] g_spdz2_params;
-    static WaveColorParams[] default_params;
-    static WaveColorParams[] g_spdz2_custom_params;
+    public static WaveColorParams[] empty = new WaveColorParams[] {new WaveColorParams(), new WaveColorParams()};
+    public static WaveColorParams[] simple_params;
+    public static WaveColorParams[] g_spdz2_params;
+    public static WaveColorParams[] default_params;
+    public static WaveColorParams[] g_spdz2_custom_params;
+    public static WaveColorParams[] user_params_out = empty;
+    public static WaveColorParams[] user_params_in = empty;
 
     enum Blend {
         HSL_BIAS,
@@ -23,10 +25,10 @@ public class Multiwave {
     }
 
     enum Mapping {
-        MAPPING_NORMAL,
-        MAPPING_SQUARE,
-        MAPPING_SQRT,
-        MAPPING_LOG,
+        NORMAL,
+        SQUARE,
+        SQRT,
+        LOG,
     }
 
     private static double huefrac(double a, double b) {
@@ -376,6 +378,10 @@ public class Multiwave {
 
     private static class RGB {
 
+        public RGB() {
+
+        }
+
         public RGB(int[] rgb) {
             r = rgb[0];
             g = rgb[1];
@@ -387,15 +393,15 @@ public class Multiwave {
             this.g = g;
             this.b = b;
         }
-        public int getR() {
+        public Integer getR() {
             return r;
         }
 
-        public int getG() {
+        public Integer getG() {
             return g;
         }
 
-        public int getB() {
+        public Integer getB() {
             return b;
         }
 
@@ -406,24 +412,49 @@ public class Multiwave {
 
         @JsonIgnore
         public boolean isValid() {
-            return r >= 0 && r <= 255
+            return r != null && g != null && b != null
+                    && r >= 0 && r <= 255
                     && g >= 0 && g <= 255
                     && b >= 0 && b <= 255;
         }
 
-        @JsonProperty("r")
-        int r;
-        @JsonProperty("g")
-        int g;
-        @JsonProperty("b")
-        int b;
+        public void setR(Integer r) {
+            this.r = r;
+        }
+
+        public void setG(Integer g) {
+            this.g = g;
+        }
+
+        public void setB(Integer b) {
+            this.b = b;
+        }
+
+        @JsonProperty
+        Integer r;
+        @JsonProperty
+        Integer g;
+        @JsonProperty
+        Integer b;
     }
 
     private static class LinearRGB {
-        @JsonProperty("x")
-        double x;
 
-        public double getX() {
+        public LinearRGB() {
+
+        }
+        public void setX(Double x) {
+            this.x = x;
+        }
+
+        public void setRgb(RGB rgb) {
+            this.rgb = rgb;
+        }
+
+        @JsonProperty
+        Double x;
+
+        public Double getX() {
             return x;
         }
 
@@ -431,9 +462,8 @@ public class Multiwave {
             return rgb;
         }
 
-        @JsonProperty("rgb")
+        @JsonProperty
         RGB rgb;
-
 
         public LinearRGB(double x, int r, int g, int b) {
             this.x = x;
@@ -447,14 +477,27 @@ public class Multiwave {
 
         @JsonIgnore
         public boolean isValid() {
-            if(rgb == null) {
-                return false;
-            }
-            return rgb.isValid();
+            return rgb!= null && x != null && rgb.isValid();
         }
     }
 
     private static class HSL {
+
+        public HSL() {
+
+        }
+
+        public void setH(Double h) {
+            this.h = h;
+        }
+
+        public void setS(Double s) {
+            this.s = s;
+        }
+
+        public void setL(Double l) {
+            this.l = l;
+        }
 
         public HSL(double[] hsl) {
             h = hsl[0];
@@ -467,51 +510,74 @@ public class Multiwave {
             this.l = l;
         }
 
-        @JsonProperty("h")
-        double h;
+        @JsonProperty
+        Double h;
 
-        @JsonProperty("s")
-        double s;
+        @JsonProperty
+        Double s;
 
-        @JsonProperty("l")
-        double l;
+        @JsonProperty
+        Double l;
 
-        public double getH() {
+        public Double getH() {
             return h;
         }
 
-        public double getS() {
+        public Double getS() {
             return s;
         }
 
-        public double getL() {
+        public Double getL() {
             return l;
         }
 
+        @JsonIgnore
         public double[] getHSL() {
             return new double[] {h, s, l};
+        }
+
+        @JsonIgnore
+        public boolean isValid() {
+            return h != null && s != null && l != null;
         }
     }
 
     private static class LinearHSL {
 
-        @JsonProperty("x")
-        double x;
+        public LinearHSL() {
+
+        }
+
+        @JsonProperty
+        Double x;
 
         public HSL getHsl() {
             return hsl;
         }
 
-        @JsonProperty("hsl")
+        @JsonProperty
         HSL hsl;
 
-        public double getX() {
+        public void setX(Double x) {
+            this.x = x;
+        }
+
+        public void setHsl(HSL hsl) {
+            this.hsl = hsl;
+        }
+
+        public Double getX() {
             return x;
         }
 
         public LinearHSL(double x, double h, double s, double l) {
             this.x = x;
             hsl = new HSL(h, s, l);
+        }
+
+        @JsonIgnore
+        public boolean isValid() {
+            return x != null && hsl != null && isValid();
         }
     }
 
@@ -621,31 +687,52 @@ public class Multiwave {
             return new double[] {0.0, 0.0, 0.0};
         }
 
-        double[] prev_hsl = waves[0].gradient;
+        double[] current_hsl = waves[0].gradient;
         for(int i = 1; i < waves.length; i++) {
-            prev_hsl = blend(waves[i].blend, prev_hsl, waves[i].gradient);
+            current_hsl = blend(waves[i].blend, current_hsl, waves[i].gradient);
         }
 
-        return prev_hsl;
+        return current_hsl;
 
     }
 
     public static class MetaTricubicRGB {
+
+        public MetaTricubicRGB() {
+
+        }
+        public void setColors(RGB[][] colors) {
+            this.colors = colors;
+        }
+
+        public void setPeriod1(Double period1) {
+            this.period1 = period1;
+        }
+
+        public void setPeriod2(Double period2) {
+            this.period2 = period2;
+        }
+
         public RGB[][] getColors() {
             return colors;
         }
 
-        public double getPeriod1() {
+        public Double getPeriod1() {
             return period1;
         }
 
-        public double getPeriod2() {
+        public Double getPeriod2() {
             return period2;
         }
 
+        @JsonProperty
         RGB[][] colors;
-        double period1;
-        double period2;
+
+        @JsonProperty
+        Double period1;
+
+        @JsonProperty
+        Double period2;
 
         public MetaTricubicRGB(int[][][] colors_in, double period1, double period2) {
             colors = new RGB[colors_in.length][];
@@ -667,21 +754,40 @@ public class Multiwave {
     }
 
     public static class MetaTricubicHSL {
+
+        public MetaTricubicHSL() {
+
+        }
         public HSL[][] getColors() {
             return colors;
         }
 
-        public double getPeriod1() {
+        public Double getPeriod1() {
             return period1;
         }
 
-        public double getPeriod2() {
+        public Double getPeriod2() {
             return period2;
         }
 
+        public void setColors(HSL[][] colors) {
+            this.colors = colors;
+        }
+
+        public void setPeriod1(Double period1) {
+            this.period1 = period1;
+        }
+
+        public void setPeriod2(Double period2) {
+            this.period2 = period2;
+        }
+
+        @JsonProperty
         HSL[][] colors;
-        double period1;
-        double period2;
+        @JsonProperty
+        Double period1;
+        @JsonProperty
+        Double period2;
 
         public MetaTricubicHSL(double[][][] colors_in, double period1, double period2) {
             colors = new HSL[colors_in.length][];
@@ -702,23 +808,18 @@ public class Multiwave {
         }
     }
 
-    @JsonPropertyOrder({"attribute", "*"})
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class WaveColorParams {
-        @JsonProperty("period")
+        @JsonProperty
         public Double period;
-        @JsonProperty("mapping")
+        @JsonProperty
         public Mapping mapping;
-        @JsonProperty("start")
+        @JsonProperty
         public Double start;
-        @JsonProperty("end")
+        @JsonProperty
         public Double end;
-        @JsonProperty("blend")
+        @JsonProperty
         public Blend blend;
-
-        @JsonProperty("attribute")
-        public String getName() {
-            return "color_wave";
-        }
 
         public Double getPeriod() {
             return period;
@@ -764,6 +865,50 @@ public class Multiwave {
             return meta_tricubic_hsl;
         }
 
+        public void setPeriod(Double period) {
+            this.period = period;
+        }
+
+        public void setMapping(Mapping mapping) {
+            this.mapping = mapping;
+        }
+
+        public void setStart(Double start) {
+            this.start = start;
+        }
+
+        public void setEnd(Double end) {
+            this.end = end;
+        }
+
+        public void setBlend(Blend blend) {
+            this.blend = blend;
+        }
+
+        public void setTricubic_rgb(RGB[] tricubic_rgb) {
+            this.tricubic_rgb = tricubic_rgb;
+        }
+
+        public void setTricubic_hsl(HSL[] tricubic_hsl) {
+            this.tricubic_hsl = tricubic_hsl;
+        }
+
+        public void setLinear_rgb(LinearRGB[] linear_rgb) {
+            this.linear_rgb = linear_rgb;
+        }
+
+        public void setLinear_hsl(LinearHSL[] linear_hsl) {
+            this.linear_hsl = linear_hsl;
+        }
+
+        public void setMeta_tricubic_rgb(MetaTricubicRGB meta_tricubic_rgb) {
+            this.meta_tricubic_rgb = meta_tricubic_rgb;
+        }
+
+        public void setMeta_tricubic_hsl(MetaTricubicHSL meta_tricubic_hsl) {
+            this.meta_tricubic_hsl = meta_tricubic_hsl;
+        }
+
         @JsonProperty("tricubic_rgb")
         public RGB[] tricubic_rgb;
 
@@ -781,6 +926,10 @@ public class Multiwave {
         @JsonProperty("meta_tricubic_hsl")
         public MetaTricubicHSL meta_tricubic_hsl;
 
+        public WaveColorParams() {
+
+        }
+
         public WaveColorParams(Double period, Mapping mapping, Double start, Double end, Blend blend) {
             this.period = period;
             this.mapping = mapping;
@@ -789,6 +938,7 @@ public class Multiwave {
             this.blend = blend;
         }
 
+        @JsonIgnore
         public void setTricubicRGB(int[][] vals) {
             RGB[] rgbs = new RGB[vals.length];
             for(int i = 0; i < rgbs.length; i++) {
@@ -796,14 +946,18 @@ public class Multiwave {
             }
             tricubic_rgb = rgbs;
         }
+
+        @JsonIgnore
         public void setTricubicRGB(RGB[] vals) {
             tricubic_rgb = vals;
         }
 
+        @JsonIgnore
         public void setTricubicHSL(HSL[] vals) {
             tricubic_hsl = vals;
         }
 
+        @JsonIgnore
         public void setTricubicHSL(double[][] vals) {
             HSL[] hsls = new HSL[vals.length];
             for(int i = 0; i < hsls.length; i++) {
@@ -812,18 +966,22 @@ public class Multiwave {
             tricubic_hsl = hsls;
         }
 
+        @JsonIgnore
         public void setLinearRGB(LinearRGB[] vals) {
             linear_rgb = vals;
         }
 
+        @JsonIgnore
         public void setLinearRGB(LinearHSL[] vals) {
             linear_hsl = vals;
         }
 
+        @JsonIgnore
         public void setMetaTricubicRGB(MetaTricubicRGB o) {
             meta_tricubic_rgb = o;
         }
 
+        @JsonIgnore
         public void setMetaTricubicHsl(MetaTricubicHSL o) {
             meta_tricubic_hsl = o;
         }
@@ -875,64 +1033,215 @@ public class Multiwave {
             }
 
             if(linear_rgb != null) {
+                if(linear_rgb.length == 0) {
+                    throw new Exception("Linear RGB cannot be empty.");
+                }
                 for(int i = 0; i < linear_rgb.length; i++) {
+                    if(linear_rgb[i].x == null) {
+                        throw new Exception("The linear coefficient is missing.");
+                    }
                     if(linear_rgb[i].x < 0 || linear_rgb[i].x > 1) {
-                        throw new Exception("The linear coefficients must be between 0 and 1.");
+                        throw new Exception("The linear coefficient must be between 0 and 1.");
                     }
                     if(linear_rgb[i].rgb == null) {
                         throw new Exception("Missing the linear rgb values.");
                     }
                     if(!linear_rgb[i].rgb.isValid()) {
-                        throw new Exception("The linear RGB values are not in the range of [0, 255].");
+                        throw new Exception("The linear r, g, b values must be present and in the range of [0, 255].");
                     }
                 }
                 for(int i = 0; i < linear_rgb.length - 1; i++) {
                     if(linear_rgb[i + 1].x < linear_rgb[i].x) {
-                        throw new Exception("The linear coefficients must in ascending order.");
+                        throw new Exception("The linear coefficient must in ascending order.");
                     }
                 }
             }
 
             if(linear_hsl != null) {
+                if(linear_hsl.length == 0) {
+                    throw new Exception("Linear HSL cannot be empty.");
+                }
                 for(int i = 0; i < linear_hsl.length; i++) {
+                    if(linear_hsl[i].x == null) {
+                        throw new Exception("The linear coefficient is missing.");
+                    }
                     if(linear_hsl[i].x < 0 || linear_hsl[i].x > 1) {
-                        throw new Exception("The linear coefficients must be between 0 and 1.");
+                        throw new Exception("The linear coefficient must be between 0 and 1.");
                     }
                     if(linear_hsl[i].hsl == null) {
                         throw new Exception("Missing the linear hsl values.");
                     }
+                    if(!linear_hsl[i].hsl.isValid()) {
+                        throw new Exception("The h, s, l values must be present.");
+                    }
                 }
                 for(int i = 0; i < linear_hsl.length - 1; i++) {
                     if(linear_hsl[i + 1].x < linear_hsl[i].x) {
-                        throw new Exception("The linear coefficients must in ascending order.");
+                        throw new Exception("The linear coefficient must in ascending order.");
                     }
                 }
             }
 
             if(meta_tricubic_rgb != null) {
+                if(meta_tricubic_rgb.period1 == null || meta_tricubic_rgb.period2 == null) {
+                    throw new Exception("Meta tricubic periods must not be present.");
+                }
                 if(meta_tricubic_rgb.period1 <= 0 || meta_tricubic_rgb.period2 <= 0) {
-                    throw new Exception("Meta tricubic Periods must be greater than zero.");
+                    throw new Exception("Meta tricubic periods must be greater than zero.");
                 }
                 if(meta_tricubic_rgb.colors == null) {
                     throw new Exception("Meta tricubic rgb colors are missing.");
                 }
+
+                if(meta_tricubic_rgb.colors.length == 0) {
+                    throw new Exception("The meta tricubic RGB cannot be empty.");
+                }
+
                 for(int i = 0; i < meta_tricubic_rgb.colors.length; i++) {
+
+                    if(meta_tricubic_rgb.colors[i].length == 0) {
+                        throw new Exception("The meta tricubic RGB cannot be empty.");
+                    }
+
                     for(int j = 0; j < meta_tricubic_rgb.colors[i].length; j++) {
                         if(!meta_tricubic_rgb.colors[i][j].isValid()) {
-                            throw new Exception("The meta tricubic rgb values are not in the range of [0, 255].");
+                            throw new Exception("The meta tricubic r, g, b values must be present and in the range of [0, 255].");
                         }
                     }
                 }
             }
 
             if(meta_tricubic_hsl != null) {
+                if(meta_tricubic_hsl.period1 == null || meta_tricubic_hsl.period2 == null) {
+                    throw new Exception("Meta tricubic periods must not be present.");
+                }
                 if(meta_tricubic_hsl.period1 <= 0 || meta_tricubic_hsl.period2 <= 0) {
                     throw new Exception("Meta tricubic periods must be greater than zero.");
                 }
                 if(meta_tricubic_hsl.colors == null) {
                     throw new Exception("Meta tricubic hsl colors are missing.");
                 }
+
+                if(meta_tricubic_hsl.colors.length == 0) {
+                    throw new Exception("The meta tricubic HSL cannot be empty.");
+                }
+
+                for(int i = 0; i < meta_tricubic_hsl.colors.length; i++) {
+
+                    if(meta_tricubic_hsl.colors[i].length == 0) {
+                        throw new Exception("The meta tricubic HSL cannot be empty.");
+                    }
+
+                    for(int j = 0; j < meta_tricubic_hsl.colors[i].length; j++) {
+                        if(!meta_tricubic_hsl.colors[i][j].isValid()) {
+                            throw new Exception("The meta tricubic h, s, l values must be present.");
+                        }
+                    }
+                }
             }
+
+            if(tricubic_rgb != null) {
+                if(tricubic_rgb.length == 0) {
+                    throw new Exception("Tricubic RGB cannot be empty.");
+                }
+                for(int i = 0; i < tricubic_rgb.length; i++) {
+                    if(!tricubic_rgb[i].isValid()) {
+                        throw new Exception("The tricubic r, g, b values must be present and in the range of [0, 255].");
+                    }
+                }
+            }
+
+            if(tricubic_hsl != null) {
+                if(tricubic_hsl.length == 0) {
+                    throw new Exception("Tricubic HSL cannot be empty.");
+                }
+                for(int i = 0; i < tricubic_hsl.length; i++) {
+                    if(!tricubic_hsl[i].isValid()) {
+                        throw new Exception("The tricubic h, s, l values must be present.");
+                    }
+                }
+            }
+        }
+
+        @JsonIgnore
+        public Color[] getTricubicRGBColors() {
+            if(tricubic_rgb == null) {
+                return null;
+            }
+            Color[] colors = new Color[tricubic_rgb.length];
+            for(int i = 0; i < colors.length; i++) {
+                colors[i] = new Color(tricubic_rgb[i].getR(), tricubic_rgb[i].getG(), tricubic_rgb[i].getB());
+            }
+            return colors;
+        }
+
+        @JsonIgnore
+        public Color[] getTricubicHSLColors() {
+            if(tricubic_hsl == null) {
+                return null;
+            }
+            Color[] colors = new Color[tricubic_hsl.length];
+            for(int i = 0; i < colors.length; i++) {
+                int[] rgb = hslToRgb2(tricubic_hsl[i].getHSL());
+                colors[i] = new Color(rgb[0], rgb[1], rgb[2]);
+            }
+            return colors;
+        }
+
+        @JsonIgnore
+        public Color[] getLinearRGBColors() {
+            if(linear_rgb == null) {
+                return null;
+            }
+            Color[] colors = new Color[linear_rgb.length];
+            for(int i = 0; i < colors.length; i++) {
+                colors[i] = new Color(linear_rgb[i].rgb.getR(), linear_rgb[i].rgb.getG(), linear_rgb[i].rgb.getB());
+            }
+            return colors;
+        }
+
+        @JsonIgnore
+        public Color[] getLinearHSLColors() {
+            if(linear_hsl == null) {
+                return null;
+            }
+            Color[] colors = new Color[linear_hsl.length];
+            for(int i = 0; i < colors.length; i++) {
+                int[] rgb = hslToRgb2(linear_hsl[i].hsl.getHSL());
+                colors[i] = new Color(rgb[0], rgb[1], rgb[2]);
+            }
+            return colors;
+        }
+
+        @JsonIgnore
+        public Color[][] getMetaTricubicRGBColors() {
+            if(meta_tricubic_rgb == null) {
+                return null;
+            }
+            Color[][] colors = new Color[meta_tricubic_rgb.colors.length][];
+            for(int i = 0; i < colors.length; i++) {
+                colors[i] = new Color[meta_tricubic_rgb.colors[i].length];
+                for(int j = 0; j < colors[i].length; j++) {
+                    colors[i][j] = new Color(meta_tricubic_rgb.colors[i][j].getR(), meta_tricubic_rgb.colors[i][j].getG(), meta_tricubic_rgb.colors[i][j].getB());
+                }
+            }
+            return colors;
+        }
+
+        @JsonIgnore
+        public Color[][] getMetaTricubicHSLColors() {
+            if(meta_tricubic_hsl == null) {
+                return null;
+            }
+            Color[][] colors = new Color[meta_tricubic_hsl.colors.length][];
+            for(int i = 0; i < colors.length; i++) {
+                colors[i] = new Color[meta_tricubic_hsl.colors[i].length];
+                for(int j = 0; j < colors[i].length; j++) {
+                    int[] rgb = hslToRgb2(meta_tricubic_hsl.colors[i][j].getHSL());
+                    colors[i][j] = new Color(rgb[0], rgb[1], rgb[2]);
+                }
+            }
+            return colors;
         }
 
     }
@@ -956,7 +1265,7 @@ public class Multiwave {
 
             mapping = mappingIn;
             if(mapping == null) {
-                mapping = Mapping.MAPPING_NORMAL;
+                mapping = Mapping.NORMAL;
             }
 
             start = startIn;
@@ -1024,13 +1333,13 @@ public class Multiwave {
         }
 
         private static double mapping(double x, Mapping mapping) {
-            if(mapping == Mapping.MAPPING_NORMAL) {
+            if(mapping == Mapping.NORMAL) {
                 return x;
             }
-            else if(mapping == Mapping.MAPPING_SQUARE) {
+            else if(mapping == Mapping.SQUARE) {
                 return x * x;
             }
-            else if (mapping == Mapping.MAPPING_SQRT) {
+            else if (mapping == Mapping.SQRT) {
                 return Math.sqrt(x);
             } else {
                 return Math.log(x);
@@ -1039,14 +1348,7 @@ public class Multiwave {
     }
 
     public static int multiwave_simple(double n) throws Exception {
-
-        WaveColorParams p1 = new WaveColorParams(100.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS);
-        p1.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, -5, -5}, {6.5, 0, 0}, {7.5, 5, 5}});
-
-        WaveColorParams[] params = {
-                p1
-        };
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(simple_params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
@@ -1055,26 +1357,42 @@ public class Multiwave {
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
+    public static int general_palette(double n, WaveColorParams[] params) throws Exception {
+        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
+        return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
+    }
+
     static {
+        create_simple_params();
         create_default_params();
         create_g_spdz2_params();
         create_g_spdz2_custom_params();
     }
 
+    static void create_simple_params() {
+        WaveColorParams p1 = new WaveColorParams(100.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
+        p1.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, -5, -5}, {6.5, 0, 0}, {7.5, 5, 5}});
+
+        WaveColorParams[] params = {
+                p1
+        };
+        simple_params = params;
+    }
+
     static void create_default_params() {
-        WaveColorParams p1 = new WaveColorParams(1000.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS);
+        WaveColorParams p1 = new WaveColorParams(1000.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
         p1.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, 0, -3}, {6.5, -3, 0}, {7.5, 0, 3}});
 
-        WaveColorParams p2 = new WaveColorParams(30.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS);
+        WaveColorParams p2 = new WaveColorParams(30.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
         p2.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, -2, -2}, {0.5, 2, 2}});
 
-        WaveColorParams p3 = new WaveColorParams(120.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS);
+        WaveColorParams p3 = new WaveColorParams(120.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
         p3.setTricubicHSL(new double[][] {{0, 0, 0}, {0, -1, -2}, {0, 0, 0}, {0, 1, 2}});
 
-        WaveColorParams p4 = new WaveColorParams(1e6, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS);
+        WaveColorParams p4 = new WaveColorParams(1e6, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
         p4.setTricubicHSL(new double[][] {{0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {3, 0, 0}, {4, 0, 0}, {5, 0, 0}, {6, 0, 0}, {7, 0, 0},});
 
-        WaveColorParams p5 = new WaveColorParams(3500.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS);
+        WaveColorParams p5 = new WaveColorParams(3500.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
         p5.setTricubicHSL(new double[][] {{0, 0, 0}, {2.5, 3, -5}, {3.5, 5, -2}, {2, -4, 4}, {0.5, 4, 2}});
 
         WaveColorParams[] params = {
@@ -1088,7 +1406,7 @@ public class Multiwave {
     }
 
     static void create_g_spdz2_custom_params() {
-        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p0.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
@@ -1096,22 +1414,22 @@ public class Multiwave {
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p1.setTricubicRGB(new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}});
 
-        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p2.setTricubicRGB(new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}});
 
-        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p3.setTricubicRGB(new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}});
 
-        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p4.setTricubicRGB(new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}});
 
-        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p5.setTricubicRGB(new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}});
 
-        WaveColorParams p6 = new WaveColorParams(Math.pow(2, 16), Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p6 = new WaveColorParams(Math.pow(2, 16), Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
 
         p6.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, 11, 25, 12),
@@ -1143,7 +1461,7 @@ public class Multiwave {
     }
 
     static void create_g_spdz2_params() {
-        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p0.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
@@ -1151,22 +1469,22 @@ public class Multiwave {
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p1.setTricubicRGB(new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}});
 
-        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p2.setTricubicRGB(new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}});
 
-        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p3.setTricubicRGB(new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}});
 
-        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p4.setTricubicRGB(new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}});
 
-        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.MAPPING_NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p5.setTricubicRGB(new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}});
 
-        WaveColorParams p6 = new WaveColorParams(null, Mapping.MAPPING_LOG, 1.0, 16777216.0,  Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p6 = new WaveColorParams(null, Mapping.LOG, 1.0, 16777216.0,  Blend.HSL_BIAS_UFCOMPAT);
         p6.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, 11, 25, 12),
                 new LinearRGB(0.375, 192, 64, 64),
@@ -1208,7 +1526,7 @@ public class Multiwave {
     public static int linear_only(double n) throws Exception {
 
 
-        WaveColorParams p1 = new WaveColorParams(Math.pow(2, 16), Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p1 = new WaveColorParams(Math.pow(2, 16), Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p1.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, 11, 25, 12),
                 new LinearRGB(0.375, 192, 64, 64),
@@ -1235,7 +1553,7 @@ public class Multiwave {
 
     public static int meta_tricubic_gradient_only(double n) throws Exception {
 
-        WaveColorParams p1 = new WaveColorParams(1175000.0, Mapping.MAPPING_NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        WaveColorParams p1 = new WaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p1.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
@@ -1251,21 +1569,22 @@ public class Multiwave {
 
     }
 
-    static String paramsToJson(WaveColorParams[] params, boolean includeNulls) throws JsonProcessingException {
+    public static String paramsToJson(WaveColorParams[] params, boolean includeNulls) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         if(!includeNulls) {
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         }
-        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(params);
+        String text = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(params);
+        return text.replace("\r\n", "\n");
     }
 
-    static WaveColorParams[] jsonToParams(String json) throws JsonProcessingException {
+    public static WaveColorParams[] jsonToParams(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, true);
         return objectMapper.readValue(json, WaveColorParams[].class);
     }
 
     public static void main(String[] args) throws Exception {
-
 
         int image_size = 1024;
         BufferedImage image = new BufferedImage(image_size, image_size, BufferedImage.TYPE_INT_ARGB);
@@ -1275,11 +1594,12 @@ public class Multiwave {
             }
         }
 
-        System.out.println(paramsToJson(g_spdz2_params, false));
         File outputfile = new File("multiwave.png");
         try {
             ImageIO.write(image, "png", outputfile);
         }
         catch (Exception ex) {}
+
     }
+
 }

@@ -1,6 +1,7 @@
 package fractalzoomer.gui;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fractalzoomer.core.TaskRender;
@@ -95,6 +96,7 @@ class ColorPoint implements Comparable<ColorPoint> {
     }
 }
 
+   @JsonIgnoreProperties(ignoreUnknown = true)
    class ColorDataPoints {
         @JsonProperty("dataPointsRed")
         private ArrayList<ColorPoint> dataPointsRed;
@@ -972,7 +974,7 @@ class ColorPoint implements Comparable<ColorPoint> {
 
                         customColorLabel.setBackground(dp.getIntermediateColor());
 
-                        if(dp.getContrastAlgorithm() < 2) {
+                        if(dp.getContrastAlgorithm() >= 0 && dp.getContrastAlgorithm() <= 5) {
                             contrast_algorithm = dp.getContrastAlgorithm();
                         }
                         else {
@@ -1496,6 +1498,30 @@ class ColorPoint implements Comparable<ColorPoint> {
                     else if(contrast_algorithm == 1) {
                         double[] vals = ColorSpaceConverter.RGBtoOKLAB(red, green, blue);
                         int[] rgb = ColorSpaceConverter.OKLABtoRGB(vals[0] * (1 - contrast_merging) + contrast_merging * ((Math.sin(2 * Math.PI * t + contrast_offset) + 1) * 0.5 * (contrast_range_max - contrast_range_min) + contrast_range_min ), vals[1], vals[2]);
+
+                        palette[i] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | (rgb[2]);
+                    }
+                    else if(contrast_algorithm == 2) {
+                        double[] vals = ColorSpaceConverter.RGBtoHSB(red, green, blue);
+                        int[] rgb = ColorSpaceConverter.HSBtoRGB(vals[0], vals[1], vals[2] * (1 - contrast_merging) + contrast_merging * ((Math.sin(2 * Math.PI * t + contrast_offset) + 1) * 0.5 * (contrast_range_max - contrast_range_min) + contrast_range_min ));
+
+                        palette[i] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | (rgb[2]);
+                    }
+                    else if(contrast_algorithm == 3) {
+                        double[] vals = ColorSpaceConverter.RGBtoHSL(red, green, blue);
+                        int[] rgb = ColorSpaceConverter.HSLtoRGB(vals[0], vals[1], vals[2] * (1 - contrast_merging) + contrast_merging * ((Math.sin(2 * Math.PI * t + contrast_offset) + 1) * 0.5 * (contrast_range_max - contrast_range_min) + contrast_range_min ));
+
+                        palette[i] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | (rgb[2]);
+                    }
+                    else if(contrast_algorithm == 4) {
+                        double[] vals = ColorSpaceConverter.RGBtoHSL_uv(red, green, blue);
+                        int[] rgb = ColorSpaceConverter.HSL_uvtoRGB(vals[0], vals[1], vals[2] * (1 - contrast_merging) + contrast_merging * ((Math.sin(2 * Math.PI * t + contrast_offset) + 1) * 0.5 * (contrast_range_max - contrast_range_min) + contrast_range_min ) * 100);
+
+                        palette[i] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | (rgb[2]);
+                    }
+                    else if(contrast_algorithm == 5) {
+                        double[] vals = ColorSpaceConverter.RGBtoHPL_uv(red, green, blue);
+                        int[] rgb = ColorSpaceConverter.HPL_uvtoRGB(vals[0], vals[1], vals[2] * (1 - contrast_merging) + contrast_merging * ((Math.sin(2 * Math.PI * t + contrast_offset) + 1) * 0.5 * (contrast_range_max - contrast_range_min) + contrast_range_min ) * 100);
 
                         palette[i] = 0xff000000 | (rgb[0] << 16) | (rgb[1] << 8) | (rgb[2]);
                     }
