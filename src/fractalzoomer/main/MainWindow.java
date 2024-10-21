@@ -4974,7 +4974,12 @@ public class MainWindow extends JFrame implements Constants {
     }
 
     private void stopRendering() {
-        TaskRender.stopRendering();
+        try {
+            TaskRender.stopRendering();
+        }
+        catch (StopExecutionException ex) {
+
+        }
 
        // synchronized (this) {
             try {
@@ -6792,7 +6797,12 @@ public class MainWindow extends JFrame implements Constants {
                 color_cycling = false;
                 toolbar.getColorCyclingButton().setSelected(false);
 
-                TaskRender.terminateColorCycling();
+                try {
+                    TaskRender.terminateColorCycling();
+                }
+                catch (StopExecutionException ex) {
+
+                }
 
                 try {
                     for(Future<?> future : futures) {
@@ -6862,7 +6872,12 @@ public class MainWindow extends JFrame implements Constants {
 
             createTasksColorCycling();
 
-            TaskRender.initializeColorCycling();
+            try {
+                TaskRender.initializeColorCycling();
+            }
+            catch (StopExecutionException ex) {
+
+            }
 
             startTasks();
         }
@@ -11957,36 +11972,36 @@ public class MainWindow extends JFrame implements Constants {
         }
     }
 
-    /*public void cancelOperation() {
+    public void cancelOperation() {
 
         resetOrbit();
 
         synchronized (this) {
             for(Future<?> future : futures) {
-                future.cancel(true);
+               future.cancel(true);
             }
         }
 
         while (!tasksCompleted()) {}
 
-        TaskRender.thread_calculation_executor.shutdownNow();
-        TaskRender.thread_calculation_executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(getNumberOfThreads());
+        //TaskRender.thread_calculation_executor.shutdownNow();
+        //TaskRender.thread_calculation_executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(getNumberOfThreads());
 
         if(s.d3s.d3) {
             progress.setMaximum(s.d3s.detail * s.d3s.detail + 1);
         }
         else {
-            progress.setMaximum(image_size * image_size + 1);
+            progress.setMaximum(image_width * image_height + 1);
         }
 
         progress.setForeground(MainWindow.progress_color);
         progress.setString(null);
 
-        Fractal.clearReferences(true);
+        Fractal.clearReferences(true, true);
         s.max_iterations = s.max_iterations > 500 ? 500 : s.max_iterations;
-        defaultFractalSettings(false);
+        defaultFractalSettings(false, false);
 
-    }*/
+    }
 
     public void createCompleteImage(int delay, boolean d3, boolean preview, boolean zoomToCursor) {
         if (timer == null) {

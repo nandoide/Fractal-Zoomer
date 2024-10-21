@@ -315,13 +315,8 @@ public abstract class TaskRender implements Runnable {
     public static volatile boolean DONE;
     public static volatile int TOTAL_NUM_TASKS;
 
-    public static void stopRendering() {
-        try {
-            stop_rendering_lock.lockWrite();
-        }
-        catch (InterruptedException ex) {
-
-        }
+    public static void stopRendering() throws StopExecutionException {
+        WaitOnCondition.LockWrite(stop_rendering_lock);
         STOP_RENDERING = true;
         stop_rendering_lock.unlockWrite();
     }
@@ -719,10 +714,11 @@ public abstract class TaskRender implements Runnable {
     public static boolean LOAD_MPFR = true;
     public static boolean LOAD_MPIR = true;
     public static final String generalArchitecture = "general";
+    //public static final String generalVcpkgMsvcArchitecture = "general_vcpkg_msvc";
     public static String MPIR_WINDOWS_ARCHITECTURE = "skylake_avx2";
     public static String MPFR_WINDOWS_ARCHITECTURE = "skylake_avx2";
     public static final String[] mpirWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge"};
-    public static final String[] mpfrWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge", generalArchitecture};
+    public static final String[] mpfrWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge", generalArchitecture}; //generalVcpkgMsvcArchitecture
     public static Random generator;
     public static int D3_APPLY_AVERAGE_TO_TRIANGLE_COLORS = 1;
     public static int PATTERN_COMPARE_ALG = 0;
@@ -1870,7 +1866,14 @@ public abstract class TaskRender implements Runnable {
                     applyPaletteAndFilterWithAA();
                     break;
             }
-        } catch (OutOfMemoryError e) {
+        }
+        catch (StopExecutionException ex) {
+
+        }
+        catch (StopSuccessiveRefinementException ex) {
+
+        }
+        catch (OutOfMemoryError e) {
             if (ptrMinimalRenderer != null) {
                 JOptionPane.showMessageDialog(ptrMinimalRenderer, "Maximum Heap size was reached.\nPlease set the maximum Heap size to a higher value.\nThe application will terminate.", "Error!", JOptionPane.ERROR_MESSAGE);
                 ptrMinimalRenderer.savePreferences();
@@ -1932,7 +1935,7 @@ public abstract class TaskRender implements Runnable {
         return (doneByThreadId + randomNumber ) * 19;
     }
 
-    private void domainMinimalRendererRendering() {
+    private void domainMinimalRendererRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2486,7 +2489,7 @@ public abstract class TaskRender implements Runnable {
     public static final String NANOMB1_CALCULATION_ELAPSED_TIME_LABEL = "<li>Nanomb1 Calculation Elapsed Time: <b>";
     public static final String BLA_CALCULATION_ELAPSED_TIME_LABEL = "<li>BLA Calculation Elapsed Time: <b>";
 
-    private void domainPolarMinimalRendererRendering() {
+    private void domainPolarMinimalRendererRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2528,25 +2531,15 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void polarMinimalRendererRendering() {
+    private void polarMinimalRendererRendering() throws StopExecutionException, StopSuccessiveRefinementException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
 
         if (filters[MainWindow.ANTIALIASING]) {
-            try {
-                renderAntialiased(image_width, image_height, true);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            renderAntialiased(image_width, image_height, true);
         } else {
-            try {
-                render(image_width, image_height, true);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            render(image_width, image_height, true);
         }
 
         if (rendering_done != 0) {
@@ -2587,25 +2580,15 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void minimalRendererRendering() {
+    private void minimalRendererRendering() throws StopExecutionException, StopSuccessiveRefinementException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
 
         if (filters[MainWindow.ANTIALIASING]) {
-            try {
-                renderAntialiased(image_width, image_height, false);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            renderAntialiased(image_width, image_height, false);
         } else {
-            try {
-                render(image_width, image_height, false);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            render(image_width, image_height, false);
         }
 
         if (rendering_done != 0) {
@@ -2667,7 +2650,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void rendering() {
+    private void rendering() throws StopExecutionException, StopSuccessiveRefinementException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2679,19 +2662,9 @@ public abstract class TaskRender implements Runnable {
                 render3D(image_width, image_height, false);
             }
         } else if (filters[MainWindow.ANTIALIASING]) {
-            try {
-                renderAntialiased(image_width, image_height, false);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            renderAntialiased(image_width, image_height, false);
         } else {
-            try {
-                render(image_width, image_height, false);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            render(image_width, image_height, false);
         }
 
         if (rendering_done != 0) {
@@ -2734,7 +2707,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void quickRendering() {
+    private void quickRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2769,7 +2742,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void quickPolarRendering() {
+    private void quickPolarRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2805,7 +2778,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void domainRendering() {
+    private void domainRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2852,7 +2825,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void quickDomainRendering() {
+    private void quickDomainRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2887,7 +2860,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void quickDomainPolarRendering() {
+    private void quickDomainPolarRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2922,7 +2895,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void polarRendering() {
+    private void polarRendering() throws StopExecutionException, StopSuccessiveRefinementException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -2934,19 +2907,9 @@ public abstract class TaskRender implements Runnable {
                 render3D(image_width, image_height, true);
             }
         } else if (filters[MainWindow.ANTIALIASING]) {
-            try {
-                renderAntialiased(image_width, image_height, true);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            renderAntialiased(image_width, image_height, true);
         } else {
-            try {
-                render(image_width, image_height, true);
-            }
-            catch (StopSuccessiveRefinementException ex) {
-                return;
-            }
+            render(image_width, image_height, true);
         }
 
         if (rendering_done != 0) {
@@ -2988,7 +2951,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    private void domainPolarRendering() {
+    private void domainPolarRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -3035,7 +2998,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    protected abstract void render(int image_with, int image_height, boolean polar) throws StopSuccessiveRefinementException;
+    protected abstract void render(int image_with, int image_height, boolean polar) throws StopSuccessiveRefinementException, StopExecutionException;
 
     protected int getFinalColor(double result, boolean escaped) {
 
@@ -3317,22 +3280,47 @@ public abstract class TaskRender implements Runnable {
 
     private int getOutPaletteColor(double transfered_result) {
 
-        if(!gps.useGeneratedPaletteOutColoring) {
+        if(gps.blendNormalPaletteWithGeneratedPaletteOutColoring) {
+            int color1 = transfered_result < 0 ? palette_outcoloring.getPaletteColor(transfered_result - color_cycling_location_outcoloring) : palette_outcoloring.getPaletteColor(transfered_result + color_cycling_location_outcoloring);
+            int color2 = palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
+
+            int red1 = (color1 >> 16) & 0xff;
+            int green1 = (color1 >> 8) & 0xff;
+            int blue1 = color1 & 0xff;
+
+            int red2 = (color2 >> 16) & 0xff;
+            int green2 = (color2 >> 8) & 0xff;
+            int blue2 = color2 & 0xff;
+            return blending.blend(red1, green1, blue1, red2, green2, blue2, 1 - gps.blendingOutColoring);
+        }
+        else if(!gps.useGeneratedPaletteOutColoring) {
             return transfered_result < 0 ? palette_outcoloring.getPaletteColor(transfered_result - color_cycling_location_outcoloring) : palette_outcoloring.getPaletteColor(transfered_result + color_cycling_location_outcoloring);
         }
         else {
-            return palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ);
+            return palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
         }
     }
 
     private int getInPaletteColor(double transfered_result) {
 
+        if(gps.blendNormalPaletteWithGeneratedPaletteInColoring) {
+            int color1 = transfered_result < 0 ? palette_incoloring.getPaletteColor(transfered_result - color_cycling_location_incoloring) : palette_incoloring.getPaletteColor(transfered_result + color_cycling_location_incoloring);
+            int color2 = palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
 
-        if(!gps.useGeneratedPaletteInColoring) {
+            int red1 = (color1 >> 16) & 0xff;
+            int green1 = (color1 >> 8) & 0xff;
+            int blue1 = color1 & 0xff;
+
+            int red2 = (color2 >> 16) & 0xff;
+            int green2 = (color2 >> 8) & 0xff;
+            int blue2 = color2 & 0xff;
+            return blending.blend(red1, green1, blue1, red2, green2, blue2, 1 - gps.blendingInColoring);
+        }
+        else if(!gps.useGeneratedPaletteInColoring) {
             return transfered_result < 0 ? palette_incoloring.getPaletteColor(transfered_result - color_cycling_location_incoloring) : palette_incoloring.getPaletteColor(transfered_result + color_cycling_location_incoloring);
         }
         else {
-            return palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ);
+            return palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
         }
 
     }
@@ -3613,7 +3601,7 @@ public abstract class TaskRender implements Runnable {
         return trapColor;
     }
 
-    protected void quickRenderDomain(int image_width, int image_height, boolean polar) {
+    protected void quickRenderDomain(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         Location location = Location.getInstanceForRendering(xCenter, yCenter, size, height_ratio, image_width, image_height, circle_period, rotation_center, rotation_vals, fractal, js, polar, false);
 
@@ -3688,13 +3676,7 @@ public abstract class TaskRender implements Runnable {
             nano_time += System.nanoTime() - time;
 
             if(QUICKRENDER_SUCCESSIVE_REFINEMENT) {
-                try {
-                    quick_render_rendering_algorithm_barrier.await();
-                } catch (InterruptedException ex) {
-
-                } catch (BrokenBarrierException ex) {
-
-                }
+                WaitOnCondition.WaitOnCyclicBarrier(quick_render_rendering_algorithm_barrier);
                 if(taskId == 0) {
                     ptr.setWholeImageDone(true);
                     if(id == 0) {
@@ -3719,37 +3701,35 @@ public abstract class TaskRender implements Runnable {
         return x - (x >>> 1);
     }
 
-    protected void initialize(Location location) {
+    protected void initializeFastJulia(Location location) throws StopExecutionException {
+        if(PERTURBATION_THEORY && fractal.supportsPerturbationTheory() && !HIGH_PRECISION_CALCULATION) {
+
+            if (reference_calc_sync.getAndIncrement() == 0) {
+                calculateReferenceFastJulia(location);
+            }
+
+            WaitOnCondition.WaitOnCyclicBarrier(reference_sync);
+            location.setReference(Fractal.refPoint);
+        }
+    }
+
+    protected void initialize(Location location) throws StopExecutionException {
         if(PERTURBATION_THEORY && fractal.supportsPerturbationTheory() && !HIGH_PRECISION_CALCULATION) {
             if (reference_calc_sync.getAndIncrement() == 0) {
                 calculateReference(location);
             }
-
-            try {
-                reference_sync.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(reference_sync);
             location.setReference(Fractal.refPoint);
         }
         else if(HIGH_PRECISION_CALCULATION && fractal.supportsPerturbationTheory()) {
             if (reference_calc_sync.getAndIncrement() == 0) {
                 initializeHighPrecision();
             }
-
-            try {
-                reference_sync.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(reference_sync);
         }
     }
 
-    protected void quickRender(int image_width, int image_height, boolean polar) {
+    protected void quickRender(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         Location location = Location.getInstanceForRendering(xCenter, yCenter, size, height_ratio, image_width, image_height, circle_period, rotation_center, rotation_vals, fractal, js, polar, (PERTURBATION_THEORY || HIGH_PRECISION_CALCULATION) && fractal.supportsPerturbationTheory());
 
@@ -3825,13 +3805,7 @@ public abstract class TaskRender implements Runnable {
             nano_time += System.nanoTime() - time;
 
             if(QUICKRENDER_SUCCESSIVE_REFINEMENT) {
-                try {
-                    quick_render_rendering_algorithm_barrier.await();
-                } catch (InterruptedException ex) {
-
-                } catch (BrokenBarrierException ex) {
-
-                }
+                WaitOnCondition.WaitOnCyclicBarrier(quick_render_rendering_algorithm_barrier);
 
                 if(taskId == 0) {
                     ptr.setWholeImageDone(true);
@@ -3847,7 +3821,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void renderDomain(int image_width, int image_height, boolean polar) {
+    protected void renderDomain(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         Location location = Location.getInstanceForRendering(xCenter, yCenter, size, height_ratio, image_width, image_height, circle_period, rotation_center, rotation_vals, fractal, js, polar, false);
 
@@ -3909,7 +3883,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void renderDomainAntialiased(int image_width, int image_height, boolean polar) {
+    protected void renderDomainAntialiased(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         int aaMethod = (filters_options_vals[MainWindow.ANTIALIASING] % 100) / 10;
         boolean useJitter = aaMethod != 6 && ((filters_options_vals[MainWindow.ANTIALIASING] / 100) & 0x4) == 4;
@@ -4090,7 +4064,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void render3D(int image_width, int image_height, boolean polar) {
+    protected void render3D(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         Location location = Location.getInstanceForRendering(xCenter, yCenter, size, height_ratio, detail, detail, circle_period, rotation_center, rotation_vals, fractal, js, polar, (PERTURBATION_THEORY || HIGH_PRECISION_CALCULATION) && fractal.supportsPerturbationTheory());
 
@@ -4161,7 +4135,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void renderDomain3D(int image_width, int image_height, boolean polar) {
+    protected void renderDomain3D(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         Location location = Location.getInstanceForRendering(xCenter, yCenter, size, height_ratio, detail, detail, circle_period, rotation_center, rotation_vals, fractal, js, polar, false);
 
@@ -4225,7 +4199,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void render3DAntialiased(int image_width, int image_height, boolean polar) {
+    protected void render3DAntialiased(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         int aaMethod = (filters_options_vals[MainWindow.ANTIALIASING] % 100) / 10;
         boolean useJitter = aaMethod != 6 && ((filters_options_vals[MainWindow.ANTIALIASING] / 100) & 0x4) == 4;
@@ -4338,7 +4312,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void renderDomain3DAntialiased(int image_width, int image_height, boolean polar) {
+    protected void renderDomain3DAntialiased(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         int aaMethod = (filters_options_vals[MainWindow.ANTIALIASING] % 100) / 10;
         boolean useJitter = aaMethod != 6 && ((filters_options_vals[MainWindow.ANTIALIASING] / 100) & 0x4) == 4;
@@ -4451,9 +4425,9 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected abstract void renderAntialiased(int image_width, int image_height, boolean polar) throws StopSuccessiveRefinementException;
+    protected abstract void renderAntialiased(int image_width, int image_height, boolean polar) throws StopSuccessiveRefinementException, StopExecutionException;
 
-    private void fastJuliaRendering() {
+    private void fastJuliaRendering() throws StopExecutionException {
 
         int image_size = image.getWidth();
 
@@ -4478,7 +4452,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void fastJuliaRenderingPolar() {
+    private void fastJuliaRenderingPolar() throws StopExecutionException {
 
         int image_size = image.getWidth();
 
@@ -5434,7 +5408,7 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
-    protected void applyPostProcessingPointFilter(int image_width, int image_height, double[] image_iterations, boolean[] escaped, PixelExtraData[] pixelData, AntialiasingAlgorithm aa, Location location) {
+    protected void applyPostProcessingPointFilter(int image_width, int image_height, double[] image_iterations, boolean[] escaped, PixelExtraData[] pixelData, AntialiasingAlgorithm aa, Location location) throws StopExecutionException {
         double sizeCorr = 0, lightx = 0, lighty = 0;
 
         if (bms.bump_map) {
@@ -5477,7 +5451,7 @@ public abstract class TaskRender implements Runnable {
         } while (true);
     }
 
-    protected void applyPostProcessing(int image_width, int image_height, double[] image_iterations, boolean[] escaped, PixelExtraData[] pixelData, AntialiasingAlgorithm aa, Location location) {
+    protected void applyPostProcessing(int image_width, int image_height, double[] image_iterations, boolean[] escaped, PixelExtraData[] pixelData, AntialiasingAlgorithm aa, Location location) throws StopExecutionException {
 
         if (hss.histogramColoring && !domain_coloring) {
             if(aa != null && pixelData != null) {
@@ -5497,33 +5471,23 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected abstract void renderFastJulia(int image_size, boolean polar);
+    protected abstract void renderFastJulia(int image_size, boolean polar) throws StopExecutionException;
 
-    protected abstract void renderFastJuliaAntialiased(int image_size, boolean polar);
+    protected abstract void renderFastJuliaAntialiased(int image_size, boolean polar) throws StopExecutionException;
 
-    private void colorCycling() {
+    private void colorCycling() throws StopExecutionException {
 
         int outPaletteLength = CommonFunctions.getOutPaletteLength(domain_coloring, domain_color != null ? domain_color.getColoringMode() : -1);
         int inPaletteLength = CommonFunctions.getInPaletteLength(domain_coloring);
 
         do {
-            try {
-                color_cycling_toggle_lock.lockRead();
-            } catch (InterruptedException e) {
-            }
+            WaitOnCondition.LockRead(color_cycling_toggle_lock);
 
-
-            try {
-                color_cycling_restart_sync.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(color_cycling_restart_sync);
 
             boolean cached_color_cycling = color_cycling;
 
-            color_cycling_toggle_lock.unlockRead();
+            WaitOnCondition.UnlockRead(color_cycling_toggle_lock);
 
             if (!cached_color_cycling) {
                 return;
@@ -5584,33 +5548,24 @@ public abstract class TaskRender implements Runnable {
 
             postProcessColorCycling(image_width, image_height);
 
-            try {
-                if (color_cycling_filters_sync.await() == 0) {
-                    applyFiltersNoProgress();
+            if (WaitOnCondition.WaitOnCyclicBarrier(color_cycling_filters_sync) == 0) {
+                applyFiltersNoProgress();
 
-                    ptr.setWholeImageDone(true);
+                ptr.setWholeImageDone(true);
 
-                    ptr.getMainPanel().repaint();
+                ptr.getMainPanel().repaint();
 
-                    if (ccs.color_cycling_adjusting_value != 0) {
-                        ptr.updatePalettePreview(color_cycling_location_outcoloring, color_cycling_location_incoloring);
-                    }
-
-                    if (ccs.gradient_cycling_adjusting_value != 0) {
-                        ptr.updateGradientPreview(gradient_offset);
-                    }
-                    //progress.setForeground(new Color(palette.getPaletteColor(color_cycling_location)));
+                if (ccs.color_cycling_adjusting_value != 0) {
+                    ptr.updatePalettePreview(color_cycling_location_outcoloring, color_cycling_location_incoloring);
                 }
-            } catch (InterruptedException ex) {
 
-            } catch (BrokenBarrierException ex) {
-
+                if (ccs.gradient_cycling_adjusting_value != 0) {
+                    ptr.updateGradientPreview(gradient_offset);
+                }
+                //progress.setForeground(new Color(palette.getPaletteColor(color_cycling_location)));
             }
 
-            try {
-                Thread.sleep(ccs.color_cycling_speed + 35);
-            } catch (InterruptedException ex) {
-            }
+            WaitOnCondition.Sleep(ccs.color_cycling_speed + 35);
 
         } while (true);
 
@@ -5674,17 +5629,12 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void applyPaletteAndFilter() {
+    private void applyPaletteAndFilter() throws StopSuccessiveRefinementException, StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
 
-        try {
-            changePalette(image_width, image_height);
-        }
-        catch (StopSuccessiveRefinementException ex) {
-            return;
-        }
+        changePalette(image_width, image_height);
 
         if (rendering_done != 0) {
             update(rendering_done);
@@ -5705,17 +5655,12 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void applyPaletteAndFilterWithAA() {
+    private void applyPaletteAndFilterWithAA() throws StopSuccessiveRefinementException, StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
 
-        try {
-            changePaletteWithAA(image_width, image_height);
-        }
-        catch (StopSuccessiveRefinementException ex) {
-            return;
-        }
+        changePaletteWithAA(image_width, image_height);
 
         if (rendering_done != 0) {
             update(rendering_done);
@@ -5736,7 +5681,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void applyPostProcessingWithAAandFilter() {
+    private void applyPostProcessingWithAAandFilter() throws StopSuccessiveRefinementException, StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -5750,12 +5695,8 @@ public abstract class TaskRender implements Runnable {
         AntialiasingAlgorithm aa = AntialiasingAlgorithm.getAntialiasingAlgorithm(totalSamples, aaMethod, aaAvgWithMean, colorSpace, fs.aaSigmaR, fs.aaSigmaS);
 
         forcePostProcessing = true;
-        try {
-            postProcess(image_width, image_height, aa, null);
-        }
-        catch (StopSuccessiveRefinementException ex) {
-            return;
-        }
+
+        postProcess(image_width, image_height, aa, null);
 
         if (rendering_done != 0) {
             update(rendering_done);
@@ -5774,7 +5715,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void changePalette(int image_width, int image_height) throws StopSuccessiveRefinementException {
+    protected void changePalette(int image_width, int image_height) throws StopSuccessiveRefinementException, StopExecutionException {
 
         int pixel_percent = (image_width * image_height) / 100;
 
@@ -5822,7 +5763,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void changePaletteWithAA(int image_width, int image_height) throws StopSuccessiveRefinementException {
+    protected void changePaletteWithAA(int image_width, int image_height) throws StopSuccessiveRefinementException, StopExecutionException {
 
         int aaMethod = (filters_options_vals[MainWindow.ANTIALIASING] % 100) / 10;
         int aaSamplesIndex = (filters_options_vals[MainWindow.ANTIALIASING] % 100) % 10;
@@ -5893,7 +5834,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void juliaMapRendering() {
+    private void juliaMapRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -5925,7 +5866,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void juliaMapPolarRendering() {
+    private void juliaMapPolarRendering() throws StopExecutionException {
 
         int image_width = image.getWidth();
         int image_height = image.getHeight();
@@ -5957,7 +5898,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void juliaMap(int image_width, int image_height, boolean polar) {
+    private void juliaMap(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         Location location = Location.getInstanceForRendering(xCenter, yCenter, size, height_ratio, TOx - FROMx, TOy - FROMy, circle_period, rotation_center, rotation_vals, fractal, js, polar, false);
 
@@ -5996,7 +5937,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void juliaMapAntialiased(int image_width, int image_height, boolean polar) {
+    private void juliaMapAntialiased(int image_width, int image_height, boolean polar) throws StopExecutionException {
 
         int aaMethod = (filters_options_vals[MainWindow.ANTIALIASING] % 100) / 10;
         boolean useJitter = aaMethod != 6 && ((filters_options_vals[MainWindow.ANTIALIASING] / 100) & 0x4) == 4;
@@ -6079,7 +6020,7 @@ public abstract class TaskRender implements Runnable {
 
     private static final int MIN_3D_SCALED_VALUE = -100;
 
-    private void shadeColorBasedOnHeight() {
+    private void shadeColorBasedOnHeight() throws StopExecutionException {
 
         double min = MIN_3D_SCALED_VALUE;
         double range = max_scaling * d3_height_scale;
@@ -6438,27 +6379,16 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    public static void terminateColorCycling() {
-
-        try {
-            color_cycling_toggle_lock.lockWrite();
-        }
-        catch (InterruptedException ex) {}
-
+    public static void terminateColorCycling() throws StopExecutionException {
+        WaitOnCondition.LockWrite(color_cycling_toggle_lock);
         color_cycling = false;
-        color_cycling_toggle_lock.unlockWrite();
-
+        WaitOnCondition.UnlockWrite(color_cycling_toggle_lock);
     }
 
-    public static void initializeColorCycling() {
-
-        try {
-            color_cycling_toggle_lock.lockWrite();
-        }
-        catch (InterruptedException ex) {}
+    public static void initializeColorCycling() throws StopExecutionException {
+        WaitOnCondition.LockWrite(color_cycling_toggle_lock);
         color_cycling = true;
-        color_cycling_toggle_lock.unlockWrite();
-
+        WaitOnCondition.UnlockWrite(color_cycling_toggle_lock);
     }
 
     public BumpMapSettings getBumpMapSettings() {
@@ -6641,7 +6571,7 @@ public abstract class TaskRender implements Runnable {
         return values.get(middle);
     }
 
-    private void applyHeightFunction() {
+    private void applyHeightFunction() throws StopExecutionException {
 
         int iteration = 0;
 
@@ -6666,7 +6596,7 @@ public abstract class TaskRender implements Runnable {
         } while (true);
     }
 
-    private void applyPostHeightScaling() {
+    private void applyPostHeightScaling() throws StopExecutionException {
 
         double local_max = max - (max - min) * (1 - max_range / 100.0);
 
@@ -6710,7 +6640,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    private void applyPreHeightScaling() {
+    private void applyPreHeightScaling() throws StopExecutionException {
 
         double local_max = max - (max - min) * (1 - max_range / 100.0);
 
@@ -6780,7 +6710,7 @@ public abstract class TaskRender implements Runnable {
         return Math.exp(-0.5 * exponent);
     }
 
-    private void gaussianOrBilateralHeightScaling() {
+    private void gaussianOrBilateralHeightScaling() throws StopExecutionException {
 
         int kernel_size = (int) (Math.sqrt(gaussian_kernel.length));
         int kernel_size2 = kernel_size / 2;
@@ -6836,7 +6766,7 @@ public abstract class TaskRender implements Runnable {
     }
 
 
-    private void removeOutliers() {
+    private void removeOutliers() throws StopExecutionException {
 
         int iteration = 0;
 
@@ -6880,7 +6810,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void heightProcessing() {
+    protected void heightProcessing() throws StopExecutionException {
 
         if (remove_outliers_pre) {
 
@@ -6890,13 +6820,7 @@ public abstract class TaskRender implements Runnable {
 
             }
 
-            try {
-                remove_outliers_sync2.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(remove_outliers_sync2);
 
             removeOutliers();
 
@@ -6910,13 +6834,7 @@ public abstract class TaskRender implements Runnable {
 
             }
 
-            try {
-                gaussian_scaling_sync2.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(gaussian_scaling_sync2);
 
             gaussianOrBilateralHeightScaling();
         }
@@ -6929,24 +6847,12 @@ public abstract class TaskRender implements Runnable {
 
             }
 
-            try {
-                height_scaling_sync4.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(height_scaling_sync4);
 
             applyPreHeightScaling();
         }
 
-        try {
-            height_function_sync.await();
-        } catch (InterruptedException ex) {
-
-        } catch (BrokenBarrierException ex) {
-
-        }
+        WaitOnCondition.WaitOnCyclicBarrier(height_function_sync);
 
         applyHeightFunction();
 
@@ -6958,13 +6864,7 @@ public abstract class TaskRender implements Runnable {
 
             }
 
-            try {
-                remove_outliers_sync4.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(remove_outliers_sync4);
 
             removeOutliers();
 
@@ -6976,36 +6876,16 @@ public abstract class TaskRender implements Runnable {
 
         }
 
-        try {
-            height_scaling_sync2.await();
-        } catch (InterruptedException ex) {
-
-        } catch (BrokenBarrierException ex) {
-
-        }
+        WaitOnCondition.WaitOnCyclicBarrier(height_scaling_sync2);
 
         applyPostHeightScaling();
 
         if (shade_height) {
-
-            try {
-                shade_color_height_sync.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
-
+            WaitOnCondition.WaitOnCyclicBarrier(shade_color_height_sync);
             shadeColorBasedOnHeight();
         }
 
-        try {
-            calculate_vectors_sync.await();
-        } catch (InterruptedException ex) {
-
-        } catch (BrokenBarrierException ex) {
-
-        }
+        WaitOnCondition.WaitOnCyclicBarrier(calculate_vectors_sync);
 
         if (gaussian_scaling || bilateral_scaling) {
             gaussianHeightScalingEnd();
@@ -7013,7 +6893,7 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void calculate3DVectors(double d, double w2) {
+    protected void calculate3DVectors(double d, double w2) throws StopExecutionException {
 
         int n1 = detail - 1;
 
@@ -7331,15 +7211,9 @@ public abstract class TaskRender implements Runnable {
         }
         D3RenderingCalculationTime = System.currentTimeMillis() - time;
     }
-    protected void postProcessFastJulia(int image_size, AntialiasingAlgorithm aa, Location location) {
+    protected void postProcessFastJulia(int image_size, AntialiasingAlgorithm aa, Location location) throws StopExecutionException {
         if (needsPostProcessing()) {
-            try {
-                post_processing_sync.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(post_processing_sync);
 
             edgeData = new HashMap<>();
             edgeAAData = new HashMap<>();
@@ -7347,47 +7221,25 @@ public abstract class TaskRender implements Runnable {
 
             applyPostProcessing(image_size, image_size, image_iterations_fast_julia, escaped_fast_julia, pixelData_fast_julia, aa, location);
 
+            WaitOnCondition.WaitOnCyclicBarrier(normalize_sync2);
 
-            try {
-                normalize_sync2.await();
-                escapedCounts = null;
-                notEscapedCounts = null;
-                arrayEscaped = null;
-                arraynotEscaped = null;
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            escapedCounts = null;
+            notEscapedCounts = null;
+            arrayEscaped = null;
+            arraynotEscaped = null;
         }
     }
 
-    protected void postProcessColorCycling(int image_width, int image_height) {
+    protected void postProcessColorCycling(int image_width, int image_height) throws StopExecutionException {
 
         if (needsPostProcessing()) {
-            try {
-                post_processing_sync.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
-
-
+            WaitOnCondition.WaitOnCyclicBarrier(post_processing_sync);
             applyPostProcessing(image_width, image_height, image_iterations, escaped, null, null, null);
-
-
-            try {
-                normalize_sync2.await();
-                escapedCounts = null;
-                notEscapedCounts = null;
-                arrayEscaped = null;
-                arraynotEscaped = null;
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(normalize_sync2);
+            escapedCounts = null;
+            notEscapedCounts = null;
+            arrayEscaped = null;
+            arraynotEscaped = null;
         }
     }
 
@@ -7408,19 +7260,13 @@ public abstract class TaskRender implements Runnable {
     }
 
     private boolean forcePostProcessing = false;
-    protected void postProcess(int image_width, int image_height, AntialiasingAlgorithm aa, Location location) throws StopSuccessiveRefinementException {
+    protected void postProcess(int image_width, int image_height, AntialiasingAlgorithm aa, Location location) throws StopSuccessiveRefinementException, StopExecutionException {
 
         if (forcePostProcessing || needsPostProcessing()) {
 
             task_post_processed = 0;
 
-            try {
-                post_processing_sync.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(post_processing_sync);
 
             if(progress != null) {
                 if(progress.getValue() < progress.getMaximum()) {
@@ -7456,36 +7302,21 @@ public abstract class TaskRender implements Runnable {
             }
 
             if(USE_NON_BLOCKING_RENDERING && supportsNonBlockingRender()) {
-                try {
-                    stop_rendering_lock.lockRead();
-                } catch (InterruptedException ex) {
+                WaitOnCondition.LockRead(stop_rendering_lock);
 
-                }
-
-                try {
-                    successive_refinement_rendering_algorithm_barrier.await();
-                } catch (InterruptedException ex) {
-
-                } catch (BrokenBarrierException ex) {
-                }
+                WaitOnCondition.WaitOnCyclicBarrier(successive_refinement_rendering_algorithm_barrier);
 
                 if (STOP_RENDERING) {
-                    stop_rendering_lock.unlockRead();
+                    WaitOnCondition.UnlockRead(stop_rendering_lock);
 
                     finalizePostProcessing();
 
                     throw new StopSuccessiveRefinementException();
                 }
-                stop_rendering_lock.unlockRead();
+                WaitOnCondition.UnlockRead(stop_rendering_lock);
             }
 
-            try {
-                normalize_sync2.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(normalize_sync2);
 
             finalizePostProcessing();
 
@@ -8942,15 +8773,9 @@ public abstract class TaskRender implements Runnable {
 
     }
 
-    protected void renderSquares(int image_width, int image_height) {
+    protected void renderSquares(int image_width, int image_height) throws StopExecutionException {
 
-        try {
-            squares_sync.await();
-        } catch (InterruptedException ex) {
-
-        } catch (BrokenBarrierException ex) {
-
-        }
+        WaitOnCondition.WaitOnCyclicBarrier(squares_sync);
 
         int white = 0xffffffff;
         int grey = 0xffAAAAAA;
@@ -9466,39 +9291,289 @@ public abstract class TaskRender implements Runnable {
         return Math.floor(10000000 * val + 0.5) / 10000000;
     }
 
-    private void initializeHistogramColoring(double[] image_iterations, boolean[] escaped) {
+    private void initializeHistogramColoring(double[] image_iterations, boolean[] escaped) throws StopExecutionException {
 
         int mapping = hss.hmapping;
         int histogramGranularity = hss.histogramBinGranularity;
 
-        try {
-            if (normalize_find_ranges_sync.await() == 0) {
+        if (WaitOnCondition.WaitOnCyclicBarrier(normalize_find_ranges_sync) == 0) {
 
-                lowerFenceEscaped = -Double.MAX_VALUE;
-                upperFenceEscaped = Double.MAX_VALUE;
+            lowerFenceEscaped = -Double.MAX_VALUE;
+            upperFenceEscaped = Double.MAX_VALUE;
 
 
-                lowerFenceNotEscaped = -Double.MAX_VALUE;
-                upperFenceNotEscaped = Double.MAX_VALUE;
+            lowerFenceNotEscaped = -Double.MAX_VALUE;
+            upperFenceNotEscaped = Double.MAX_VALUE;
 
-                if(hss.hs_remove_outliers) {
-                    //Remove outliers first
-                    double meanEscaped = 0;
-                    double meanNotEscaped = 0;
-                    double varianceEscaped = 0;
-                    double varianceNotEscaped = 0;
-                    int samples = 0;
-                    ArrayList<Double> dataEscaped = null;
-                    ArrayList<Double> dataNotEscaped = null;
+            if(hss.hs_remove_outliers) {
+                //Remove outliers first
+                double meanEscaped = 0;
+                double meanNotEscaped = 0;
+                double varianceEscaped = 0;
+                double varianceNotEscaped = 0;
+                int samples = 0;
+                ArrayList<Double> dataEscaped = null;
+                ArrayList<Double> dataNotEscaped = null;
 
-                    if(hss.hs_outliers_method == 0) {
-                        dataEscaped = new ArrayList<>();
-                        dataNotEscaped = new ArrayList<>();
+                if(hss.hs_outliers_method == 0) {
+                    dataEscaped = new ArrayList<>();
+                    dataNotEscaped = new ArrayList<>();
+                }
+
+                for (int i = 0; i < image_iterations.length; i++) {
+
+                    double val = image_iterations[i];
+
+                    if (isMaximumIterations(val)) {
+                        continue;
                     }
 
-                    for (int i = 0; i < image_iterations.length; i++) {
+                    if (Double.isNaN(val) || Double.isInfinite(val)) {
+                        continue;
+                    }
 
-                        double val = image_iterations[i];
+                    val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
+
+                    samples++;
+                    if (escaped[i]) {
+
+                        if(hss.hs_outliers_method == 0) {
+                            dataEscaped.add(val);
+                        }
+                        else {
+                            double delta = val - meanEscaped;
+                            meanEscaped += delta / samples;
+                            double delta2 = val - meanEscaped;
+                            varianceEscaped += delta * delta2;
+                        }
+
+                    } else {
+
+                        if(hss.hs_outliers_method == 0) {
+                            dataNotEscaped.add(val);
+                        }
+                        else {
+                            double delta = val - meanNotEscaped;
+                            meanNotEscaped += delta / samples;
+                            double delta2 = val - meanNotEscaped;
+                            varianceNotEscaped += delta * delta2;
+                        }
+                    }
+                }
+
+                if(hss.hs_outliers_method == 0) {
+                    double[] res = getFencesDouble(dataEscaped);
+                    lowerFenceEscaped = res[0];
+                    upperFenceEscaped = res[1];
+
+
+                    double[] res2 = getFencesDouble(dataNotEscaped);
+                    lowerFenceNotEscaped = res2[0];
+                    upperFenceNotEscaped = res2[1];
+                }
+                else {
+                    double sigmaEscaped = Math.sqrt(varianceEscaped / samples);
+                    double sigmaNotEscaped = Math.sqrt(varianceNotEscaped / samples);
+
+                    upperFenceEscaped = meanEscaped + 3 * sigmaEscaped;
+                    lowerFenceEscaped = meanEscaped - 3 * sigmaEscaped;
+
+                    upperFenceNotEscaped = meanNotEscaped + 3 * sigmaNotEscaped;
+                    lowerFenceNotEscaped = meanNotEscaped - 3 * sigmaNotEscaped;
+                }
+
+                if(hss.hs_outliers_method == 0) {
+                    dataEscaped.clear();
+                    dataNotEscaped.clear();
+                }
+            }
+
+            maxIterationEscaped = -Double.MAX_VALUE;
+            maxIterationNotEscaped = -Double.MAX_VALUE;
+            totalEscaped = 0;
+            totalNotEscaped = 0;
+            minIterationsEscaped = Double.MAX_VALUE;
+            minIterationsNotEscaped = Double.MAX_VALUE;
+            denominatorEscaped = 1;
+            denominatorNotEscaped = 1;
+
+            if(mapping != 6) {
+                for (int i = 0; i < image_iterations.length; i++) {
+
+                    double val = image_iterations[i];
+
+                    if (isMaximumIterations(val)) {
+                        continue;
+                    }
+
+                    if (Double.isNaN(val) || Double.isInfinite(val)) {
+                        continue;
+                    }
+
+                    val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
+
+                    if (escaped[i]) {
+
+                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
+
+                        maxIterationEscaped = val > maxIterationEscaped ? val : maxIterationEscaped;
+                        minIterationsEscaped = val < minIterationsEscaped ? val : minIterationsEscaped;
+                    } else {
+
+                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
+
+                        maxIterationNotEscaped = val > maxIterationNotEscaped ? val : maxIterationNotEscaped;
+                        minIterationsNotEscaped = val < minIterationsNotEscaped ? val : minIterationsNotEscaped;
+                    }
+                }
+            }
+
+            if (mapping == 0 || mapping == 6) {
+
+                if(mapping == 0) {
+                    if (maxIterationEscaped != -Double.MAX_VALUE && minIterationsEscaped != Double.MAX_VALUE) {
+                        double diff = maxIterationEscaped - minIterationsEscaped;
+                        long total = ((long)((diff + 1) * histogramGranularity));
+                        total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
+                        escapedCounts = new int[(int)total];
+                    }
+
+                    if (maxIterationNotEscaped != -Double.MAX_VALUE && minIterationsNotEscaped != Double.MAX_VALUE) {
+                        double diff = maxIterationNotEscaped - minIterationsNotEscaped;
+                        long total = ((long)((diff + 1) * histogramGranularity));
+                        total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
+                        notEscapedCounts = new int[(int)total];
+                    }
+
+                    if (maxIterationEscaped < 1 && minIterationsEscaped < 1) {
+                        denominatorEscaped = maxIterationEscaped - minIterationsEscaped + 1e-12;
+                    }
+
+                    if (maxIterationNotEscaped < 1 && minIterationsNotEscaped < 1) {
+                        denominatorNotEscaped = maxIterationNotEscaped - minIterationsNotEscaped + 1e-12;
+                    }
+                }
+
+                Set<Double> setEscaped = new HashSet<>();
+                Set<Double> setnotEscaped = new HashSet<>();
+                ArrayList<Double> listEscaped;
+                ArrayList<Double> listnotEscaped;
+
+
+                for (int i = 0; i < image_iterations.length; i++) {
+                    double val = image_iterations[i];
+
+                    if (isMaximumIterations(val)) {
+                        continue;
+                    }
+
+                    if (Double.isNaN(val) || Double.isInfinite(val)) {
+                        continue;
+                    }
+
+                    val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
+
+                    if (escaped[i]) {
+                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
+
+                        if(mapping == 6) {
+                            setEscaped.add(roundForRankOrder(val));
+                        }
+                        else {
+                            double diff = val - minIterationsEscaped;
+                            long id = (long) ((diff) / denominatorEscaped * histogramGranularity);
+                            id = id >= escapedCounts.length ? escapedCounts.length - 1 : id;
+                            escapedCounts[(int)id]++;
+                        }
+                        totalEscaped++;
+                    } else {
+
+                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
+                        if(mapping == 6) {
+                            setnotEscaped.add(roundForRankOrder(val));
+                        }
+                        else {
+                            double diff = val - minIterationsNotEscaped;
+                            long id = (long) ((diff) / denominatorNotEscaped * histogramGranularity);
+                            id = id >= notEscapedCounts.length ? notEscapedCounts.length - 1 : id;
+                            notEscapedCounts[(int)id]++;
+                        }
+                        totalNotEscaped++;
+                    }
+                }
+
+                if(mapping == 0) {
+                    if (escapedCounts != null) {
+                        double sum = 0;
+                        for (int i = 0; i < escapedCounts.length; i++) {
+                            escapedCounts[i] += sum;
+                            sum = escapedCounts[i];
+                        }
+                    }
+
+                    if (notEscapedCounts != null) {
+                        double sum = 0;
+                        for (int i = 0; i < notEscapedCounts.length; i++) {
+                            notEscapedCounts[i] += sum;
+                            sum = notEscapedCounts[i];
+                        }
+                    }
+                }
+                else if(mapping == 6) {
+                    listEscaped = new ArrayList<>(setEscaped);
+                    setEscaped.clear();
+                    listnotEscaped = new ArrayList<>(setnotEscaped);
+                    setnotEscaped.clear();
+
+                    arrayEscaped = listEscaped.stream().mapToDouble(Double::doubleValue).toArray();
+                    arraynotEscaped = listnotEscaped.stream().mapToDouble(Double::doubleValue).toArray();
+
+                    Arrays.parallelSort(arrayEscaped);
+                    Arrays.parallelSort(arraynotEscaped);
+
+                    listEscaped.clear();
+                    listnotEscaped.clear();
+                }
+            }
+        }
+
+        WaitOnCondition.WaitOnCyclicBarrier(normalize_sync);
+
+    }
+
+    private void initializeHistogramColoring(PixelExtraData[] data) throws StopExecutionException {
+
+        int mapping = hss.hmapping;
+        int histogramGranularity = hss.histogramBinGranularity;
+
+        if (WaitOnCondition.WaitOnCyclicBarrier(normalize_find_ranges_sync) == 0) {
+
+            lowerFenceEscaped = -Double.MAX_VALUE;
+            upperFenceEscaped = Double.MAX_VALUE;
+
+
+            lowerFenceNotEscaped = -Double.MAX_VALUE;
+            upperFenceNotEscaped = Double.MAX_VALUE;
+
+            if(hss.hs_remove_outliers) {
+                //Remove outliers first
+                double meanEscaped = 0;
+                double meanNotEscaped = 0;
+                double varianceEscaped = 0;
+                double varianceNotEscaped = 0;
+                int samples = 0;
+                ArrayList<Double> dataEscaped = null;
+                ArrayList<Double> dataNotEscaped = null;
+
+                if(hss.hs_outliers_method == 0) {
+                    dataEscaped = new ArrayList<>();
+                    dataNotEscaped = new ArrayList<>();
+                }
+
+                for(int j = 0; j < data.length; j++) {
+                    for (int i = 0; i < data[j].values.length; i++) {
+
+                        double val = data[j].values[i];
 
                         if (isMaximumIterations(val)) {
                             continue;
@@ -9511,12 +9586,11 @@ public abstract class TaskRender implements Runnable {
                         val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
 
                         samples++;
-                        if (escaped[i]) {
+                        if (data[j].escaped[i]) {
 
-                            if(hss.hs_outliers_method == 0) {
+                            if (hss.hs_outliers_method == 0) {
                                 dataEscaped.add(val);
-                            }
-                            else {
+                            } else {
                                 double delta = val - meanEscaped;
                                 meanEscaped += delta / samples;
                                 double delta2 = val - meanEscaped;
@@ -9525,10 +9599,9 @@ public abstract class TaskRender implements Runnable {
 
                         } else {
 
-                            if(hss.hs_outliers_method == 0) {
+                            if (hss.hs_outliers_method == 0) {
                                 dataNotEscaped.add(val);
-                            }
-                            else {
+                            } else {
                                 double delta = val - meanNotEscaped;
                                 meanNotEscaped += delta / samples;
                                 double delta2 = val - meanNotEscaped;
@@ -9536,47 +9609,50 @@ public abstract class TaskRender implements Runnable {
                             }
                         }
                     }
-
-                    if(hss.hs_outliers_method == 0) {
-                        double[] res = getFencesDouble(dataEscaped);
-                        lowerFenceEscaped = res[0];
-                        upperFenceEscaped = res[1];
-
-
-                        double[] res2 = getFencesDouble(dataNotEscaped);
-                        lowerFenceNotEscaped = res2[0];
-                        upperFenceNotEscaped = res2[1];
-                    }
-                    else {
-                        double sigmaEscaped = Math.sqrt(varianceEscaped / samples);
-                        double sigmaNotEscaped = Math.sqrt(varianceNotEscaped / samples);
-
-                        upperFenceEscaped = meanEscaped + 3 * sigmaEscaped;
-                        lowerFenceEscaped = meanEscaped - 3 * sigmaEscaped;
-
-                        upperFenceNotEscaped = meanNotEscaped + 3 * sigmaNotEscaped;
-                        lowerFenceNotEscaped = meanNotEscaped - 3 * sigmaNotEscaped;
-                    }
-
-                    if(hss.hs_outliers_method == 0) {
-                        dataEscaped.clear();
-                        dataNotEscaped.clear();
-                    }
                 }
 
-                maxIterationEscaped = -Double.MAX_VALUE;
-                maxIterationNotEscaped = -Double.MAX_VALUE;
-                totalEscaped = 0;
-                totalNotEscaped = 0;
-                minIterationsEscaped = Double.MAX_VALUE;
-                minIterationsNotEscaped = Double.MAX_VALUE;
-                denominatorEscaped = 1;
-                denominatorNotEscaped = 1;
+                if(hss.hs_outliers_method == 0) {
+                    double[] res = getFencesDouble(dataEscaped);
+                    lowerFenceEscaped = res[0];
+                    upperFenceEscaped = res[1];
 
-                if(mapping != 6) {
-                    for (int i = 0; i < image_iterations.length; i++) {
 
-                        double val = image_iterations[i];
+                    double[] res2 = getFencesDouble(dataNotEscaped);
+                    lowerFenceNotEscaped = res2[0];
+                    upperFenceNotEscaped = res2[1];
+                }
+                else {
+                    double sigmaEscaped = Math.sqrt(varianceEscaped / samples);
+                    double sigmaNotEscaped = Math.sqrt(varianceNotEscaped / samples);
+
+                    upperFenceEscaped = meanEscaped + 3 * sigmaEscaped;
+                    lowerFenceEscaped = meanEscaped - 3 * sigmaEscaped;
+
+                    upperFenceNotEscaped = meanNotEscaped + 3 * sigmaNotEscaped;
+                    lowerFenceNotEscaped = meanNotEscaped - 3 * sigmaNotEscaped;
+                }
+
+                if(hss.hs_outliers_method == 0) {
+                    dataEscaped.clear();
+                    dataNotEscaped.clear();
+                }
+            }
+
+            maxIterationEscaped = -Double.MAX_VALUE;
+            maxIterationNotEscaped = -Double.MAX_VALUE;
+            totalEscaped = 0;
+            totalNotEscaped = 0;
+            minIterationsEscaped = Double.MAX_VALUE;
+            minIterationsNotEscaped = Double.MAX_VALUE;
+            denominatorEscaped = 1;
+            denominatorNotEscaped = 1;
+
+            if(mapping != 6) {
+
+                for (int j = 0; j < data.length; j++) {
+                    for (int i = 0; i < data[j].values.length; i++) {
+
+                        double val = data[j].values[i];
 
                         if (isMaximumIterations(val)) {
                             continue;
@@ -9588,7 +9664,7 @@ public abstract class TaskRender implements Runnable {
 
                         val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
 
-                        if (escaped[i]) {
+                        if (data[j].escaped[i]) {
 
                             val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
 
@@ -9603,41 +9679,49 @@ public abstract class TaskRender implements Runnable {
                         }
                     }
                 }
+            }
 
-                if (mapping == 0 || mapping == 6) {
+            if (mapping == 0 || mapping == 6) {
 
-                    if(mapping == 0) {
-                        if (maxIterationEscaped != -Double.MAX_VALUE && minIterationsEscaped != Double.MAX_VALUE) {
-                            double diff = maxIterationEscaped - minIterationsEscaped;
-                            long total = ((long)((diff + 1) * histogramGranularity));
-                            total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
-                            escapedCounts = new int[(int)total];
-                        }
-
-                        if (maxIterationNotEscaped != -Double.MAX_VALUE && minIterationsNotEscaped != Double.MAX_VALUE) {
-                            double diff = maxIterationNotEscaped - minIterationsNotEscaped;
-                            long total = ((long)((diff + 1) * histogramGranularity));
-                            total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
-                            notEscapedCounts = new int[(int)total];
-                        }
-
-                        if (maxIterationEscaped < 1 && minIterationsEscaped < 1) {
-                            denominatorEscaped = maxIterationEscaped - minIterationsEscaped + 1e-12;
-                        }
-
-                        if (maxIterationNotEscaped < 1 && minIterationsNotEscaped < 1) {
-                            denominatorNotEscaped = maxIterationNotEscaped - minIterationsNotEscaped + 1e-12;
-                        }
+                if(mapping == 0) {
+                    if (maxIterationEscaped != -Double.MAX_VALUE && minIterationsEscaped != Double.MAX_VALUE) {
+                        double diff = maxIterationEscaped - minIterationsEscaped;
+                        long total = ((long)((diff + 1) * histogramGranularity));
+                        total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
+                        escapedCounts = new int[(int)total];
                     }
 
-                    Set<Double> setEscaped = new HashSet<>();
-                    Set<Double> setnotEscaped = new HashSet<>();
-                    ArrayList<Double> listEscaped;
-                    ArrayList<Double> listnotEscaped;
+                    if (maxIterationNotEscaped != -Double.MAX_VALUE && minIterationsNotEscaped != Double.MAX_VALUE) {
+                        double diff = maxIterationNotEscaped - minIterationsNotEscaped;
+                        long total = ((long)((diff + 1) * histogramGranularity));
+                        total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
+                        notEscapedCounts = new int[(int)total];
+                    }
 
+                    if (maxIterationEscaped < 1 && minIterationsEscaped < 1) {
+                        denominatorEscaped = maxIterationEscaped - minIterationsEscaped + 1e-12;
+                    }
 
-                    for (int i = 0; i < image_iterations.length; i++) {
-                        double val = image_iterations[i];
+                    if (maxIterationNotEscaped < 1 && minIterationsNotEscaped < 1) {
+                        denominatorNotEscaped = maxIterationNotEscaped - minIterationsNotEscaped + 1e-12;
+                    }
+                }
+
+                Set<Double> setEscaped = new HashSet<>();
+                Set<Double> setnotEscaped = new HashSet<>();
+                ArrayList<Double> listEscaped;
+                ArrayList<Double> listnotEscaped;
+
+                for(int j = 0; j < data.length; j++) {
+                    int length;
+                    if(mapping == 6 && INCLUDE_AA_DATA_ON_RANK_ORDER) {
+                        length = data[j].values.length;
+                    }
+                    else {
+                        length = mapping == 6 ? Math.min(1, data[j].values.length) : data[j].values.length;
+                    }
+                    for (int i = 0; i < length; i++) {
+                        double val = data[j].values[i];
 
                         if (isMaximumIterations(val)) {
                             continue;
@@ -9649,7 +9733,7 @@ public abstract class TaskRender implements Runnable {
 
                         val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
 
-                        if (escaped[i]) {
+                        if (data[j].escaped[i]) {
                             val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
 
                             if(mapping == 6) {
@@ -9663,7 +9747,6 @@ public abstract class TaskRender implements Runnable {
                             }
                             totalEscaped++;
                         } else {
-
                             val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
                             if(mapping == 6) {
                                 setnotEscaped.add(roundForRankOrder(val));
@@ -9674,330 +9757,48 @@ public abstract class TaskRender implements Runnable {
                                 id = id >= notEscapedCounts.length ? notEscapedCounts.length - 1 : id;
                                 notEscapedCounts[(int)id]++;
                             }
+
                             totalNotEscaped++;
                         }
                     }
+                }
 
-                    if(mapping == 0) {
-                        if (escapedCounts != null) {
-                            double sum = 0;
-                            for (int i = 0; i < escapedCounts.length; i++) {
-                                escapedCounts[i] += sum;
-                                sum = escapedCounts[i];
-                            }
-                        }
-
-                        if (notEscapedCounts != null) {
-                            double sum = 0;
-                            for (int i = 0; i < notEscapedCounts.length; i++) {
-                                notEscapedCounts[i] += sum;
-                                sum = notEscapedCounts[i];
-                            }
+                if(mapping == 0) {
+                    if (escapedCounts != null) {
+                        double sum = 0;
+                        for (int i = 0; i < escapedCounts.length; i++) {
+                            escapedCounts[i] += sum;
+                            sum = escapedCounts[i];
                         }
                     }
-                    else if(mapping == 6) {
-                        listEscaped = new ArrayList<>(setEscaped);
-                        setEscaped.clear();
-                        listnotEscaped = new ArrayList<>(setnotEscaped);
-                        setnotEscaped.clear();
 
-                        arrayEscaped = listEscaped.stream().mapToDouble(Double::doubleValue).toArray();
-                        arraynotEscaped = listnotEscaped.stream().mapToDouble(Double::doubleValue).toArray();
-
-                        Arrays.parallelSort(arrayEscaped);
-                        Arrays.parallelSort(arraynotEscaped);
-
-                        listEscaped.clear();
-                        listnotEscaped.clear();
+                    if (notEscapedCounts != null) {
+                        double sum = 0;
+                        for (int i = 0; i < notEscapedCounts.length; i++) {
+                            notEscapedCounts[i] += sum;
+                            sum = notEscapedCounts[i];
+                        }
                     }
+                }
+                else if(mapping == 6) {
+                    listEscaped = new ArrayList<>(setEscaped);
+                    setEscaped.clear();
+                    listnotEscaped = new ArrayList<>(setnotEscaped);
+                    setnotEscaped.clear();
+
+                    arrayEscaped = listEscaped.stream().mapToDouble(Double::doubleValue).toArray();
+                    arraynotEscaped = listnotEscaped.stream().mapToDouble(Double::doubleValue).toArray();
+
+                    Arrays.parallelSort(arrayEscaped);
+                    Arrays.parallelSort(arraynotEscaped);
+
+                    listEscaped.clear();
+                    listnotEscaped.clear();
                 }
             }
-        } catch (InterruptedException e) {
-
-        } catch (BrokenBarrierException e) {
-
         }
 
-        try {
-            normalize_sync.await();
-        } catch (InterruptedException ex) {
-
-        } catch (BrokenBarrierException ex) {
-
-        }
-
-    }
-
-    private void initializeHistogramColoring(PixelExtraData[] data) {
-
-        int mapping = hss.hmapping;
-        int histogramGranularity = hss.histogramBinGranularity;
-
-        try {
-            if (normalize_find_ranges_sync.await() == 0) {
-
-                lowerFenceEscaped = -Double.MAX_VALUE;
-                upperFenceEscaped = Double.MAX_VALUE;
-
-
-                lowerFenceNotEscaped = -Double.MAX_VALUE;
-                upperFenceNotEscaped = Double.MAX_VALUE;
-
-                if(hss.hs_remove_outliers) {
-                    //Remove outliers first
-                    double meanEscaped = 0;
-                    double meanNotEscaped = 0;
-                    double varianceEscaped = 0;
-                    double varianceNotEscaped = 0;
-                    int samples = 0;
-                    ArrayList<Double> dataEscaped = null;
-                    ArrayList<Double> dataNotEscaped = null;
-
-                    if(hss.hs_outliers_method == 0) {
-                        dataEscaped = new ArrayList<>();
-                        dataNotEscaped = new ArrayList<>();
-                    }
-
-                    for(int j = 0; j < data.length; j++) {
-                        for (int i = 0; i < data[j].values.length; i++) {
-
-                            double val = data[j].values[i];
-
-                            if (isMaximumIterations(val)) {
-                                continue;
-                            }
-
-                            if (Double.isNaN(val) || Double.isInfinite(val)) {
-                                continue;
-                            }
-
-                            val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
-
-                            samples++;
-                            if (data[j].escaped[i]) {
-
-                                if (hss.hs_outliers_method == 0) {
-                                    dataEscaped.add(val);
-                                } else {
-                                    double delta = val - meanEscaped;
-                                    meanEscaped += delta / samples;
-                                    double delta2 = val - meanEscaped;
-                                    varianceEscaped += delta * delta2;
-                                }
-
-                            } else {
-
-                                if (hss.hs_outliers_method == 0) {
-                                    dataNotEscaped.add(val);
-                                } else {
-                                    double delta = val - meanNotEscaped;
-                                    meanNotEscaped += delta / samples;
-                                    double delta2 = val - meanNotEscaped;
-                                    varianceNotEscaped += delta * delta2;
-                                }
-                            }
-                        }
-                    }
-
-                    if(hss.hs_outliers_method == 0) {
-                        double[] res = getFencesDouble(dataEscaped);
-                        lowerFenceEscaped = res[0];
-                        upperFenceEscaped = res[1];
-
-
-                        double[] res2 = getFencesDouble(dataNotEscaped);
-                        lowerFenceNotEscaped = res2[0];
-                        upperFenceNotEscaped = res2[1];
-                    }
-                    else {
-                        double sigmaEscaped = Math.sqrt(varianceEscaped / samples);
-                        double sigmaNotEscaped = Math.sqrt(varianceNotEscaped / samples);
-
-                        upperFenceEscaped = meanEscaped + 3 * sigmaEscaped;
-                        lowerFenceEscaped = meanEscaped - 3 * sigmaEscaped;
-
-                        upperFenceNotEscaped = meanNotEscaped + 3 * sigmaNotEscaped;
-                        lowerFenceNotEscaped = meanNotEscaped - 3 * sigmaNotEscaped;
-                    }
-
-                    if(hss.hs_outliers_method == 0) {
-                        dataEscaped.clear();
-                        dataNotEscaped.clear();
-                    }
-                }
-
-                maxIterationEscaped = -Double.MAX_VALUE;
-                maxIterationNotEscaped = -Double.MAX_VALUE;
-                totalEscaped = 0;
-                totalNotEscaped = 0;
-                minIterationsEscaped = Double.MAX_VALUE;
-                minIterationsNotEscaped = Double.MAX_VALUE;
-                denominatorEscaped = 1;
-                denominatorNotEscaped = 1;
-
-                if(mapping != 6) {
-
-                    for (int j = 0; j < data.length; j++) {
-                        for (int i = 0; i < data[j].values.length; i++) {
-
-                            double val = data[j].values[i];
-
-                            if (isMaximumIterations(val)) {
-                                continue;
-                            }
-
-                            if (Double.isNaN(val) || Double.isInfinite(val)) {
-                                continue;
-                            }
-
-                            val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
-
-                            if (data[j].escaped[i]) {
-
-                                val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
-
-                                maxIterationEscaped = val > maxIterationEscaped ? val : maxIterationEscaped;
-                                minIterationsEscaped = val < minIterationsEscaped ? val : minIterationsEscaped;
-                            } else {
-
-                                val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
-
-                                maxIterationNotEscaped = val > maxIterationNotEscaped ? val : maxIterationNotEscaped;
-                                minIterationsNotEscaped = val < minIterationsNotEscaped ? val : minIterationsNotEscaped;
-                            }
-                        }
-                    }
-                }
-
-                if (mapping == 0 || mapping == 6) {
-
-                    if(mapping == 0) {
-                        if (maxIterationEscaped != -Double.MAX_VALUE && minIterationsEscaped != Double.MAX_VALUE) {
-                            double diff = maxIterationEscaped - minIterationsEscaped;
-                            long total = ((long)((diff + 1) * histogramGranularity));
-                            total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
-                            escapedCounts = new int[(int)total];
-                        }
-
-                        if (maxIterationNotEscaped != -Double.MAX_VALUE && minIterationsNotEscaped != Double.MAX_VALUE) {
-                            double diff = maxIterationNotEscaped - minIterationsNotEscaped;
-                            long total = ((long)((diff + 1) * histogramGranularity));
-                            total = total > Integer.MAX_VALUE ? Integer.MAX_VALUE : total;
-                            notEscapedCounts = new int[(int)total];
-                        }
-
-                        if (maxIterationEscaped < 1 && minIterationsEscaped < 1) {
-                            denominatorEscaped = maxIterationEscaped - minIterationsEscaped + 1e-12;
-                        }
-
-                        if (maxIterationNotEscaped < 1 && minIterationsNotEscaped < 1) {
-                            denominatorNotEscaped = maxIterationNotEscaped - minIterationsNotEscaped + 1e-12;
-                        }
-                    }
-
-                    Set<Double> setEscaped = new HashSet<>();
-                    Set<Double> setnotEscaped = new HashSet<>();
-                    ArrayList<Double> listEscaped;
-                    ArrayList<Double> listnotEscaped;
-
-                    for(int j = 0; j < data.length; j++) {
-                        int length;
-                        if(mapping == 6 && INCLUDE_AA_DATA_ON_RANK_ORDER) {
-                            length = data[j].values.length;
-                        }
-                        else {
-                            length = mapping == 6 ? Math.min(1, data[j].values.length) : data[j].values.length;
-                        }
-                        for (int i = 0; i < length; i++) {
-                            double val = data[j].values[i];
-
-                            if (isMaximumIterations(val)) {
-                                continue;
-                            }
-
-                            if (Double.isNaN(val) || Double.isInfinite(val)) {
-                                continue;
-                            }
-
-                            val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
-
-                            if (data[j].escaped[i]) {
-                                val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
-
-                                if(mapping == 6) {
-                                    setEscaped.add(roundForRankOrder(val));
-                                }
-                                else {
-                                    double diff = val - minIterationsEscaped;
-                                    long id = (long) ((diff) / denominatorEscaped * histogramGranularity);
-                                    id = id >= escapedCounts.length ? escapedCounts.length - 1 : id;
-                                    escapedCounts[(int)id]++;
-                                }
-                                totalEscaped++;
-                            } else {
-                                val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
-                                if(mapping == 6) {
-                                    setnotEscaped.add(roundForRankOrder(val));
-                                }
-                                else {
-                                    double diff = val - minIterationsNotEscaped;
-                                    long id = (long) ((diff) / denominatorNotEscaped * histogramGranularity);
-                                    id = id >= notEscapedCounts.length ? notEscapedCounts.length - 1 : id;
-                                    notEscapedCounts[(int)id]++;
-                                }
-
-                                totalNotEscaped++;
-                            }
-                        }
-                    }
-
-                    if(mapping == 0) {
-                        if (escapedCounts != null) {
-                            double sum = 0;
-                            for (int i = 0; i < escapedCounts.length; i++) {
-                                escapedCounts[i] += sum;
-                                sum = escapedCounts[i];
-                            }
-                        }
-
-                        if (notEscapedCounts != null) {
-                            double sum = 0;
-                            for (int i = 0; i < notEscapedCounts.length; i++) {
-                                notEscapedCounts[i] += sum;
-                                sum = notEscapedCounts[i];
-                            }
-                        }
-                    }
-                    else if(mapping == 6) {
-                        listEscaped = new ArrayList<>(setEscaped);
-                        setEscaped.clear();
-                        listnotEscaped = new ArrayList<>(setnotEscaped);
-                        setnotEscaped.clear();
-
-                        arrayEscaped = listEscaped.stream().mapToDouble(Double::doubleValue).toArray();
-                        arraynotEscaped = listnotEscaped.stream().mapToDouble(Double::doubleValue).toArray();
-
-                        Arrays.parallelSort(arrayEscaped);
-                        Arrays.parallelSort(arraynotEscaped);
-
-                        listEscaped.clear();
-                        listnotEscaped.clear();
-                    }
-                }
-            }
-        } catch (InterruptedException e) {
-
-        } catch (BrokenBarrierException e) {
-
-        }
-
-        try {
-            normalize_sync.await();
-        } catch (InterruptedException ex) {
-
-        } catch (BrokenBarrierException ex) {
-
-        }
+        WaitOnCondition.WaitOnCyclicBarrier(normalize_sync);
 
     }
 
@@ -13386,7 +13187,7 @@ public abstract class TaskRender implements Runnable {
         return null;
     }
 
-    protected void initializeRectangleAreasQueue(int image_width, int image_height) {
+    protected void initializeRectangleAreasQueue(int image_width, int image_height) throws StopExecutionException {
         if(!SPLIT_INTO_RECTANGLE_AREAS) {
             return;
         }
@@ -13415,13 +13216,7 @@ public abstract class TaskRender implements Runnable {
         }
         else if(RECTANGLE_AREA_SPLIT_ALGORITHM == 1) {
             //split the original rectangle into an x*y grid
-            try {
-                initialize_jobs_sync4.await();
-            } catch (InterruptedException ex) {
-
-            } catch (BrokenBarrierException ex) {
-
-            }
+            WaitOnCondition.WaitOnCyclicBarrier(initialize_jobs_sync4);
             int area_width = TOx - FROMx;
             int area_height = TOy - FROMy;
             synchronized (rectangleAreasQueueu) {
@@ -13443,13 +13238,7 @@ public abstract class TaskRender implements Runnable {
             }
         }
 
-        try {
-            initialize_jobs_sync3.await();
-        } catch (InterruptedException ex) {
-
-        } catch (BrokenBarrierException ex) {
-
-        }
+        WaitOnCondition.WaitOnCyclicBarrier(initialize_jobs_sync3);
 
     }
 }

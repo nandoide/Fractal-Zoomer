@@ -25,6 +25,7 @@ public class NativeLoader {
     private static String libDir = "fzNativeLibs";
     public static final String mpfrLinuxLib = "libmpfr.so";
     public static final String[] mpfrGeneralExtraWinLibs = {"libgmp-10.dll", "libwinpthread-1.dll"};//"libgomp-1.dll", "libgcc_s_seh-1.dll"
+    public static final String[] mpfrGeneralVcpkgMsvcExtraWinLibs = {"gmp-10.dll"};
     private static String[] winLibs;
     private static String[] linuxLibs;
     public static final String mpfrWinLib = "mpfr.dll";
@@ -49,6 +50,11 @@ public class NativeLoader {
                             resultList.add(arch + "/" + Platform.RESOURCE_PREFIX + "/" + extra);
                         }
                     }
+//                    else if(arch.equals(TaskRender.generalVcpkgMsvcArchitecture)) {
+//                        for (String extra : mpfrGeneralVcpkgMsvcExtraWinLibs) {
+//                            resultList.add(arch + "/" + Platform.RESOURCE_PREFIX + "/" + extra);
+//                        }
+//                    }
                 }
             }
             else { //32 bit

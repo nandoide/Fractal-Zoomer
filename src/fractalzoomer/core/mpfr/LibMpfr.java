@@ -70,8 +70,8 @@ public class LibMpfr {
     }
 
     public static boolean hasThreadSupport() {
-        if(!Platform.isWindows()) { //Todo revisit when you can test it in linux
-            return false;
+        if(!Platform.isWindows()) {
+            return true;
         }
 
         if(!Platform.is64Bit()) {
@@ -94,7 +94,7 @@ public class LibMpfr {
             return false;
         }
 
-        return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.equals(TaskRender.generalArchitecture);
+        return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.contains(TaskRender.generalArchitecture);
     }
 
     public static int getThreadThreshold() {
@@ -106,7 +106,7 @@ public class LibMpfr {
             return MpfrBigNum.THREADS_THRESHOLD;
         }
 
-        return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.equals(TaskRender.generalArchitecture) ? MpfrBigNum.THREADS_THRESHOLD_WITH_MPIR : MpfrBigNum.THREADS_THRESHOLD;
+        return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.contains(TaskRender.generalArchitecture) ? MpfrBigNum.THREADS_THRESHOLD_WITH_MPIR : MpfrBigNum.THREADS_THRESHOLD;
     }
 
 
