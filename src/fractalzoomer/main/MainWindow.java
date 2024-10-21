@@ -2170,12 +2170,12 @@ public class MainWindow extends JFrame implements Constants {
         bailout_tests[s.fns.bailout_test_algorithm].setSelected(true);
         convergent_bailout_tests[s.fns.cbs.convergent_bailout_test_algorithm].setSelected(true);
 
-        if(s.gps.useGeneratedPaletteOutColoring) {
+        if(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) {
             infobar.getOutColoringPalettePreview().setVisible(false);
             infobar.getOutColoringPalettePreviewLabel().setVisible(false);
         }
 
-        if(s.gps.useGeneratedPaletteInColoring && s.usePaletteForInColoring) {
+        if((s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring) && s.usePaletteForInColoring) {
             infobar.getInColoringPalettePreview().setVisible(false);
             infobar.getInColoringPalettePreviewLabel().setVisible(false);
         }
@@ -2219,8 +2219,8 @@ public class MainWindow extends JFrame implements Constants {
             infobar.getGradientPreviewLabel().setVisible(true);
             infobar.getGradientPreview().setVisible(true);
 
-            infobar.getOutColoringPalettePreview().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
-            infobar.getOutColoringPalettePreviewLabel().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+            infobar.getOutColoringPalettePreview().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+            infobar.getOutColoringPalettePreviewLabel().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
 
             if (s.ds.domain_coloring_mode != 1) {
                 toolbar.getOutCustomPaletteButton().setEnabled(false);
@@ -2272,7 +2272,7 @@ public class MainWindow extends JFrame implements Constants {
         } else {
             if (!s.useDirectColor && !(s.pps.sts.statistic && s.pps.sts.statisticGroup == 4)) {
                 if (s.usePaletteForInColoring) {
-                    if(!s.gps.useGeneratedPaletteInColoring) {
+                    if(!(s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring)) {
                         infobar.getInColoringPalettePreview().setVisible(true);
                         infobar.getInColoringPalettePreviewLabel().setVisible(true);
                     }
@@ -8275,7 +8275,7 @@ public class MainWindow extends JFrame implements Constants {
             s.usePaletteForInColoring = true;
 
             if(!(s.pps.sts.statistic && s.pps.sts.statisticGroup == 4)) {
-                if(!s.gps.useGeneratedPaletteInColoring) {
+                if(!(s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring)) {
                     infobar.getInColoringPalettePreview().setVisible(true);
                     infobar.getInColoringPalettePreviewLabel().setVisible(true);
                 }
@@ -8755,8 +8755,8 @@ public class MainWindow extends JFrame implements Constants {
 
                     infobar.getGradientPreviewLabel().setVisible(true);
                     infobar.getGradientPreview().setVisible(true);
-                    infobar.getOutColoringPalettePreview().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
-                    infobar.getOutColoringPalettePreviewLabel().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                    infobar.getOutColoringPalettePreview().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                    infobar.getOutColoringPalettePreviewLabel().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
                     infobar.getInColoringPalettePreview().setVisible(false);
                     infobar.getInColoringPalettePreviewLabel().setVisible(false);
 
@@ -8798,8 +8798,8 @@ public class MainWindow extends JFrame implements Constants {
                         options_menu.getOutColoringPaletteMenu().setEnabled(true);
                     }
 
-                    infobar.getOutColoringPalettePreview().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
-                    infobar.getOutColoringPalettePreviewLabel().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                    infobar.getOutColoringPalettePreview().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                    infobar.getOutColoringPalettePreviewLabel().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
 
                     updatePalettePreview(s.ps.color_cycling_location, s.ps2.color_cycling_location);
                 }
@@ -8842,7 +8842,7 @@ public class MainWindow extends JFrame implements Constants {
 
                 if(!(s.pps.sts.statistic && s.pps.sts.statisticGroup == 4)) {
                     if (s.usePaletteForInColoring) {
-                        if(!s.gps.useGeneratedPaletteInColoring) {
+                        if(!(s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring)) {
                             infobar.getInColoringPalettePreview().setVisible(true);
                             infobar.getInColoringPalettePreviewLabel().setVisible(true);
                         }
@@ -8859,8 +8859,8 @@ public class MainWindow extends JFrame implements Constants {
                         infobar.getInColoringPalettePreviewLabel().setVisible(false);
                     }
 
-                    infobar.getOutColoringPalettePreview().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
-                    infobar.getOutColoringPalettePreviewLabel().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                    infobar.getOutColoringPalettePreview().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                    infobar.getOutColoringPalettePreviewLabel().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
                 }
                 else {
                     infobar.getMaxIterationsColorPreview().setVisible(false);
@@ -9007,7 +9007,7 @@ public class MainWindow extends JFrame implements Constants {
                     if(!(s.pps.sts.statistic && s.pps.sts.statisticGroup == 4)) {
                         if (!s.ds.domain_coloring) {
                             if (s.usePaletteForInColoring) {
-                                if(!s.gps.useGeneratedPaletteInColoring) {
+                                if(!(s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring)) {
                                     infobar.getInColoringPalettePreview().setVisible(true);
                                     infobar.getInColoringPalettePreviewLabel().setVisible(true);
                                 }
@@ -9024,8 +9024,8 @@ public class MainWindow extends JFrame implements Constants {
                                 infobar.getInColoringPalettePreviewLabel().setVisible(false);
                             }
                         }
-                        infobar.getOutColoringPalettePreview().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
-                        infobar.getOutColoringPalettePreviewLabel().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                        infobar.getOutColoringPalettePreview().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+                        infobar.getOutColoringPalettePreviewLabel().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
                     }
 
                     infobar.getGradientPreviewLabel().setVisible(true);
@@ -12486,7 +12486,7 @@ public class MainWindow extends JFrame implements Constants {
     private void setPalettePreviewsVisible() {
         if (!s.ds.domain_coloring) {
             if (s.usePaletteForInColoring) {
-                if(!s.gps.useGeneratedPaletteInColoring) {
+                if(!(s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring)) {
                     infobar.getInColoringPalettePreview().setVisible(true);
                     infobar.getInColoringPalettePreviewLabel().setVisible(true);
                 }
@@ -12503,8 +12503,8 @@ public class MainWindow extends JFrame implements Constants {
                 infobar.getInColoringPalettePreviewLabel().setVisible(false);
             }
         }
-        infobar.getOutColoringPalettePreview().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
-        infobar.getOutColoringPalettePreviewLabel().setVisible(!s.gps.useGeneratedPaletteOutColoring || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+        infobar.getOutColoringPalettePreview().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
+        infobar.getOutColoringPalettePreviewLabel().setVisible(!(s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) || (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1));
     }
 
     public void setDirectColor() {
@@ -12806,7 +12806,7 @@ public class MainWindow extends JFrame implements Constants {
             }
         }
 
-        if(s.gps.useGeneratedPaletteOutColoring && !(s.ds.domain_coloring && s.ds.domain_coloring_mode != 1)) {
+        if((s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) && !(s.ds.domain_coloring && s.ds.domain_coloring_mode != 1)) {
             infobar.getOutColoringPalettePreview().setVisible(false);
             infobar.getOutColoringPalettePreviewLabel().setVisible(false);
         } else if (!s.useDirectColor && !(s.pps.sts.statistic && s.pps.sts.statisticGroup == 4)) {
@@ -12815,7 +12815,7 @@ public class MainWindow extends JFrame implements Constants {
         }
 
 
-        if(s.gps.useGeneratedPaletteInColoring) {
+        if(s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring) {
             infobar.getInColoringPalettePreview().setVisible(false);
             infobar.getInColoringPalettePreviewLabel().setVisible(false);
         }
@@ -13520,7 +13520,7 @@ public class MainWindow extends JFrame implements Constants {
             String JitterShape = "0";
             String JitterScale = "1";
             String MultiColor = "0";
-            String BlendMC = "0"; //Todo add this
+            String BlendMC = "0";
             String MultiColors = "";
 
             boolean matchedAny = false;
@@ -13797,6 +13797,7 @@ public class MainWindow extends JFrame implements Constants {
             s.gamma = 1;
             s.intesity_exponent = 1;
             s.interpolation_exponent = 1;
+            s.color_blending.color_blending = Constants.NORMAL_BLENDING;
 
             if(MultiColor.equals("1")) {
                 try {
@@ -13836,6 +13837,10 @@ public class MainWindow extends JFrame implements Constants {
                         throw ex;
                     }
 
+                    if(BlendMC.equals("1")) {
+                        s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring = true;
+                    }
+                    s.gps.blendingOutColoring = 0.5;
                     s.gps.useGeneratedPaletteOutColoring = true;
                     s.gps.restartGeneratedOutColoringPaletteAt = DEFAULT_LARGE_LENGTH;
                     s.gps.generatedPaletteOutColoringId = 5;

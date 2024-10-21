@@ -1637,7 +1637,11 @@ public class CommonFunctions implements Constants {
 
         if ((!s.ds.domain_coloring || (s.ds.domain_coloring && s.ds.domain_coloring_mode == 1)) && !s.useDirectColor) {
 
-            if(s.gps.useGeneratedPaletteOutColoring) {
+            if(s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) {
+                overview += "<b><font color='red'>Palette(Out):</font></b> " + PaletteMenu.paletteNames[s.ps.color_choice] + ", " + Constants.generatedPalettes[s.gps.generatedPaletteOutColoringId] + "<br>";
+                overview += tab + "Color Blending = " + s.gps.blendingOutColoring + "<br>";
+            }
+            else if(s.gps.useGeneratedPaletteOutColoring) {
                 overview += "<b><font color='red'>Palette(Out):</font></b> " + Constants.generatedPalettes[s.gps.generatedPaletteOutColoringId] + "<br>";
             }
             else {
@@ -1651,7 +1655,11 @@ public class CommonFunctions implements Constants {
             overview += tab + "Color Intensity = " + s.ps.color_intensity + "<br><br>";
 
             if (!s.ds.domain_coloring && s.usePaletteForInColoring) {
-                if(s.gps.useGeneratedPaletteInColoring) {
+                if(s.gps.blendNormalPaletteWithGeneratedPaletteInColoring) {
+                    overview += "<b><font color='red'>Palette(In):</font></b> " + PaletteMenu.paletteNames[s.ps2.color_choice] + ", " + Constants.generatedPalettes[s.gps.generatedPaletteInColoringId] + "<br>";
+                    overview += tab + "Color Blending = " + s.gps.blendingInColoring + "<br>";
+                }
+                else if(s.gps.useGeneratedPaletteInColoring) {
                     overview += "<b><font color='red'>Palette(In):</font></b> " + Constants.generatedPalettes[s.gps.generatedPaletteInColoringId] + "<br>";
                 }
                 else {
@@ -2258,10 +2266,10 @@ public class CommonFunctions implements Constants {
                 Object[] message = {
                     scroll_pane_2,
                     " ",
-                    s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || s.gps.useGeneratedPaletteOutColoring ? null : palette_text_label,
-                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || s.gps.useGeneratedPaletteOutColoring ? null : palette_label,
-                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || s.gps.useGeneratedPaletteInColoring ? null : palette_in_text_label,
-                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || s.gps.useGeneratedPaletteInColoring ? null : palette_in_label,
+                    s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || (s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) ? null : palette_text_label,
+                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || (s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) ? null : palette_label,
+                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || (s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring) ? null : palette_in_text_label,
+                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || (s.gps.useGeneratedPaletteInColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteInColoring) ? null : palette_in_label,
                     gradient_text_label,
                     gradient_label};
 
@@ -2330,8 +2338,8 @@ public class CommonFunctions implements Constants {
                 Object[] message = {
                     scroll_pane_2,
                     " ",
-                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || (s.gps.useGeneratedPaletteOutColoring && (!s.ds.domain_coloring || (s.ds.domain_coloring && s.ds.domain_coloring_mode == 1))) ? null : palette_text_label,
-                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || (s.gps.useGeneratedPaletteOutColoring && (!s.ds.domain_coloring || (s.ds.domain_coloring && s.ds.domain_coloring_mode == 1))) ? null : palette_label,
+                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || ((s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) && (!s.ds.domain_coloring || (s.ds.domain_coloring && s.ds.domain_coloring_mode == 1))) ? null : palette_text_label,
+                        s.pps.sts.statistic && s.pps.sts.statisticGroup == 4 || ((s.gps.useGeneratedPaletteOutColoring && !s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) && (!s.ds.domain_coloring || (s.ds.domain_coloring && s.ds.domain_coloring_mode == 1))) ? null : palette_label,
                     gradient_text_label,
                     gradient_label
                     ," ",

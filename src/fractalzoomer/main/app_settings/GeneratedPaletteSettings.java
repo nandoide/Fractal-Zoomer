@@ -12,6 +12,11 @@ public class GeneratedPaletteSettings {
     public boolean useGeneratedPaletteInColoring;
     public int generatedPaletteInColoringId;
 
+    public boolean blendNormalPaletteWithGeneratedPaletteOutColoring;
+    public boolean blendNormalPaletteWithGeneratedPaletteInColoring;
+    public double blendingOutColoring;
+    public double blendingInColoring;
+
     public int restartGeneratedOutColoringPaletteAt;
     public int restartGeneratedInColoringPaletteAt;
     public CosinePaletteSettings outColoringIQ;
@@ -75,6 +80,11 @@ public class GeneratedPaletteSettings {
             incoloring_simple_multiwave_user_palette = "";
         }
 
+        blendNormalPaletteWithGeneratedPaletteOutColoring = false;
+        blendNormalPaletteWithGeneratedPaletteInColoring = false;
+        blendingOutColoring = 0.5;
+        blendingInColoring = 0.5;
+
     }
 
     public GeneratedPaletteSettings(GeneratedPaletteSettings other) {
@@ -92,5 +102,9 @@ public class GeneratedPaletteSettings {
         incoloring_infinite_wave_user_palette = new String(other.incoloring_infinite_wave_user_palette);
         outcoloring_simple_multiwave_user_palette = new String(other.outcoloring_simple_multiwave_user_palette);
         incoloring_simple_multiwave_user_palette = new String(other.incoloring_simple_multiwave_user_palette);
+        blendNormalPaletteWithGeneratedPaletteInColoring = other.blendNormalPaletteWithGeneratedPaletteInColoring;
+        blendNormalPaletteWithGeneratedPaletteOutColoring = other.blendNormalPaletteWithGeneratedPaletteOutColoring;
+        blendingOutColoring = other.blendingOutColoring;
+        blendingInColoring = other.blendingInColoring;
     }
 }

@@ -2987,9 +2987,15 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
             startGlobalTimer();
 
+            long total = numberOfSequenceSteps;
+
+            if(zss.stop_after_n_steps > 0) {
+                total = Math.min(zss.stop_after_n_steps, numberOfSequenceSteps);
+            }
+
             int max_steps = 1000000;
-            long divisor = numberOfSequenceSteps > max_steps ? numberOfSequenceSteps / 100 : 1;
-            totalprogress.setMaximum((int)(numberOfSequenceSteps > max_steps ? 100 : numberOfSequenceSteps));
+            long divisor = total > max_steps ? total / 100 : 1;
+            totalprogress.setMaximum((int)(total > max_steps ? 100 : total));
 
             totalprogress.setValue(0);
 
@@ -3092,7 +3098,13 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                     sequenceIndex++;
                 }
 
-                totalprogress.setValue((int)(k / divisor));
+                if(zss.stop_after_n_steps > 0) {
+                    totalprogress.setValue((int)(renderCount / divisor));
+                }
+                else {
+                    totalprogress.setValue((int)(k / divisor));
+                }
+
                 if(divisor == 1) {
                     totalprogress.setString("Zoom Sequence: " + totalprogress.getValue() + "/" + totalprogress.getMaximum());
                 }

@@ -43,10 +43,24 @@ public class GeneratedPaletteDialog extends JDialog {
         enable_generated_palette.setSelected(outcoloring ? s.gps.useGeneratedPaletteOutColoring : s.gps.useGeneratedPaletteInColoring);
         enable_generated_palette.setFocusable(false);
 
+        final JCheckBox blend_generated_and_normal_palette = new JCheckBox("Blend Normal and Generated Palettes");
+        blend_generated_and_normal_palette.setSelected(outcoloring ? s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring : s.gps.blendNormalPaletteWithGeneratedPaletteInColoring);
+        blend_generated_and_normal_palette.setFocusable(false);
+
+        JSlider color_blend_opt = new SliderGradient(JSlider.HORIZONTAL, 0, 100, (int) (outcoloring ? (s.gps.blendingOutColoring * 100) : (s.gps.blendingInColoring * 100)));
+        color_blend_opt.setMajorTickSpacing(25);
+        color_blend_opt.setMinorTickSpacing(1);
+        color_blend_opt.setToolTipText("Sets the color blending percentage.");
+        color_blend_opt.setFocusable(false);
+        color_blend_opt.setPaintLabels(true);
+
         final JComboBox<String> generated_palettes_combon = new JComboBox<>(Constants.generatedPalettes);
         generated_palettes_combon.setSelectedIndex(outcoloring ? s.gps.generatedPaletteOutColoringId : s.gps.generatedPaletteInColoringId);
         generated_palettes_combon.setFocusable(false);
         generated_palettes_combon.setToolTipText("Sets the generated palette algorithm.");
+
+        color_blend_opt.setEnabled(blend_generated_and_normal_palette.isSelected());
+        blend_generated_and_normal_palette.addActionListener(e -> color_blend_opt.setEnabled(blend_generated_and_normal_palette.isSelected()));
 
         JPanel buttons_panel = new JPanel();
 
@@ -128,6 +142,10 @@ public class GeneratedPaletteDialog extends JDialog {
         Object[] message = {
             " ",
                 enable_generated_palette,
+                blend_generated_and_normal_palette,
+                " ",
+                "Color Blending:",
+                color_blend_opt,
                 " ",
                 "Set the generated palette algorithm.",
                 "Generated Palette algorithm:", generated_palettes_combon,
@@ -193,11 +211,15 @@ public class GeneratedPaletteDialog extends JDialog {
                                 s.gps.useGeneratedPaletteOutColoring = enable_generated_palette.isSelected();
                                 s.gps.restartGeneratedOutColoringPaletteAt = temp2;
                                 s.gps.generatedPaletteOutColoringId = generated_palettes_combon.getSelectedIndex();
+                                s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring = blend_generated_and_normal_palette.isSelected();
+                                s.gps.blendingOutColoring = color_blend_opt.getValue() / 100.0;
                             }
                             else {
                                 s.gps.useGeneratedPaletteInColoring = enable_generated_palette.isSelected();
                                 s.gps.restartGeneratedInColoringPaletteAt = temp2;
                                 s.gps.generatedPaletteInColoringId = generated_palettes_combon.getSelectedIndex();
+                                s.gps.blendNormalPaletteWithGeneratedPaletteInColoring = blend_generated_and_normal_palette.isSelected();
+                                s.gps.blendingInColoring = color_blend_opt.getValue() / 100.0;
                             }
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
