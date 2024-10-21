@@ -12,6 +12,8 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import static fractalzoomer.main.app_settings.GeneratedPaletteSettings.DEFAULT_LARGE_LENGTH;
+
 /**
  *
  * @author hrkalona2
@@ -63,14 +65,31 @@ public class GeneratedPaletteDialog extends JDialog {
         buttons_panel.add(iq_edit);
         buttons_panel.add(multiwave_edit);
 
+        JPanel buttons_panel2 = new JPanel();
+        JButton infinitewave_edit = new JButton("Infinite Waves (KF) Palette");
+        infinitewave_edit.setIcon(MainWindow.getIcon("multiwave.png"));
+        infinitewave_edit.setFocusable(false);
+        infinitewave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 5);
+        infinitewave_edit.addActionListener(e -> new InfiniteWaveDialog(this, outcoloring, currentGps));
+        buttons_panel2.add(infinitewave_edit);
+
+        JButton simple_multiwave_edit = new JButton("Simple Multiwave Palette");
+        simple_multiwave_edit.setIcon(MainWindow.getIcon("multiwave.png"));
+        simple_multiwave_edit.setFocusable(false);
+        simple_multiwave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 6);
+        simple_multiwave_edit.addActionListener(e -> new SimpleMultiwaveDialog(this, outcoloring, currentGps));
+        buttons_panel2.add(simple_multiwave_edit);
+
         generated_palettes_combon.addActionListener(e -> {
             iq_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 3);
             multiwave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 4);
+            infinitewave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 5);
+            simple_multiwave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 6);
             if(generated_palettes_combon.getSelectedIndex() == 3) {
                 try {
                     int length = Integer.parseInt(generated_palette_restart_field.getText());
 
-                    if(length == GeneratedPaletteSettings.DEFAULT_LARGE_LENGTH) {
+                    if(length == DEFAULT_LARGE_LENGTH) {
                         generated_palette_restart_field.setText("" + GeneratedPaletteSettings.DEFAULT_SMALL_LENGTH);
                     }
                 }
@@ -113,6 +132,7 @@ public class GeneratedPaletteDialog extends JDialog {
                 "Set the generated palette algorithm.",
                 "Generated Palette algorithm:", generated_palettes_combon,
                 buttons_panel,
+                buttons_panel2,
             " ",
             "Set the Palette Length.",
             "Palette Length:", generated_palette_restart_field,
@@ -162,7 +182,7 @@ public class GeneratedPaletteDialog extends JDialog {
                                 return;
                             }
 
-                            if (temp2 > 2100000000) {
+                            if (temp2 > DEFAULT_LARGE_LENGTH) {
                                 JOptionPane.showMessageDialog(ptra, "The generated palette length value must be lower than 2100000001.", "Error!", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }

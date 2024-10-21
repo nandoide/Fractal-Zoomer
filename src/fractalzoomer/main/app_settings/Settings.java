@@ -22,9 +22,7 @@ import fractalzoomer.parser.Parser;
 import fractalzoomer.parser.ParserException;
 import fractalzoomer.planes.Plane;
 import fractalzoomer.settings.*;
-import fractalzoomer.utils.ColorAlgorithm;
-import fractalzoomer.utils.ColorCorrection;
-import fractalzoomer.utils.Multiwave;
+import fractalzoomer.utils.*;
 import org.apfloat.Apfloat;
 
 import javax.swing.*;
@@ -3237,6 +3235,32 @@ public class Settings implements Constants {
         }
         catch (Exception ex) {
             Multiwave.user_params_in = Multiwave.empty;
+        }
+
+        try {
+            InfiniteWave.user_params_out = InfiniteWave.jsonToParams(gps.outcoloring_infinite_wave_user_palette);
+        }
+        catch (Exception ex) {
+            InfiniteWave.user_params_out = InfiniteWave.empty;
+        }
+        try {
+            InfiniteWave.user_params_in = InfiniteWave.jsonToParams(gps.incoloring_infinite_wave_user_palette);
+        }
+        catch (Exception ex) {
+            InfiniteWave.user_params_in = InfiniteWave.empty;
+        }
+
+        try {
+            MultiwaveSimple.user_params_out = MultiwaveSimple.jsonToParams(gps.outcoloring_simple_multiwave_user_palette);
+        }
+        catch (Exception ex) {
+            MultiwaveSimple.user_params_out = MultiwaveSimple.empty;
+        }
+        try {
+            MultiwaveSimple.user_params_in = MultiwaveSimple.jsonToParams(gps.incoloring_simple_multiwave_user_palette);
+        }
+        catch (Exception ex) {
+            MultiwaveSimple.user_params_in = MultiwaveSimple.empty;
         }
 
         NNormDistanceBailoutCondition.A = fns.cbs.norm_a;

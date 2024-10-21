@@ -1005,11 +1005,19 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             if (runsOnSequenceMode) {
                 Path path = Paths.get(outputDirectory);
 
-                if (Files.exists(path) && Files.isDirectory(path)) {
-                    name = path.resolve(settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + extension).toString();
+                if(!zss.file_name_pattern.isEmpty()) {
+                    if (Files.exists(path) && Files.isDirectory(path)) {
+                        name = path.resolve(String.format(zss.file_name_pattern, sequenceIndex) + extension).toString();
+                    } else {
+                        name = String.format(zss.file_name_pattern, sequenceIndex) + extension;
+                    }
                 }
                 else {
-                    name = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + extension;
+                    if (Files.exists(path) && Files.isDirectory(path)) {
+                        name = path.resolve(settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + extension).toString();
+                    } else {
+                        name = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + extension;
+                    }
                 }
             }
             else if(runsOnSplitImageMode) {
@@ -1222,8 +1230,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         JScrollPane scroll_pane_2 = new JScrollPane(textArea);
 
         String help = "<html><center><font size='5' face='arial' color='blue'><b><u>Help</u></b></font></center><br>"
-                + "<font size='4' face='arial'>This tool lets you create larger images than the main application,<br>"
-                + "which has a limit of 6000x6000 as an image size.<br><br>"
+                + "<font size='4' face='arial'>This tool lets you perform some additional renderings,<br>"
+                + "which are not provided in the main application.<br><br>"
                 + "In order to use this tool the right way you must set the JVM's heap size, through<br>"
                 + "command line. For instance to execute it using the jar file, use<br>"
                 + "<b>java -jar -Xmx4000m FZMinimalRenderer.jar</b> in order to request maximum 4Gb<br>"
@@ -2937,8 +2945,10 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
         numberOfSequenceSteps = 0;
 
-        Apfloat temp = zss.zooming_mode == 0 ? zss.size : s.size;
-        while ((zss.zooming_mode == 0 && temp.compareTo(s.size) > 0) || (zss.zooming_mode == 1 && temp.compareTo(zss.size) < 0)) {
+        Apfloat original_size = s.size;
+
+        Apfloat temp = zss.zooming_mode == 0 ? zss.startSize : zss.endSize;
+        while ((zss.zooming_mode == 0 && temp.compareTo(zss.endSize) > 0) || (zss.zooming_mode == 1 && temp.compareTo(zss.startSize) < 0)) {
             if(zss.zooming_mode == 0) {
                 temp = MyApfloat.fp.divide(temp, new MyApfloat(zss.zoom_factor));
             }
@@ -2997,7 +3007,6 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             runsOnSequenceMode = true;
             sequenceIndex = zss.flipSequenceIndexing ? numberOfSequenceSteps : 1;
 
-            Apfloat originalSize = s.size;
             Apfloat[] originalRotCenter = new Apfloat[2];
             originalRotCenter[0] = s.fns.rotation_center[0];
             originalRotCenter[1] = s.fns.rotation_center[1];
@@ -3023,9 +3032,9 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
             Fractal.clearStatistics();
 
-            s.size = zss.zooming_mode == 0 ? zss.size : s.size;
+            s.size = zss.zooming_mode == 0 ? zss.startSize : zss.endSize;
 
-            int renderCount = 0;
+            long renderCount = 0;
 
             for(int k = 1; k <= numberOfSequenceSteps; k++) {
 
@@ -3123,13 +3132,17 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                 if (s.pps.ss.slopes && zss.slopes_direction_adjusting_value != 0) {
                     CommonFunctions.adjustSlopeOffset(s.pps.ss, zss.slopes_direction_adjusting_value);
                 }
+
+                if(zss.stop_after_n_steps > 0 && renderCount >= zss.stop_after_n_steps) {
+                    break;
+                }
             }
 
             runsOnSequenceMode = false;
             cleanUp();
 
             //Rollback
-            s.size = originalSize;
+            s.size = original_size;
             s.fns.rotation_center[0] = originalRotCenter[0];
             s.fns.rotation_center[1] = originalRotCenter[1];
             s.fns.rotation =  originalRotation;
@@ -3175,16 +3188,26 @@ public class MinimalRendererWindow extends JFrame implements Constants {
     }
 
     private void writeInfo(Path path) {
-        String infoName;
-        if (Files.exists(path) && Files.isDirectory(path)) {
-            infoName = path.resolve(settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + ".info").toString();
+        String infoName = "";
+        if(!zss.file_name_pattern.isEmpty()) {
+            if (Files.exists(path) && Files.isDirectory(path)) {
+                infoName = path.resolve(String.format(zss.file_name_pattern, sequenceIndex) + ".info").toString();
+            } else {
+                infoName = String.format(zss.file_name_pattern, sequenceIndex) + ".info";
+            }
         }
         else {
-            infoName = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + ".info";
+            if (Files.exists(path) && Files.isDirectory(path)) {
+                infoName = path.resolve(settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + ".info").toString();
+            } else {
+                infoName = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + ".info";
+            }
         }
 
         String info = "Size: " + normalizeValue(s.size.toString(), 4) + "\n" +
-                "Magnification/Zoom: " + normalizeValue(MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, s.size).toString(), 6);
+                "Magnification/Zoom: " + normalizeValue(MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, s.size).toString(), 6) + "\n" +
+                "Size(Full): " + s.size.toString() + "\n" +
+                "Magnification/Zoom(Full): " + MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, s.size).toString();
 
         try {
             Files.write(Paths.get(infoName), info.getBytes());

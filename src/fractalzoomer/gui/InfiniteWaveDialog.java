@@ -4,6 +4,7 @@ package fractalzoomer.gui;
 import fractalzoomer.main.Constants;
 import fractalzoomer.main.MainWindow;
 import fractalzoomer.main.app_settings.GeneratedPaletteSettings;
+import fractalzoomer.utils.InfiniteWave;
 import fractalzoomer.utils.Multiwave;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -22,34 +23,34 @@ import static fractalzoomer.gui.CenterSizeDialog.TEMPLATE_TFIELD;
  *
  * @author hrkalona2
  */
-public class MultiwaveDialog extends JDialog {
+public class InfiniteWaveDialog extends JDialog {
     private JOptionPane optionPane;
     private GeneratedPaletteDialog ptra;
 
-    public MultiwaveDialog(GeneratedPaletteDialog ptr, boolean outcoloring, GeneratedPaletteSettings gps) {
+    public InfiniteWaveDialog(GeneratedPaletteDialog ptr, boolean outcoloring, GeneratedPaletteSettings gps) {
 
         super(ptr);
         
         ptra = ptr;
 
-        Multiwave.MultiwaveColorParams[] inputParams;
+        InfiniteWave.InfiniteColorWaveParams[] inputParams;
 
         try {
             if (outcoloring) {
-                inputParams = Multiwave.jsonToParams(gps.outcoloring_multiwave_user_palette);
+                inputParams = InfiniteWave.jsonToParams(gps.outcoloring_infinite_wave_user_palette);
             } else {
-                inputParams = Multiwave.jsonToParams(gps.incoloring_multiwave_user_palette);
+                inputParams = InfiniteWave.jsonToParams(gps.incoloring_infinite_wave_user_palette);
             }
         }
         catch (Exception ex) {
-            inputParams = Multiwave.empty;
+            inputParams = InfiniteWave.empty;
         }
 
-        setTitle("Multiwave Palette");
+        setTitle("Infinite Waves (KF) Palette");
         setModal(true);
         setIconImage(MainWindow.getIcon("mandel2.png").getImage());
 
-        JComboBox<String> templates = new JComboBox<>(Constants.multiwavePalettes);
+        JComboBox<String> templates = new JComboBox<>(new String[] {"", "default"});
         templates.setSelectedIndex(0);
         templates.setFocusable(false);
 
@@ -77,16 +78,10 @@ public class MultiwaveDialog extends JDialog {
             String json = "";
             try {
                 if(templates.getSelectedIndex() == 1) {
-                    json = Multiwave.paramsToJson(Multiwave.default_params, showNulls);
-                }
-                else if(templates.getSelectedIndex() == 2) {
-                    json = Multiwave.paramsToJson(Multiwave.g_spdz2_params, showNulls);
-                }
-                else if(templates.getSelectedIndex() == 3) {
-                    json = Multiwave.paramsToJson(Multiwave.g_spdz2_params, showNulls);
+                    json = InfiniteWave.paramsToJson(InfiniteWave.defaultParams, showNulls);
                 }
                 else {
-                    json = Multiwave.paramsToJson(Multiwave.empty, true);
+                    json = InfiniteWave.paramsToJson(InfiniteWave.empty, true);
                 }
             }
             catch (Exception ex) {
@@ -100,7 +95,7 @@ public class MultiwaveDialog extends JDialog {
 
 
         try {
-            multiwaveTextArea.setText(Multiwave.paramsToJson(inputParams, inputParams == Multiwave.empty ? true : showNulls));
+            multiwaveTextArea.setText(InfiniteWave.paramsToJson(inputParams, inputParams == InfiniteWave.empty ? true : showNulls));
             multiwaveTextArea.setCaretPosition(0);
         }
         catch (Exception ex) {
@@ -114,37 +109,12 @@ public class MultiwaveDialog extends JDialog {
             multiwaveTextArea.setCaretPosition(0);
         });
 
-        JPanel buttons_panel = new JPanel();
-
-        JButton view_colors = new JButton("View Colors");
-        //view_colors.setIcon(MainWindow.getIcon("multiwave.png"));
-        view_colors.setFocusable(false);
-        view_colors.addActionListener(e -> {
-            Multiwave.MultiwaveColorParams[] params = null;
-            try {
-                params = Multiwave.jsonToParams(multiwaveTextArea.getText());
-                Multiwave.MultiwaveColorParams.build(params, 0);
-            }
-            catch (Exception ex) {
-                JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if(params != null) {
-                viewColors(this, params);
-            }
-        });
-
-        buttons_panel.add(view_colors);
-
         Object[] message = {
             " ",
                 "Templates:",
                 templates,
                 " ",
-                buttons_panel,
-                " ",
-            "Set the multi-wave parameters.",
+            "Set the infinite waves parameters.",
             "Parameters:",
                 sp,
             " ",
@@ -185,22 +155,22 @@ public class MultiwaveDialog extends JDialog {
                         }
 
                         try {
-                            Multiwave.MultiwaveColorParams[] params = Multiwave.jsonToParams(multiwaveTextArea.getText());
-                            Multiwave.MultiwaveColorParams.build(params, 0);
+                            InfiniteWave.InfiniteColorWaveParams[] params = InfiniteWave.jsonToParams(multiwaveTextArea.getText());
+                            InfiniteWave.get_color(0, params);
                             if(outcoloring) {
                                 try {
-                                    gps.outcoloring_multiwave_user_palette = Multiwave.paramsToJson(params, false);
+                                    gps.outcoloring_infinite_wave_user_palette = InfiniteWave.paramsToJson(params, false);
                                 }
                                 catch (Exception ex) {
-                                    gps.outcoloring_multiwave_user_palette = "";
+                                    gps.outcoloring_infinite_wave_user_palette = "";
                                 }
                             }
                             else {
                                 try {
-                                    gps.incoloring_multiwave_user_palette = Multiwave.paramsToJson(params, false);
+                                    gps.incoloring_infinite_wave_user_palette = InfiniteWave.paramsToJson(params, false);
                                 }
                                 catch (Exception ex) {
-                                    gps.incoloring_multiwave_user_palette = "";
+                                    gps.incoloring_infinite_wave_user_palette = "";
                                 }
                             }
                             ptr.setParams(gps);

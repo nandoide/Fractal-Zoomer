@@ -1,12 +1,12 @@
 package fractalzoomer.gui;
 
-import fractalzoomer.main.Constants;
 import fractalzoomer.main.MainWindow;
 import fractalzoomer.main.app_settings.CosinePaletteSettings;
 import fractalzoomer.main.app_settings.GeneratedPaletteSettings;
-import fractalzoomer.main.app_settings.GradientSettings;
-import fractalzoomer.palettes.CustomPalette;
 import fractalzoomer.palettes.PaletteColor;
+import fractalzoomer.utils.InfiniteWave;
+import fractalzoomer.utils.Multiwave;
+import fractalzoomer.utils.MultiwaveSimple;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -28,6 +28,10 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
     private Cursor grabbing_cursor;
 
     private int mouse_color_label_x;
+    Multiwave.MultiwaveColorParams[] mw;
+    InfiniteWave.InfiniteColorWaveParams[] iw;
+
+    MultiwaveSimple.MultiwaveSimpleColorParams[] smw;
 
     public GeneratedPaletteOverviewDialog(GeneratedPaletteDialog ptra, boolean outcoloring, GeneratedPaletteSettings gps, int id, int cycle) {
 
@@ -75,9 +79,30 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
         int color_offset = 0;
         CosinePaletteSettings cps = outcoloring ? gps.outColoringIQ : gps.inColoringIQ;
 
+        try {
+            mw = outcoloring ? Multiwave.jsonToParams(gps.outcoloring_multiwave_user_palette) : Multiwave.jsonToParams(gps.incoloring_multiwave_user_palette);
+        }
+        catch (Exception ex) {
+            mw = Multiwave.empty;
+        }
+
+        try {
+            iw = outcoloring ? InfiniteWave.jsonToParams(gps.outcoloring_infinite_wave_user_palette) : InfiniteWave.jsonToParams(gps.incoloring_infinite_wave_user_palette);
+        }
+        catch (Exception ex) {
+            iw = InfiniteWave.empty;
+        }
+
+        try {
+            smw = outcoloring ? MultiwaveSimple.jsonToParams(gps.outcoloring_simple_multiwave_user_palette) : MultiwaveSimple.jsonToParams(gps.incoloring_simple_multiwave_user_palette);
+        }
+        catch (Exception ex) {
+            smw = MultiwaveSimple.empty;
+        }
+
         Color[] c = new Color[colors.getWidth()];
         for(int i = 0; i < c.length; i++) {
-            c[i] = new Color(PaletteColor.getGeneratedColor(i, id, color_offset, cycle, cps, outcoloring));
+            c[i] = new Color(PaletteColor.getGeneratedColor(i, id, color_offset, cycle, cps, outcoloring, mw, iw, smw));
         }
 
         try {
@@ -224,7 +249,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
                     Color[] c = new Color[colors.getWidth()];
                     for(int i = 0; i < c.length; i++) {
-                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, cycle, cps, outcoloring));
+                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, cycle, cps, outcoloring, mw, iw, smw));
                     }
 
                     paintGradient(c);
@@ -248,7 +273,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
                     Color[] c = new Color[colors.getWidth()];
                     for(int i = 0; i < c.length; i++) {
-                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, cycle, cps, outcoloring));
+                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, cycle, cps, outcoloring, mw, iw, smw));
                     }
 
                     paintGradient(c);
@@ -272,7 +297,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
                     Color[] c = new Color[colors.getWidth()];
                     for(int i = 0; i < c.length; i++) {
-                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, cycle, cps, outcoloring));
+                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, cycle, cps, outcoloring, mw, iw, smw));
                     }
 
                     paintGradient(c);

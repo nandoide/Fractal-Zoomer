@@ -4,7 +4,9 @@ package fractalzoomer.palettes;
 import fractalzoomer.main.app_settings.CosinePaletteSettings;
 import fractalzoomer.main.app_settings.GeneratedPaletteSettings;
 import fractalzoomer.utils.ColorSpaceConverter;
+import fractalzoomer.utils.InfiniteWave;
 import fractalzoomer.utils.Multiwave;
+import fractalzoomer.utils.MultiwaveSimple;
 
 import java.awt.*;
 
@@ -76,7 +78,7 @@ public abstract class PaletteColor {
     public abstract int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring);
 
     private static double twoPi = Math.PI * 2;
-    public static int getGeneratedColor(double result, int id, int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring) {
+    public static int getGeneratedColor(double result, int id, int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring, Multiwave.MultiwaveColorParams[] mw, InfiniteWave.InfiniteColorWaveParams[] iw, MultiwaveSimple.MultiwaveSimpleColorParams[] smw) {
         double value = (Math.abs(result) + color_cycling_location) % cycle;
         switch (id) {
             case 0:
@@ -111,7 +113,24 @@ public abstract class PaletteColor {
                 return 0xff000000 | (red << 16) | (green << 8) | blue;
             case 4:
                 try {
-                    return Multiwave.general_palette(value, outcoloring ? Multiwave.user_params_out : Multiwave.user_params_in);
+                    Multiwave.MultiwaveColorParams[] params = mw != null ? mw : (outcoloring ? Multiwave.user_params_out : Multiwave.user_params_in);
+                    return Multiwave.general_palette(value, params);
+                }
+                catch (Exception ex) {
+                    return 0xff000000;
+                }
+            case 5:
+                try {
+                    InfiniteWave.InfiniteColorWaveParams[] params = iw != null ? iw : (outcoloring ? InfiniteWave.user_params_out : InfiniteWave.user_params_in);
+                    return InfiniteWave.get_color(value, params);
+                }
+                catch (Exception ex) {
+                    return 0xff000000;
+                }
+            case 6:
+                try {
+                    MultiwaveSimple.MultiwaveSimpleColorParams[] params = smw != null ? smw : (outcoloring ? MultiwaveSimple.user_params_out : MultiwaveSimple.user_params_in);
+                    return MultiwaveSimple.get_color(value, params);
                 }
                 catch (Exception ex) {
                     return 0xff000000;

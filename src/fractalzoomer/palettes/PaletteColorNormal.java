@@ -33,7 +33,7 @@ public class PaletteColorNormal extends PaletteColor {
     @Override
     public int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring) {
 
-        return getGeneratedColor((int)result, paletteId, color_cycling_location, cycle, iqps, outcoloring);
+        return getGeneratedColor((int)result, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
 
     }
 

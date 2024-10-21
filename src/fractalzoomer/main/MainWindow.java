@@ -95,7 +95,9 @@ package fractalzoomer.main;
  import java.util.stream.IntStream;
  import java.util.stream.Stream;
 
-/**
+ import static fractalzoomer.main.app_settings.GeneratedPaletteSettings.DEFAULT_LARGE_LENGTH;
+
+ /**
  *
  * @author hrkalona
  */
@@ -12772,6 +12774,38 @@ public class MainWindow extends JFrame implements Constants {
             }
         }
 
+        try {
+            if (outcoloring) {
+                InfiniteWave.user_params_out = InfiniteWave.jsonToParams(s.gps.outcoloring_infinite_wave_user_palette);
+            } else {
+                InfiniteWave.user_params_in = InfiniteWave.jsonToParams(s.gps.incoloring_infinite_wave_user_palette);
+            }
+        }
+        catch (Exception ex) {
+            if(outcoloring) {
+                InfiniteWave.user_params_out = InfiniteWave.empty;
+            }
+            else {
+                InfiniteWave.user_params_in = InfiniteWave.empty;
+            }
+        }
+
+        try {
+            if (outcoloring) {
+                MultiwaveSimple.user_params_out = MultiwaveSimple.jsonToParams(s.gps.outcoloring_simple_multiwave_user_palette);
+            } else {
+                MultiwaveSimple.user_params_in = MultiwaveSimple.jsonToParams(s.gps.incoloring_simple_multiwave_user_palette);
+            }
+        }
+        catch (Exception ex) {
+            if(outcoloring) {
+                MultiwaveSimple.user_params_out = MultiwaveSimple.empty;
+            }
+            else {
+                MultiwaveSimple.user_params_in = MultiwaveSimple.empty;
+            }
+        }
+
         if(s.gps.useGeneratedPaletteOutColoring && !(s.ds.domain_coloring && s.ds.domain_coloring_mode != 1)) {
             infobar.getOutColoringPalettePreview().setVisible(false);
             infobar.getOutColoringPalettePreviewLabel().setVisible(false);
@@ -13485,6 +13519,9 @@ public class MainWindow extends JFrame implements Constants {
             String JitterSeed = "0";
             String JitterShape = "0";
             String JitterScale = "1";
+            String MultiColor = "0";
+            String BlendMC = "0"; //Todo add this
+            String MultiColors = "";
 
             boolean matchedAny = false;
             while ((str_line = br.readLine()) != null) {
@@ -13508,6 +13545,21 @@ public class MainWindow extends JFrame implements Constants {
                     }
                     else if(token.equalsIgnoreCase("Iterations:") && tokenizer.countTokens() == 1) {
                         iterations = tokenizer.nextToken();
+                        matchedAny = true;
+                    }
+                    else if(token.equalsIgnoreCase("MultiColor:") && tokenizer.countTokens() == 1) {
+                        MultiColor = tokenizer.nextToken();
+                        matchedAny = true;
+                    }
+                    else if(token.equalsIgnoreCase("BlendMC:") && tokenizer.countTokens() == 1) {
+                        BlendMC = tokenizer.nextToken();
+                        matchedAny = true;
+                    }
+                    else if(token.equalsIgnoreCase("MultiColors:") && tokenizer.countTokens() >= 1) {
+                        int tokens_size = tokenizer.countTokens();
+                        for(int i = 0; i < tokens_size; i++) {
+                            MultiColors += tokenizer.nextToken();
+                        }
                         matchedAny = true;
                     }
                     else if(token.equalsIgnoreCase("Colors:") && tokenizer.countTokens() >= 1) {
@@ -13745,6 +13797,53 @@ public class MainWindow extends JFrame implements Constants {
             s.gamma = 1;
             s.intesity_exponent = 1;
             s.interpolation_exponent = 1;
+
+            if(MultiColor.equals("1")) {
+                try {
+                    String[] tokens = MultiColors.split(",");
+
+                    ArrayList<InfiniteWave.InfiniteColorWaveParams> params = new ArrayList<>();
+                    for (int i = 0; i < tokens.length; i ++) {
+                        String[] tokens2 = tokens[i].split("\\s+");
+
+                        if(tokens2.length != 3) {
+                            throw new Exception();
+                        }
+
+                        InfiniteWave.WaveType type;
+                        if(tokens2[2].equals("2")) {
+                            type = InfiniteWave.WaveType.BRIGHTNESS;
+                        }
+                        else if(tokens2[2].equals("1")) {
+                            type = InfiniteWave.WaveType.SATURATION;
+                        }
+                        else {
+                            type = InfiniteWave.WaveType.HUE;
+                        }
+
+                        params.add(new InfiniteWave.InfiniteColorWaveParams(type, Double.parseDouble(tokens2[0])));
+                    }
+
+                    InfiniteWave.InfiniteColorWaveParams[] p = new InfiniteWave.InfiniteColorWaveParams[params.size()];
+                    for(int i = 0; i < p.length; i++) {
+                        p[i] = params.get(i);
+                    }
+
+                    try {
+                        s.gps.outcoloring_infinite_wave_user_palette = InfiniteWave.paramsToJson(p, false);
+                    }
+                    catch (Exception ex) {
+                        throw ex;
+                    }
+
+                    s.gps.useGeneratedPaletteOutColoring = true;
+                    s.gps.restartGeneratedOutColoringPaletteAt = DEFAULT_LARGE_LENGTH;
+                    s.gps.generatedPaletteOutColoringId = 5;
+                }
+                catch (Exception ex) {
+
+                }
+            }
 
             try {
                 ArrayList<Color> primaryCols = new ArrayList<>();

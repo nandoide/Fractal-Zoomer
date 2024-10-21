@@ -162,18 +162,30 @@ public class PaletteColorSmooth extends PaletteColor {
         result = fractional_transfer(result, fractional_transfer_method);
 
         if((paletteId == 3) && interpolator instanceof LinearInterpolation) {
-            return getGeneratedColor(result, paletteId, color_cycling_location, cycle, iqps, outcoloring);
+            return getGeneratedColor(result, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
         }
 
         int color;
         int color2;
 
         if(result == 0) {
-            color = color2 = getGeneratedColor(0, paletteId, color_cycling_location, cycle, iqps, outcoloring);
+            if(SMOOTHING_COLOR_SELECTION == 0) {
+                color = color2 = getGeneratedColor(0, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+            }
+            else {
+                color = getGeneratedColor(0, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+                color2 = getGeneratedColor(1, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+            }
         }
         else {
-            color = getGeneratedColor(((long)result - 1), paletteId, color_cycling_location, cycle, iqps, outcoloring);
-            color2 = getGeneratedColor(((long)result), paletteId, color_cycling_location, cycle, iqps, outcoloring);
+            if(SMOOTHING_COLOR_SELECTION == 0) {
+                color = getGeneratedColor(((long)result - 1), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+                color2 = getGeneratedColor(((long)result), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+            }
+            else {
+                color = getGeneratedColor(((long)result), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+                color2 = getGeneratedColor(((long)result + 1), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+            }
         }
 
         int color_red = (color >> 16) & 0xff;

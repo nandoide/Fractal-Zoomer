@@ -1,6 +1,8 @@
 package fractalzoomer.main.app_settings;
 
+import fractalzoomer.utils.InfiniteWave;
 import fractalzoomer.utils.Multiwave;
+import fractalzoomer.utils.MultiwaveSimple;
 
 public class GeneratedPaletteSettings {
     public static final int DEFAULT_LARGE_LENGTH = 2100000000;
@@ -16,6 +18,10 @@ public class GeneratedPaletteSettings {
     public CosinePaletteSettings inColoringIQ;
     public String outcoloring_multiwave_user_palette;
     public String incoloring_multiwave_user_palette;
+    public String outcoloring_infinite_wave_user_palette;
+    public String incoloring_infinite_wave_user_palette;
+    public String outcoloring_simple_multiwave_user_palette;
+    public String incoloring_simple_multiwave_user_palette;
 
 
 
@@ -41,6 +47,34 @@ public class GeneratedPaletteSettings {
             incoloring_multiwave_user_palette = "";
         }
 
+        try {
+            outcoloring_infinite_wave_user_palette = InfiniteWave.paramsToJson(InfiniteWave.defaultParams, false);
+        }
+        catch (Exception ex) {
+            outcoloring_infinite_wave_user_palette = "";
+        }
+
+        try {
+            incoloring_infinite_wave_user_palette = InfiniteWave.paramsToJson(InfiniteWave.defaultParams, false);
+        }
+        catch (Exception ex) {
+            incoloring_infinite_wave_user_palette = "";
+        }
+
+        try {
+            outcoloring_simple_multiwave_user_palette = MultiwaveSimple.paramsToJson(MultiwaveSimple.defaultParams, false);
+        }
+        catch (Exception ex) {
+            outcoloring_simple_multiwave_user_palette = "";
+        }
+
+        try {
+            incoloring_simple_multiwave_user_palette = MultiwaveSimple.paramsToJson(MultiwaveSimple.defaultParams, false);
+        }
+        catch (Exception ex) {
+            incoloring_simple_multiwave_user_palette = "";
+        }
+
     }
 
     public GeneratedPaletteSettings(GeneratedPaletteSettings other) {
@@ -54,5 +88,9 @@ public class GeneratedPaletteSettings {
         restartGeneratedInColoringPaletteAt = other.restartGeneratedInColoringPaletteAt;
         outcoloring_multiwave_user_palette = new String(other.outcoloring_multiwave_user_palette);
         incoloring_multiwave_user_palette = new String(other.incoloring_multiwave_user_palette);
+        outcoloring_infinite_wave_user_palette = new String(other.outcoloring_infinite_wave_user_palette);
+        incoloring_infinite_wave_user_palette = new String(other.incoloring_infinite_wave_user_palette);
+        outcoloring_simple_multiwave_user_palette = new String(other.outcoloring_simple_multiwave_user_palette);
+        incoloring_simple_multiwave_user_palette = new String(other.incoloring_simple_multiwave_user_palette);
     }
 }

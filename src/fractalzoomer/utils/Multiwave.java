@@ -11,13 +11,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class Multiwave {
-    public static WaveColorParams[] empty = new WaveColorParams[] {new WaveColorParams(), new WaveColorParams()};
-    public static WaveColorParams[] simple_params;
-    public static WaveColorParams[] g_spdz2_params;
-    public static WaveColorParams[] default_params;
-    public static WaveColorParams[] g_spdz2_custom_params;
-    public static WaveColorParams[] user_params_out = empty;
-    public static WaveColorParams[] user_params_in = empty;
+    public static MultiwaveColorParams[] empty = new MultiwaveColorParams[] {new MultiwaveColorParams(), new MultiwaveColorParams()};
+    public static MultiwaveColorParams[] simple_params;
+    public static MultiwaveColorParams[] g_spdz2_params;
+    public static MultiwaveColorParams[] default_params;
+    public static MultiwaveColorParams[] g_spdz2_custom_params;
+    public static MultiwaveColorParams[] user_params_out = empty;
+    public static MultiwaveColorParams[] user_params_in = empty;
 
     enum Blend {
         HSL_BIAS,
@@ -681,7 +681,7 @@ public class Multiwave {
         }
         return hslBiasUfcompat(hsl1, hsl2);
     }
-    private static double[] multiwaveColor(WaveColor[] waves) {
+    private static double[] multiwaveColor(MultiwaveColor[] waves) {
 
         if(waves.length == 0) {
             return new double[] {0.0, 0.0, 0.0};
@@ -809,7 +809,7 @@ public class Multiwave {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class WaveColorParams {
+    public static class MultiwaveColorParams {
         @JsonProperty
         public Double period;
         @JsonProperty
@@ -926,11 +926,11 @@ public class Multiwave {
         @JsonProperty("meta_tricubic_hsl")
         public MetaTricubicHSL meta_tricubic_hsl;
 
-        public WaveColorParams() {
+        public MultiwaveColorParams() {
 
         }
 
-        public WaveColorParams(Double period, Mapping mapping, Double start, Double end, Blend blend) {
+        public MultiwaveColorParams(Double period, Mapping mapping, Double start, Double end, Blend blend) {
             this.period = period;
             this.mapping = mapping;
             this.start = start;
@@ -986,11 +986,11 @@ public class Multiwave {
             meta_tricubic_hsl = o;
         }
 
-        public static WaveColor[] build(WaveColorParams[] params, double n) throws Exception {
-            WaveColor[] waves = new WaveColor[params.length];
+        public static MultiwaveColor[] build(MultiwaveColorParams[] params, double n) throws Exception {
+            MultiwaveColor[] waves = new MultiwaveColor[params.length];
             for(int i = 0; i < waves.length; i++) {
                 params[i].validate();
-                waves[i] = new WaveColor(params[i], n);
+                waves[i] = new MultiwaveColor(params[i], n);
             }
             return waves;
         }
@@ -1247,7 +1247,7 @@ public class Multiwave {
     }
 
 
-    public static class WaveColor {
+    public static class MultiwaveColor {
         protected double[] gradient;
         protected Blend blend;
         protected Mapping mapping;
@@ -1256,7 +1256,7 @@ public class Multiwave {
         protected Double start2;
         protected Double end;
 
-        public WaveColor(WaveColorParams params, double n) {
+        public MultiwaveColor(MultiwaveColorParams params, double n) {
             Mapping mappingIn = params.mapping;
             Double startIn = params.start;
             Double endIn = params.end;
@@ -1348,17 +1348,17 @@ public class Multiwave {
     }
 
     public static int multiwave_simple(double n) throws Exception {
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(simple_params, n)));
+        int[] rgb = hslToRgb(multiwaveColor(MultiwaveColorParams.build(simple_params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
     public static int multiwave_default(double n) throws Exception {
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(default_params, n)));
+        int[] rgb = hslToRgb(multiwaveColor(MultiwaveColorParams.build(default_params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
-    public static int general_palette(double n, WaveColorParams[] params) throws Exception {
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
+    public static int general_palette(double n, MultiwaveColorParams[] params) throws Exception {
+        int[] rgb = hslToRgb(multiwaveColor(MultiwaveColorParams.build(params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
@@ -1370,32 +1370,32 @@ public class Multiwave {
     }
 
     static void create_simple_params() {
-        WaveColorParams p1 = new WaveColorParams(100.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
+        MultiwaveColorParams p1 = new MultiwaveColorParams(100.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
         p1.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, -5, -5}, {6.5, 0, 0}, {7.5, 5, 5}});
 
-        WaveColorParams[] params = {
+        MultiwaveColorParams[] params = {
                 p1
         };
         simple_params = params;
     }
 
     static void create_default_params() {
-        WaveColorParams p1 = new WaveColorParams(1000.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
+        MultiwaveColorParams p1 = new MultiwaveColorParams(1000.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
         p1.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, 0, -3}, {6.5, -3, 0}, {7.5, 0, 3}});
 
-        WaveColorParams p2 = new WaveColorParams(30.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
+        MultiwaveColorParams p2 = new MultiwaveColorParams(30.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
         p2.setTricubicHSL(new double[][] {{0, 0, 0}, {7.5, -2, -2}, {0.5, 2, 2}});
 
-        WaveColorParams p3 = new WaveColorParams(120.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
+        MultiwaveColorParams p3 = new MultiwaveColorParams(120.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS);
         p3.setTricubicHSL(new double[][] {{0, 0, 0}, {0, -1, -2}, {0, 0, 0}, {0, 1, 2}});
 
-        WaveColorParams p4 = new WaveColorParams(1e6, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
+        MultiwaveColorParams p4 = new MultiwaveColorParams(1e6, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
         p4.setTricubicHSL(new double[][] {{0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {3, 0, 0}, {4, 0, 0}, {5, 0, 0}, {6, 0, 0}, {7, 0, 0},});
 
-        WaveColorParams p5 = new WaveColorParams(3500.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
+        MultiwaveColorParams p5 = new MultiwaveColorParams(3500.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS);
         p5.setTricubicHSL(new double[][] {{0, 0, 0}, {2.5, 3, -5}, {3.5, 5, -2}, {2, -4, 4}, {0.5, 4, 2}});
 
-        WaveColorParams[] params = {
+        MultiwaveColorParams[] params = {
                 p1,
                 p2,
                 p3,
@@ -1406,7 +1406,7 @@ public class Multiwave {
     }
 
     static void create_g_spdz2_custom_params() {
-        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p0 = new MultiwaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p0.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
@@ -1414,22 +1414,22 @@ public class Multiwave {
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p1 = new MultiwaveColorParams(5000.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p1.setTricubicRGB(new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}});
 
-        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p2 = new MultiwaveColorParams(10.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p2.setTricubicRGB(new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}});
 
-        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p3 = new MultiwaveColorParams(17.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p3.setTricubicRGB(new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}});
 
-        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p4 = new MultiwaveColorParams(2544.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p4.setTricubicRGB(new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}});
 
-        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p5 = new MultiwaveColorParams(235.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p5.setTricubicRGB(new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}});
 
-        WaveColorParams p6 = new WaveColorParams(Math.pow(2, 16), Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p6 = new MultiwaveColorParams(Math.pow(2, 16), Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
 
         p6.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, 11, 25, 12),
@@ -1447,7 +1447,7 @@ public class Multiwave {
                 new LinearRGB(1.0, 243, 227, 234),
         });
 
-        WaveColorParams[] params = {
+        MultiwaveColorParams[] params = {
                 p0,
                 p1,
                 p2,
@@ -1461,7 +1461,7 @@ public class Multiwave {
     }
 
     static void create_g_spdz2_params() {
-        WaveColorParams p0 = new WaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p0 = new MultiwaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p0.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
@@ -1469,22 +1469,22 @@ public class Multiwave {
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColorParams p1 = new WaveColorParams(5000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p1 = new MultiwaveColorParams(5000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p1.setTricubicRGB(new int[][]{{192, 64, 64}, {192, 64, 64}, {81, 71, 71}});
 
-        WaveColorParams p2 = new WaveColorParams(10.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p2 = new MultiwaveColorParams(10.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p2.setTricubicRGB(new int[][]{{199, 83, 83}, {192, 64, 64}, {172, 58, 58}, {192, 64, 64}});
 
-        WaveColorParams p3 = new WaveColorParams(17.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p3 = new MultiwaveColorParams(17.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p3.setTricubicRGB(new int[][]{{211, 121, 121}, {192, 64, 64}, {135, 45, 45}, {192, 64, 64}});
 
-        WaveColorParams p4 = new WaveColorParams(2544.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p4 = new MultiwaveColorParams(2544.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p4.setTricubicRGB(new int[][]{{243, 217, 217}, {192, 64, 64}, {39, 13, 13}, {192, 64, 64}});
 
-        WaveColorParams p5 = new WaveColorParams(235.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p5 = new MultiwaveColorParams(235.0, Mapping.NORMAL, null, null,  Blend.HSL_BIAS_UFCOMPAT);
         p5.setTricubicRGB(new int[][]{{192, 64, 64}, {76, 26, 26}, {192, 64, 64}, {231, 179, 179}});
 
-        WaveColorParams p6 = new WaveColorParams(null, Mapping.LOG, 1.0, 16777216.0,  Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p6 = new MultiwaveColorParams(null, Mapping.LOG, 1.0, 16777216.0,  Blend.HSL_BIAS_UFCOMPAT);
         p6.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, 11, 25, 12),
                 new LinearRGB(0.375, 192, 64, 64),
@@ -1501,7 +1501,7 @@ public class Multiwave {
                 new LinearRGB(1.0, 243, 227, 234),
         });
 
-        WaveColorParams[] params = {
+        MultiwaveColorParams[] params = {
                 p0,
                 p1,
                 p2,
@@ -1514,19 +1514,19 @@ public class Multiwave {
         g_spdz2_params = params;
     }
     public static int g_spdz2(double n) throws Exception {
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(g_spdz2_params, n)));
+        int[] rgb = hslToRgb(multiwaveColor(MultiwaveColorParams.build(g_spdz2_params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
     public static int g_spdz2_custom(double n) throws Exception {
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(g_spdz2_custom_params, n)));
+        int[] rgb = hslToRgb(multiwaveColor(MultiwaveColorParams.build(g_spdz2_custom_params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
     public static int linear_only(double n) throws Exception {
 
 
-        WaveColorParams p1 = new WaveColorParams(Math.pow(2, 16), Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p1 = new MultiwaveColorParams(Math.pow(2, 16), Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p1.setLinearRGB(new LinearRGB[] {
                 new LinearRGB(0.0, 11, 25, 12),
                 new LinearRGB(0.375, 192, 64, 64),
@@ -1544,16 +1544,16 @@ public class Multiwave {
 
         });
 
-        WaveColorParams[] params = {
+        MultiwaveColorParams[] params = {
                 p1
         };
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
+        int[] rgb = hslToRgb(multiwaveColor(MultiwaveColorParams.build(params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
     }
 
     public static int meta_tricubic_gradient_only(double n) throws Exception {
 
-        WaveColorParams p1 = new WaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
+        MultiwaveColorParams p1 = new MultiwaveColorParams(1175000.0, Mapping.NORMAL, null, null, Blend.HSL_BIAS_UFCOMPAT);
         p1.setMetaTricubicRGB(new MetaTricubicRGB(new int[][][]{
                 {{15, 91, 30}, {60, 62, 128}, {71, 37, 95}, {45, 45, 53}, {64, 62, 80}}
                 ,{{56, 240, 80}, {187, 141, 199}, {142, 128, 146}, {24, 24, 164}, {135, 155, 171}}
@@ -1561,15 +1561,15 @@ public class Multiwave {
                 ,{{29, 39, 227}, {225, 33, 255}, {9, 95, 233}, {120, 84, 100}, {21, 33, 123}}
         }, 0.02127659574468085, 8E-4));
 
-        WaveColorParams[] params = {
+        MultiwaveColorParams[] params = {
                 p1
         };
-        int[] rgb = hslToRgb(multiwaveColor(WaveColorParams.build(params, n)));
+        int[] rgb = hslToRgb(multiwaveColor(MultiwaveColorParams.build(params, n)));
         return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
 
     }
 
-    public static String paramsToJson(WaveColorParams[] params, boolean includeNulls) throws JsonProcessingException {
+    public static String paramsToJson(MultiwaveColorParams[] params, boolean includeNulls) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         if(!includeNulls) {
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -1578,10 +1578,10 @@ public class Multiwave {
         return text.replace("\r\n", "\n");
     }
 
-    public static WaveColorParams[] jsonToParams(String json) throws JsonProcessingException {
+    public static MultiwaveColorParams[] jsonToParams(String json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, true);
-        return objectMapper.readValue(json, WaveColorParams[].class);
+        return objectMapper.readValue(json, MultiwaveColorParams[].class);
     }
 
     public static void main(String[] args) throws Exception {

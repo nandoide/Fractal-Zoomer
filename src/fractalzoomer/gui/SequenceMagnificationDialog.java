@@ -24,7 +24,7 @@ public class SequenceMagnificationDialog extends JDialog {
     private MinimalRendererWindow ptra;
     private JOptionPane optionPane;
 
-    public SequenceMagnificationDialog(MinimalRendererWindow ptr, Settings s, JTextArea field_size, JTextArea field_size_readonly) {
+    public SequenceMagnificationDialog(MinimalRendererWindow ptr, Settings s, JTextArea field_start_size, JTextArea field_end_size, String original_size) {
 
         super(ptr);
         
@@ -34,12 +34,12 @@ public class SequenceMagnificationDialog extends JDialog {
         setModal(true);
         setIconImage(MainWindow.getIcon("mandel2.png").getImage());
 
-        Apfloat tempSize;
-        Apfloat tempSizeReadOnly;
+        Apfloat tempStartSize;
+        Apfloat tempEndSize;
         try {
 
             if(MyApfloat.setAutomaticPrecision) {
-                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_size.getText(), field_size_readonly.getText()}, new boolean[] {true, true}, s.fns.function);
+                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_start_size.getText(), field_end_size.getText(), original_size}, new boolean[] {true, true, true}, s.fns.function);
 
                 if (MyApfloat.shouldSetPrecision(precision, MyApfloat.alwaysCheckForDecrease, s.fns.function)) {
                     Fractal.clearReferences(true, true);
@@ -47,41 +47,41 @@ public class SequenceMagnificationDialog extends JDialog {
                 }
             }
 
-            tempSize = new MyApfloat(field_size.getText());
-            tempSizeReadOnly = new MyApfloat(field_size_readonly.getText());
+            tempStartSize = new MyApfloat(field_start_size.getText());
+            tempEndSize = new MyApfloat(field_end_size.getText());
         } catch (Exception ex) {
-            tempSize = s.size;
-            tempSizeReadOnly = s.size;
+            tempStartSize = s.size;
+            tempEndSize = s.size;
         }
 
-        Apfloat magnificationVal = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempSize);
-        Apfloat magnificationValReadOnly = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempSizeReadOnly);
+        Apfloat magnificationStartVal = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempStartSize);
+        Apfloat magnigificationEndVal = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempEndSize);
+        Apfloat magnificationOriginal = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, new MyApfloat(original_size));
 
 
-        JTextArea magnification = new JTextArea(6, 50);
-        magnification.setFont(TEMPLATE_TFIELD.getFont());
-        magnification.setLineWrap(true);
+        JTextArea magnificationStart = new JTextArea(6, 50);
+        magnificationStart.setFont(TEMPLATE_TFIELD.getFont());
+        magnificationStart.setLineWrap(true);
 
-        JScrollPane magnScroll = new JScrollPane (magnification,
+        JScrollPane magnScroll = new JScrollPane (magnificationStart,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        CenterSizeDialog.disableKeys(magnification.getInputMap());
+        CenterSizeDialog.disableKeys(magnificationStart.getInputMap());
         CenterSizeDialog.disableKeys(magnScroll.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
 
-        magnification.setText("" + magnificationVal);
+        magnificationStart.setText("" + magnificationStartVal);
 
-        JTextArea magnificationReadOnly = new JTextArea(6, 50);
-        magnificationReadOnly.setFont(TEMPLATE_TFIELD.getFont());
-        magnificationReadOnly.setLineWrap(true);
-        magnificationReadOnly.setEnabled(false);
+        JTextArea magnificationEnd = new JTextArea(6, 50);
+        magnificationEnd.setFont(TEMPLATE_TFIELD.getFont());
+        magnificationEnd.setLineWrap(true);
 
-        JScrollPane magnScroll2 = new JScrollPane (magnificationReadOnly,
+        JScrollPane magnScroll2 = new JScrollPane (magnificationEnd,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        CenterSizeDialog.disableKeys(magnificationReadOnly.getInputMap());
+        CenterSizeDialog.disableKeys(magnificationEnd.getInputMap());
         CenterSizeDialog.disableKeys(magnScroll2.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
 
-        magnificationReadOnly.setText("" + magnificationValReadOnly);
+        magnificationEnd.setText("" + magnigificationEndVal);
 
         SwingUtilities.invokeLater(() -> {
             magnScroll.getVerticalScrollBar().setValue(0);
@@ -135,7 +135,7 @@ public class SequenceMagnificationDialog extends JDialog {
                         try {
 
                             if(MyApfloat.setAutomaticPrecision) {
-                                long precision = MyApfloat.getAutomaticPrecision(new String[]{magnification.getText(), magnificationReadOnly.getText()}, new boolean[] {true, true}, s.fns.function);
+                                long precision = MyApfloat.getAutomaticPrecision(new String[]{magnificationStart.getText(), magnificationEnd.getText(), magnificationOriginal.toString()}, new boolean[] {true, true, true}, s.fns.function);
 
                                 if (MyApfloat.shouldSetPrecision(precision, MyApfloat.alwaysCheckForDecrease, s.fns.function)) {
                                     Fractal.clearReferences(true, true);
@@ -143,8 +143,10 @@ public class SequenceMagnificationDialog extends JDialog {
                                 }
                             }
 
-                            Apfloat tempMagn = new MyApfloat(magnification.getText());
-                            field_size.setText("" + MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempMagn));
+                            Apfloat tempMagn = new MyApfloat(magnificationStart.getText());
+                            Apfloat tempSettingsMagn = new MyApfloat(magnificationEnd.getText());
+                            field_start_size.setText("" + MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempMagn));
+                            field_end_size.setText("" + MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempSettingsMagn));
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                             return;
