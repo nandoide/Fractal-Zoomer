@@ -116,7 +116,7 @@ public class MultiwaveDialog extends JDialog {
 
         JPanel buttons_panel = new JPanel();
 
-        JButton view_colors = new JButton("View Colors");
+        JButton view_colors = new MyButton("View Colors");
         //view_colors.setIcon(MainWindow.getIcon("multiwave.png"));
         view_colors.setFocusable(false);
         view_colors.addActionListener(e -> {

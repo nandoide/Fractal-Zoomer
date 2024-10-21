@@ -64,13 +64,13 @@ public class GeneratedPaletteDialog extends JDialog {
 
         JPanel buttons_panel = new JPanel();
 
-        JButton multiwave_edit = new JButton("Multiwave Palette");
+        JButton multiwave_edit = new MyButton("Multiwave Palette");
         multiwave_edit.setIcon(MainWindow.getIcon("multiwave.png"));
         multiwave_edit.setFocusable(false);
         multiwave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 4);
         multiwave_edit.addActionListener(e -> new MultiwaveDialog(this, outcoloring, currentGps));
 
-        JButton iq_edit = new JButton("IQ Cosine Palette");
+        JButton iq_edit = new MyButton("IQ Cosine Palette");
         iq_edit.setIcon(MainWindow.getIcon("sine.png"));
         iq_edit.setFocusable(false);
         iq_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 3);
@@ -80,14 +80,14 @@ public class GeneratedPaletteDialog extends JDialog {
         buttons_panel.add(multiwave_edit);
 
         JPanel buttons_panel2 = new JPanel();
-        JButton infinitewave_edit = new JButton("Infinite Waves (KF) Palette");
+        JButton infinitewave_edit = new MyButton("Infinite Waves (KF) Palette");
         infinitewave_edit.setIcon(MainWindow.getIcon("multiwave.png"));
         infinitewave_edit.setFocusable(false);
         infinitewave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 5);
         infinitewave_edit.addActionListener(e -> new InfiniteWaveDialog(this, outcoloring, currentGps));
         buttons_panel2.add(infinitewave_edit);
 
-        JButton simple_multiwave_edit = new JButton("Simple Multiwave Palette");
+        JButton simple_multiwave_edit = new MyButton("Simple Multiwave Palette");
         simple_multiwave_edit.setIcon(MainWindow.getIcon("multiwave.png"));
         simple_multiwave_edit.setFocusable(false);
         simple_multiwave_edit.setEnabled(generated_palettes_combon.getSelectedIndex() == 6);
@@ -115,7 +115,7 @@ public class GeneratedPaletteDialog extends JDialog {
 
         JPanel panel2 = new JPanel();
 
-        JButton overview = new JButton("Preview");
+        JButton overview = new MyButton("Preview");
         overview.setIcon(MainWindow.getIcon("preview.png"));
         overview.setFocusable(false);
         overview.addActionListener(e -> {
