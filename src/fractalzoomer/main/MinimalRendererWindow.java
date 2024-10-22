@@ -84,6 +84,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
     private JButton outputDirectoryButton;
 
+    private JButton stopRenderButton;
+
     private JDialog previewFrame;
     private JPanel previewPanel;
     private MinimalRendererWindow ptr;
@@ -132,6 +134,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
     private static final String TITLE = "Fractal Zoomer Minimal Renderer";
     private static final String PREVIEW_TITLE = "Preview";
 
+    private boolean stopped;
+
     public MinimalRendererWindow() {
         super();
 
@@ -142,6 +146,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         ptr = this;
 
         imageFormat = 0;
+
+        stopped = false;
 
         s = new Settings();
         s.applyStaticSettings();
@@ -268,8 +274,19 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         p1.add(settings_label);
         p1.add(overviewButton);
 
+        stopRenderButton = new MyButton("");
+        stopRenderButton.setIcon(MainWindow.getIcon("abort.png"));
+        stopRenderButton.setFocusable(false);
+        stopRenderButton.setEnabled(false);
+        stopRenderButton.setToolTipText("Stops the render.");
+        stopRenderButton.addActionListener(e -> {
+            stopped = true;
+            stopRenderButton.setEnabled(false);
+        });
+
         JPanel p10 = new JPanel(new FlowLayout());
         p10.setBackground(Constants.bg_color);
+        p10.add(stopRenderButton);
         p10.add(statsButton);
         p10.add(taskStatsButton);
         p10.add(metricsButton);
@@ -350,7 +367,6 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         splitImageRenderButton.setToolTipText("Renders a grid of images.");
 
         splitImageRenderButton.addActionListener(e -> splitImageRender());
-
 
         perturbationTheoryButton = new MyButton("Perturbation Theory", MainWindow.getIcon("perturbation.png"));
         perturbationTheoryButton.setFocusable(false);
@@ -2730,6 +2746,16 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         new SplitImageRenderDialog(ptr, split_image_grid_dimension);
     }
 
+    private void enableStop() {
+        stopRenderButton.setEnabled(true);
+        stopped = false;
+    }
+
+    private void disableStop() {
+        stopRenderButton.setEnabled(false);
+        stopped = false;
+    }
+
     public void startSplitImageRender(int split_image_grid_dimension) {
 
         this.split_image_grid_dimension = split_image_grid_dimension;
@@ -2745,6 +2771,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(true);
             overviewButton.setVisible(true);
             overviewButton.setEnabled(false);
+            enableStop();
             setOptions(false);
             runsOnSplitImageMode = true;
 
@@ -2770,6 +2797,10 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
                 totalprogress.setValue(k + 1);
                 totalprogress.setString("Image: " + totalprogress.getValue() + "/" + totalprogress.getMaximum());
+
+                if(stopped) {
+                    break;
+                }
             }
 
             runsOnSplitImageMode = false;
@@ -2778,6 +2809,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             setOptions(true);
             totalprogress.setVisible(false);
             overviewButton.setEnabled(true);
+            disableStop();
             stopGlobalTimer();
         });
     }
@@ -2810,6 +2842,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(true);
             overviewButton.setVisible(true);
             overviewButton.setEnabled(false);
+            enableStop();
             setOptions(false);
             runsOnLargePolarImageMode = true;
 
@@ -2857,6 +2890,10 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                 totalprogress.setValue(k + 1);
                 totalprogress.setString("Image: " + totalprogress.getValue() + "/" + totalprogress.getMaximum());
                 updatePreview();
+
+                if(stopped) {
+                    break;
+                }
             }
 
             writeLargePolarImageToDisk();
@@ -2868,6 +2905,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             setOptions(true);
             totalprogress.setVisible(false);
             overviewButton.setEnabled(true);
+            disableStop();
             stopGlobalTimer();
         });
     }
@@ -2886,6 +2924,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(true);
             overviewButton.setVisible(true);
             overviewButton.setEnabled(false);
+            enableStop();
             setOptions(false);
             runsOnBatchingMode = true;
             batchIndex = 1;
@@ -2926,6 +2965,10 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                 batchIndex++;
                 totalprogress.setValue(batchIndex - 1);
                 totalprogress.setString("Files: " + totalprogress.getValue() + "/" + totalprogress.getMaximum());
+
+                if(stopped) {
+                    break;
+                }
             }
 
             runsOnBatchingMode = false;
@@ -2933,6 +2976,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             setOptions(true);
             totalprogress.setVisible(false);
             overviewButton.setEnabled(true);
+            disableStop();
             stopGlobalTimer();
         });
 
@@ -3009,6 +3053,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(true);
             overviewButton.setVisible(true);
             overviewButton.setEnabled(false);
+            enableStop();
             setOptions(false);
             runsOnSequenceMode = true;
             sequenceIndex = zss.flipSequenceIndexing ? numberOfSequenceSteps : 1;
@@ -3148,6 +3193,9 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                 if(zss.stop_after_n_steps > 0 && renderCount >= zss.stop_after_n_steps) {
                     break;
                 }
+                if(stopped) {
+                    break;
+                }
             }
 
             runsOnSequenceMode = false;
@@ -3174,6 +3222,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             setOptions(true);
             totalprogress.setVisible(false);
             overviewButton.setEnabled(true);
+            disableStop();
             stopGlobalTimer();
         });
 

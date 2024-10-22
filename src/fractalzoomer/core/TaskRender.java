@@ -714,11 +714,11 @@ public abstract class TaskRender implements Runnable {
     public static boolean LOAD_MPFR = true;
     public static boolean LOAD_MPIR = true;
     public static final String generalArchitecture = "general";
-    //public static final String generalVcpkgMsvcArchitecture = "general_vcpkg_msvc";
+    public static final String generalVcpkgMsvcArchitecture = "general_vcpkg_msvc";
     public static String MPIR_WINDOWS_ARCHITECTURE = "skylake_avx2";
     public static String MPFR_WINDOWS_ARCHITECTURE = "skylake_avx2";
     public static final String[] mpirWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge"};
-    public static final String[] mpfrWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge", generalArchitecture}; //generalVcpkgMsvcArchitecture
+    public static final String[] mpfrWinArchitecture = {"skylake_avx2", "haswell_avx2", "sandybridge_ivybridge", generalVcpkgMsvcArchitecture, generalArchitecture};
     public static Random generator;
     public static int D3_APPLY_AVERAGE_TO_TRIANGLE_COLORS = 1;
     public static int PATTERN_COMPARE_ALG = 0;

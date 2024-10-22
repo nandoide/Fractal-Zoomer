@@ -24,7 +24,7 @@ public class SequenceMagnificationDialog extends JDialog {
     private MinimalRendererWindow ptra;
     private JOptionPane optionPane;
 
-    public SequenceMagnificationDialog(MinimalRendererWindow ptr, Settings s, JTextArea field_start_size, JTextArea field_end_size, String original_size) {
+    public SequenceMagnificationDialog(MinimalRendererWindow ptr, Settings s, JTextArea field_start_size, JTextArea field_end_size) {
 
         super(ptr);
         
@@ -39,8 +39,8 @@ public class SequenceMagnificationDialog extends JDialog {
         try {
 
             if(MyApfloat.setAutomaticPrecision) {
-                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_start_size.getText(), field_end_size.getText(), original_size}, new boolean[] {true, true, true}, s.fns.function);
-
+                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_start_size.getText(), field_end_size.getText()}, new boolean[] {true, true}, s.fns.function);
+                precision = Math.max(MyApfloat.precision, precision);
                 if (MyApfloat.shouldSetPrecision(precision, MyApfloat.alwaysCheckForDecrease, s.fns.function)) {
                     Fractal.clearReferences(true, true);
                     MyApfloat.setPrecision(precision, s);
@@ -56,7 +56,6 @@ public class SequenceMagnificationDialog extends JDialog {
 
         Apfloat magnificationStartVal = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempStartSize);
         Apfloat magnigificationEndVal = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, tempEndSize);
-        Apfloat magnificationOriginal = MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, new MyApfloat(original_size));
 
 
         JTextArea magnificationStart = new JTextArea(6, 50);
@@ -135,8 +134,8 @@ public class SequenceMagnificationDialog extends JDialog {
                         try {
 
                             if(MyApfloat.setAutomaticPrecision) {
-                                long precision = MyApfloat.getAutomaticPrecision(new String[]{magnificationStart.getText(), magnificationEnd.getText(), magnificationOriginal.toString()}, new boolean[] {true, true, true}, s.fns.function);
-
+                                long precision = MyApfloat.getAutomaticPrecision(new String[]{magnificationStart.getText(), magnificationEnd.getText()}, new boolean[] {true, true}, s.fns.function);
+                                precision = Math.max(MyApfloat.precision, precision);
                                 if (MyApfloat.shouldSetPrecision(precision, MyApfloat.alwaysCheckForDecrease, s.fns.function)) {
                                     Fractal.clearReferences(true, true);
                                     MyApfloat.setPrecision(precision, s);

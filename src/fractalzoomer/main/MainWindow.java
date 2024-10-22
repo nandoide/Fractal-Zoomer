@@ -11972,7 +11972,7 @@ public class MainWindow extends JFrame implements Constants {
         }
     }
 
-    public void cancelOperation() {
+    /*public void cancelOperation() {
 
         resetOrbit();
 
@@ -11984,8 +11984,8 @@ public class MainWindow extends JFrame implements Constants {
 
         while (!tasksCompleted()) {}
 
-        //TaskRender.thread_calculation_executor.shutdownNow();
-        //TaskRender.thread_calculation_executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(getNumberOfThreads());
+        TaskRender.thread_calculation_executor.shutdownNow();
+        TaskRender.thread_calculation_executor = (ThreadPoolExecutor)Executors.newFixedThreadPool(getNumberOfThreads());
 
         if(s.d3s.d3) {
             progress.setMaximum(s.d3s.detail * s.d3s.detail + 1);
@@ -12001,7 +12001,7 @@ public class MainWindow extends JFrame implements Constants {
         s.max_iterations = s.max_iterations > 500 ? 500 : s.max_iterations;
         defaultFractalSettings(false, false);
 
-    }
+    }*/
 
     public void createCompleteImage(int delay, boolean d3, boolean preview, boolean zoomToCursor) {
         if (timer == null) {

@@ -295,7 +295,7 @@ public class Infobar extends JToolBar {
         metrics_button.setToolTipText("Displays some time-series metrics.");
         metrics_button.addActionListener(e ->ptr.Metrics());
 
-        cancel_button= new MyButton();
+        cancel_button = new MyButton();
         cancel_button.setIcon(MainWindow.getIcon("abort.png"));
         cancel_button.setFocusable(false);
         cancel_button.setToolTipText("Cancels the current rendering operation and resets.");

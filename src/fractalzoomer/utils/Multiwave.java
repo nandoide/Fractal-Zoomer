@@ -117,12 +117,8 @@ public class Multiwave {
 
         double r = 0, g = 0, b = 0;
 
-        if(h >= 4.0) {
-            h = h - 2.0;
-        }
-        else {
-            h  = h * 0.5;
-        }
+        h = h >= 4.0 ? h - 2.0 : h * 0.5;
+
         double rec = 1.0 / Math.PI;
         double s_color = Math.atan(hsl[1]) * rec + 0.5;
         double s_grey = 0.5 * (1.0 - s_color);

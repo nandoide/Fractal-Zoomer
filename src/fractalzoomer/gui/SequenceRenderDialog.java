@@ -125,7 +125,6 @@ public class SequenceRenderDialog extends JDialog {
         disableKeys(field_size.getInputMap());
         disableKeys(scrollSize.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
 
-        String original_size = s.size.toString();
         if(zss.endSize == null) {
             zss.setEndSize(s.size);
         }
@@ -151,7 +150,7 @@ public class SequenceRenderDialog extends JDialog {
         magnification.setFocusable(false);
         magnification.setIcon(MainWindow.getIcon("magnification.png"));
 
-        magnification.addActionListener(e -> new SequenceMagnificationDialog(ptr, s, field_size, end_size, original_size));
+        magnification.addActionListener(e -> new SequenceMagnificationDialog(ptr, s, field_size, end_size));
 
         JPanel button_panel = new JPanel();
         button_panel.setLayout(new FlowLayout());
@@ -277,8 +276,8 @@ public class SequenceRenderDialog extends JDialog {
                             long stopAfterN = Long.parseLong(stopAfterNSteps.getText());
 
                             if(MyApfloat.setAutomaticPrecision) {
-                                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_size.getText(), end_size.getText(), original_size}, new boolean[]{true, true, true}, s.fns.function);
-
+                                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_size.getText(), end_size.getText()}, new boolean[]{true, true}, s.fns.function);
+                                precision = Math.max(MyApfloat.precision, precision);
                                 if (MyApfloat.shouldSetPrecision(precision, MyApfloat.alwaysCheckForDecrease, s.fns.function)) {
                                     Fractal.clearReferences(true, true);
                                     MyApfloat.setPrecision(precision, s);

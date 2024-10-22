@@ -50,11 +50,11 @@ public class NativeLoader {
                             resultList.add(arch + "/" + Platform.RESOURCE_PREFIX + "/" + extra);
                         }
                     }
-//                    else if(arch.equals(TaskRender.generalVcpkgMsvcArchitecture)) {
-//                        for (String extra : mpfrGeneralVcpkgMsvcExtraWinLibs) {
-//                            resultList.add(arch + "/" + Platform.RESOURCE_PREFIX + "/" + extra);
-//                        }
-//                    }
+                    else if(arch.equals(TaskRender.generalVcpkgMsvcArchitecture)) {
+                        for (String extra : mpfrGeneralVcpkgMsvcExtraWinLibs) {
+                            resultList.add(arch + "/" + Platform.RESOURCE_PREFIX + "/" + extra);
+                        }
+                    }
                 }
             }
             else { //32 bit

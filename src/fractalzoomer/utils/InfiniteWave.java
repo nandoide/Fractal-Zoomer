@@ -80,14 +80,8 @@ public class InfiniteWave {
 					g = sin((pi*((int)iter)) / nPeriod) / 2 + .5;
                  */
 
-                /*
 
-                if (Smooth)
-      g = sin(2.0 * pi * wrap(div(iter, nPeriod * 2.0)).x[0]) / 2.0 + 0.5;
-    else
-      g = sin(2.0 * pi * wrap(div(floor(iter), nPeriod * 2.0)).x[0]) / 2.0 + 0.5;
-                 */
-                double g = Math.sin((Math.PI * n) / nPeriod) * 0.5 + 0.5;
+                double g = (Math.sin((Math.PI * n) / nPeriod) + 1) * 0.5;
 
                 if (nPeriod<0)
                     g = -(double)nPeriod / (double)100;
