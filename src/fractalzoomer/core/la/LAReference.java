@@ -92,6 +92,7 @@ public class LAReference {
     private int[] LAcurrentIndexPerThread;
     private int LAcurrentIndex;
     private LAStageInfo[] LAStages;
+    private ATInfo[] ATs;
 
     private void init(boolean deepZoom) {
 
@@ -110,6 +111,7 @@ public class LAReference {
         LAStages[0].UseDoublePrecision = !deepZoom;
 
         LAStages[0].LAIndex = 0;
+        ATs = null;
 
     }
 
@@ -1136,15 +1138,24 @@ public class LAReference {
 
     public void CreateATFromLA(MantExp radius) {
 
+        if(ATs == null) {
+            ATs = new ATInfo[LAStageCount];
+        }
+
         MantExp SqrRadius = radius.square();
         SqrRadius.Normalize();
 
         for (int Stage = LAStageCount; Stage > 0; ) {
             Stage--;
-            int LAIndex = LAStages[Stage].LAIndex;
-            LAData laData = LAs[LAIndex];
-            AT = laData.la.CreateAT(LAs[LAIndex + 1].la);
-            AT.StepLength = laData.StepLength;
+
+            AT = ATs[Stage];
+            if(AT == null) {
+                int LAIndex = LAStages[Stage].LAIndex;
+                LAData laData = LAs[LAIndex];
+                ATs[Stage] = AT = laData.la.CreateAT(LAs[LAIndex + 1].la);
+                AT.StepLength = laData.StepLength;
+            }
+
             if (AT.StepLength > 0 && AT.Usable(SqrRadius)) {
                 UseAT = true;
                 return;

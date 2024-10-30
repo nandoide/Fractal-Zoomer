@@ -137,6 +137,8 @@ public class MultiwaveDialog extends JDialog {
 
         buttons_panel.add(view_colors);
 
+        //Todo add help
+
         Object[] message = {
             " ",
                 "Templates:",

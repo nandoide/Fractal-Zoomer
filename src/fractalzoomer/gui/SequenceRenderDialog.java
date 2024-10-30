@@ -33,6 +33,8 @@ public class SequenceRenderDialog extends JDialog {
     private final JScrollPane scrollPane;
     private JTextArea field_size;
     private JTextArea end_size;
+
+    private JTextArea override_max_iterations_size;
     private JComboBox<String> zoooming_mode;
 
     private MyJSpinner fieldZoom;
@@ -57,6 +59,8 @@ public class SequenceRenderDialog extends JDialog {
 
     private JTextField stopAfterNSteps;
     private JTextField namePattern;
+
+    private JTextField overrideMaxIterations;
 
     public SequenceRenderDialog(MinimalRendererWindow ptr, Settings s, ZoomSequenceSettings zss) {
 
@@ -183,6 +187,21 @@ public class SequenceRenderDialog extends JDialog {
         stopAfterNSteps = new JTextField();
         stopAfterNSteps.setText("" + zss.stop_after_n_steps);
 
+        overrideMaxIterations = new JTextField();
+        overrideMaxIterations.setText("" + zss.override_max_iterations);
+
+        override_max_iterations_size = new JTextArea(6, 50);
+        override_max_iterations_size.setLineWrap(true);
+        override_max_iterations_size.setFont(TEMPLATE_TFIELD.getFont());
+        override_max_iterations_size.setText("" + zss.overrideMaxIterationsSizeLimit);
+        //Todo add magnigification
+
+        JScrollPane scrollOverrideMaxIterSize = new JScrollPane (override_max_iterations_size,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        disableKeys(override_max_iterations_size.getInputMap());
+        disableKeys(scrollOverrideMaxIterSize.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
+
         Object[] message = {
             " ",
                 action_panel,
@@ -215,6 +234,12 @@ public class SequenceRenderDialog extends JDialog {
                 filedBumpLightCycling,
                 "Slope Direction Adjusting Value (When Slopes is Enabled):",
                 fieldSlopesCycling,
+                " ",
+                "Set the max iterations override.",
+                "Override Max Iterations when size > than:",
+                scrollOverrideMaxIterSize,
+                "Max Iterations Override:",
+                overrideMaxIterations,
                 " ",
                 "Set the zoom sequence index parameters.",
                 flipIndex,
@@ -274,9 +299,10 @@ public class SequenceRenderDialog extends JDialog {
                             int tempGradientColorCycling = Integer.parseInt(fieldGradientColorCycling.getText());
                             long startAtIdx = Long.parseLong(startAtIndex.getText());
                             long stopAfterN = Long.parseLong(stopAfterNSteps.getText());
+                            int max_iterations_override = Integer.parseInt(overrideMaxIterations.getText());
 
                             if(MyApfloat.setAutomaticPrecision) {
-                                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_size.getText(), end_size.getText()}, new boolean[]{true, true}, s.fns.function);
+                                long precision = MyApfloat.getAutomaticPrecision(new String[]{field_size.getText(), end_size.getText(), override_max_iterations_size.getText()}, new boolean[]{true, true, true}, s.fns.function);
                                 precision = Math.max(MyApfloat.precision, precision);
                                 if (MyApfloat.shouldSetPrecision(precision, MyApfloat.alwaysCheckForDecrease, s.fns.function)) {
                                     Fractal.clearReferences(true, true);
@@ -286,9 +312,25 @@ public class SequenceRenderDialog extends JDialog {
 
                             Apfloat tempStartSize = new MyApfloat(field_size.getText());
                             Apfloat tempEndSize = new MyApfloat(end_size.getText());
+                            Apfloat tempOverrideMaxIterSize = new MyApfloat(override_max_iterations_size.getText());
+
+                            if(tempStartSize.compareTo(MyApfloat.ZERO) <= 0 || tempEndSize.compareTo(MyApfloat.ZERO) <= 0) {
+                                JOptionPane.showMessageDialog(ptra, "The start and end sizes must be greater than 0.", "Error!", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
 
                             if(tempStartSize.compareTo(tempEndSize) <= 0) {
                                 JOptionPane.showMessageDialog(ptra, "The value entered in the second size text-field must be greater than the size in the first size text-field.", "Error!", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+
+                            if(tempOverrideMaxIterSize.compareTo(MyApfloat.ZERO) < 0) {
+                                JOptionPane.showMessageDialog(ptra, "The max iterations size override limit must be greater or equal to 0.", "Error!", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+
+                            if(max_iterations_override < 0) {
+                                JOptionPane.showMessageDialog(ptra, "The max iterations override must be greater or equal to 0.", "Error!", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
 
@@ -355,8 +397,10 @@ public class SequenceRenderDialog extends JDialog {
                             zss.slopes_direction_adjusting_value = tempSlopes;
                             zss.setStartSize(tempStartSize);
                             zss.setEndSize(tempEndSize);
+                            zss.setOverrideMaxIterationsSizeLimit(tempOverrideMaxIterSize);
                             zss.file_name_pattern = namePattern.getText();
                             zss.stop_after_n_steps = stopAfterN;
+                            zss.override_max_iterations = max_iterations_override;
 
                             ptr.startSequenceRender();
 
@@ -417,8 +461,8 @@ public class SequenceRenderDialog extends JDialog {
                 }
 
                 if(MyApfloat.setAutomaticPrecision) {
-                    long precision = MyApfloat.getAutomaticPrecision(new String[]{zss.sizeStr, zss.endSizeStr, s.size.toString()}, new boolean[]{true, true, true}, s.fns.function);
-
+                    long precision = MyApfloat.getAutomaticPrecision(new String[]{zss.sizeStr, zss.endSizeStr, zss.overrideMaxIterationsSizeLimitStr}, new boolean[]{true, true, true}, s.fns.function);
+                    precision = Math.max(MyApfloat.precision, precision);
                     if (MyApfloat.shouldSetPrecision(precision, MyApfloat.alwaysCheckForDecrease, s.fns.function)) {
                         Fractal.clearReferences(true, true);
                         MyApfloat.setPrecision(precision, s);
@@ -427,6 +471,7 @@ public class SequenceRenderDialog extends JDialog {
 
                 zss.setStartSize(new MyApfloat(zss.sizeStr));
                 zss.setEndSize(new MyApfloat(zss.endSizeStr));
+                zss.setOverrideMaxIterationsSizeLimit(new MyApfloat(zss.overrideMaxIterationsSizeLimitStr));
 
                 setFromSettings(zss);
             } catch (IOException ex) {
@@ -460,6 +505,8 @@ public class SequenceRenderDialog extends JDialog {
         startAtIndex.setText("" + zss.startAtSequenceIndex);
         stopAfterNSteps.setText("" + zss.stop_after_n_steps);
         namePattern.setText(zss.file_name_pattern);
+        override_max_iterations_size.setText("" + zss.overrideMaxIterationsSizeLimit);
+        overrideMaxIterations.setText("" + zss.override_max_iterations);
     }
 
 }

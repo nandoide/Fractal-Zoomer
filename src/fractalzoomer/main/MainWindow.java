@@ -159,6 +159,7 @@ public class MainWindow extends JFrame implements Constants {
     public static boolean ZOOM_TO_THE_SELECTED_AREA = false;
     public static boolean DRAGGING_TRANSFORMS_IMAGE = true;
     public static boolean REUSE_DATA_ON_ITERATION_CHANGE = true;
+    public static boolean FIRST_RUN = true;
 
     public static String SaveSettingsPath = "";
     public static String SaveImagesPath = "";
@@ -1134,6 +1135,10 @@ public class MainWindow extends JFrame implements Constants {
     }
 
     public void checkCompilationStatus() {
+
+        if(!FIRST_RUN) {
+            return;
+        }
 
         if (((Integer) compilationStatus[0]) == 0) {
             return;
@@ -9640,6 +9645,7 @@ public class MainWindow extends JFrame implements Constants {
             writer.println("display_user_code_warning " + Settings.DISPLAY_USER_CODE_WARNING);
             writer.println("dragging_transforms_image " + DRAGGING_TRANSFORMS_IMAGE);
             writer.println("reuse_data_on_iteration_change " + REUSE_DATA_ON_ITERATION_CHANGE);
+            writer.println("first_run " + false);
 
             writer.println();
             writer.println("[Window]");
@@ -11550,6 +11556,16 @@ public class MainWindow extends JFrame implements Constants {
                         }
                         else if(token.equalsIgnoreCase("true")) {
                             minimalProgressBar = true;
+                        }
+                    }
+                    else if(token.equals("first_run") && tokenizer.countTokens() == 1) {
+                        token = tokenizer.nextToken();
+
+                        if(token.equalsIgnoreCase("false")) {
+                            FIRST_RUN = false;
+                        }
+                        else if(token.equalsIgnoreCase("true")) {
+                            FIRST_RUN = true;
                         }
                     }
                     else if(token.equals("display_user_code_warning") && tokenizer.countTokens() == 1) {

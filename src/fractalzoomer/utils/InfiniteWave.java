@@ -9,9 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InfiniteWave {
     public static InfiniteColorWaveParams[] empty = new InfiniteColorWaveParams[] {new InfiniteColorWaveParams(), new InfiniteColorWaveParams()};
-    public static InfiniteColorWaveParams[] defaultParams = new InfiniteColorWaveParams[] {new InfiniteColorWaveParams(WaveType.SATURATION, 10.0),
-            new InfiniteColorWaveParams(WaveType.HUE, 11.0),
-            new InfiniteColorWaveParams(WaveType.BRIGHTNESS, 20.0)};
+    public static InfiniteColorWaveParams[] defaultParams = new InfiniteColorWaveParams[] {
+            new InfiniteColorWaveParams(WaveType.SATURATION, 100.0),
+            new InfiniteColorWaveParams(WaveType.HUE, 250.0),
+            new InfiniteColorWaveParams(WaveType.BRIGHTNESS, 200.0)};
 
     public static InfiniteColorWaveParams[] user_params_out = empty;
     public static InfiniteColorWaveParams[] user_params_in = empty;

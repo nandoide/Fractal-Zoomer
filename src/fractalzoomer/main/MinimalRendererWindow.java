@@ -3,6 +3,7 @@ package fractalzoomer.main;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fractalzoomer.core.*;
+import fractalzoomer.core.interpolation.LinearInterpolation;
 import fractalzoomer.core.la.LAReference;
 import fractalzoomer.core.la.impl.LAInfo;
 import fractalzoomer.core.la.impl.LAInfoDeep;
@@ -84,6 +85,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
     private JButton outputDirectoryButton;
 
+    private JButton multipleRendersTrendButton;
     private JButton stopRenderButton;
 
     private JDialog previewFrame;
@@ -124,8 +126,6 @@ public class MinimalRendererWindow extends JFrame implements Constants {
     private String settingsName;
     private int imageFormat;
 
-    private static boolean USE_LESS_INITIAL_ITERATIONS_ON_SEQUENCE_RENDER = true;
-
     private BufferedImage preview_image;
     private int preview_scale_alg = 0;
 
@@ -135,6 +135,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
     private static final String PREVIEW_TITLE = "Preview";
 
     private boolean stopped;
+    private String largePolarStats;
+    private long imageWriteTime;
 
     public MinimalRendererWindow() {
         super();
@@ -146,6 +148,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         ptr = this;
 
         imageFormat = 0;
+
+        largePolarStats = "";
 
         stopped = false;
 
@@ -269,6 +273,12 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         taskStatsButton.addActionListener(e -> TaskStats());
         taskStatsButton.setEnabled(false);
 
+        multipleRendersTrendButton = new MyButton("", MainWindow.getIcon("line_chart.png"));
+        multipleRendersTrendButton.setFocusable(false);
+        multipleRendersTrendButton.setToolTipText("Displays a trend of some statistics.");
+        multipleRendersTrendButton.addActionListener(e -> TrendStats());
+        multipleRendersTrendButton.setEnabled(false);
+
         JPanel p1 = new JPanel();
         p1.setBackground(Constants.bg_color);
         p1.add(settings_label);
@@ -286,9 +296,10 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
         JPanel p10 = new JPanel(new FlowLayout());
         p10.setBackground(Constants.bg_color);
-        p10.add(stopRenderButton);
         p10.add(statsButton);
         p10.add(taskStatsButton);
+        p10.add(stopRenderButton);
+        p10.add(multipleRendersTrendButton);
         p10.add(metricsButton);
 
         Dimension buttonDimension = new Dimension(220, 32);
@@ -617,6 +628,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
                 statsButton.setEnabled(false);
                 taskStatsButton.setEnabled(false);
+                zss = new ZoomSequenceSettings();
             }
             catch(IOException ex) {
                 JOptionPane.showMessageDialog(ptr, "Error while loading the file.", "Error!", JOptionPane.ERROR_MESSAGE);
@@ -941,22 +953,25 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         try {
             String name;
             String extension = getImageFormatExtension();
+            String baseName = settingsName + " - polar -";
 
             Path path = Paths.get(outputDirectory);
             if (Files.exists(path) && Files.isDirectory(path)) {
-                name = path.resolve(settingsName + " - polar -" + extension).toString();
+                name = path.resolve(baseName + extension).toString();
 
                 int counter = 1;
                 while (Files.exists(Paths.get(name))) {
-                    name = path.resolve( settingsName + " - polar - (" + counter + ")" + extension).toString();
+                    baseName = settingsName + " - polar - (" + counter + ")";
+                    name = path.resolve( baseName + extension).toString();
                     counter++;
                 }
             }
             else {
-                name = settingsName + " - polar -" + extension;
+                name = baseName + extension;
             }
 
             File file = new File(name);
+            writeStats(path, baseName, largePolarStats);
             saveImage(largePolarImage, imageFormat, file);
         }
         catch(IOException ex) {
@@ -1011,58 +1026,57 @@ public class MinimalRendererWindow extends JFrame implements Constants {
     public void writeImageToDisk() {
 
         if(runsOnLargePolarImageMode) {
+            largePolarStats += progress.getToolTipText() + "\n";
             return;
         }
 
-       String extension = getImageFormatExtension();
+        Path path = Paths.get(outputDirectory);
+        String baseName = "";
+        String extension = getImageFormatExtension();
 
         try {
             String name;
             if (runsOnSequenceMode) {
-                Path path = Paths.get(outputDirectory);
-
                 if(!zss.file_name_pattern.isEmpty()) {
-                    if (Files.exists(path) && Files.isDirectory(path)) {
-                        name = path.resolve(String.format(zss.file_name_pattern, sequenceIndex) + extension).toString();
-                    } else {
-                        name = String.format(zss.file_name_pattern, sequenceIndex) + extension;
-                    }
+                    baseName = String.format(zss.file_name_pattern, sequenceIndex);
                 }
                 else {
-                    if (Files.exists(path) && Files.isDirectory(path)) {
-                        name = path.resolve(settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + extension).toString();
-                    } else {
-                        name = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + extension;
-                    }
+                    baseName = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")";
+                }
+                if (Files.exists(path) && Files.isDirectory(path)) {
+                    name = path.resolve(baseName + extension).toString();
+                } else {
+                    name = baseName + extension;
                 }
             }
             else if(runsOnSplitImageMode) {
-                Path path = Paths.get(outputDirectory);
-
+                baseName = settingsName + " (" + String.format("%03d", gridI) + ", " + String.format("%03d", gridJ) + ")";
                 if (Files.exists(path) && Files.isDirectory(path)) {
-                    name = path.resolve(settingsName + " (" + String.format("%03d", gridI) + ", " + String.format("%03d", gridJ) + ")" + extension).toString();
+                    name = path.resolve(baseName + extension).toString();
                 }
                 else {
-                    name = settingsName + " (" + String.format("%03d", gridI) + ", " + String.format("%03d", gridJ) + ")" + extension;
+                    name = baseName + extension;
                 }
             }
             else {
-                Path path = Paths.get(outputDirectory);
+                baseName = settingsName;
                 if (Files.exists(path) && Files.isDirectory(path)) {
-                    name = path.resolve(settingsName + extension).toString();
+                    name = path.resolve(baseName + extension).toString();
 
                     int counter = 1;
                     while (Files.exists(Paths.get(name))) {
-                        name = path.resolve( settingsName + " (" + counter + ")" + extension).toString();
+                        baseName = settingsName + " (" + counter + ")";
+                        name = path.resolve( baseName + extension).toString();
                         counter++;
                     }
                 }
                 else {
-                    name = settingsName + extension;
+                    name = baseName + extension;
                 }
 
             }
 
+            writeStats(path, baseName, progress.getToolTipText());
             writeImage(image, name, 1);
         }
         catch(IOException ex) {
@@ -1075,6 +1089,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
     private void writeImage(BufferedImage image, String name, double aspect_ratio) throws IOException {
 
+        imageWriteTime = System.currentTimeMillis();
         if(aspect_ratio == 1) {
             File file = new File(name);
             saveImage(image, imageFormat, file);
@@ -1099,6 +1114,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             File file = new File(name);
             saveImage(subImage, imageFormat, file);
         }
+        imageWriteTime = System.currentTimeMillis() - imageWriteTime;
 
         updatePreview();
     }
@@ -1417,10 +1433,6 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             writer.println("include_aa_data_on_rank_order " + TaskRender.INCLUDE_AA_DATA_ON_RANK_ORDER);
             writer.println("seed " + TaskRender.SEED);
             writer.println("user_formula_derivative_method " + FunctionDerivative2ArgumentsExpressionNode.USER_FORMULA_DERIVATIVE_METHOD);
-
-            writer.println();
-            writer.println("[Sequence Render]");
-            writer.println("use_less_initial_iterations " + USE_LESS_INITIAL_ITERATIONS_ON_SEQUENCE_RENDER);
 
             writer.close();
         }
@@ -1908,17 +1920,6 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                         }
                         else if(token.equalsIgnoreCase("true")) {
                             TaskRender.INCLUDE_AA_DATA_ON_RANK_ORDER = true;
-                        }
-                    }
-                    else if(token.equals("use_less_initial_iterations") && tokenizer.countTokens() == 1) {
-
-                        token = tokenizer.nextToken();
-
-                        if(token.equalsIgnoreCase("false")) {
-                            USE_LESS_INITIAL_ITERATIONS_ON_SEQUENCE_RENDER = false;
-                        }
-                        else if(token.equalsIgnoreCase("true")) {
-                            USE_LESS_INITIAL_ITERATIONS_ON_SEQUENCE_RENDER = true;
                         }
                     }
                     else if(token.equals("use_threads_for_bla2") && tokenizer.countTokens() == 1) {
@@ -2771,6 +2772,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(true);
             overviewButton.setVisible(true);
             overviewButton.setEnabled(false);
+            multipleRendersTrendButton.setEnabled(true);
             enableStop();
             setOptions(false);
             runsOnSplitImageMode = true;
@@ -2810,6 +2812,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(false);
             overviewButton.setEnabled(true);
             disableStop();
+            multipleRendersTrendButton.setEnabled(false);
             stopGlobalTimer();
         });
     }
@@ -2836,12 +2839,14 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
 
             startGlobalTimer();
+            largePolarStats = "";
             totalprogress.setMaximum(number_of_polar_images);
             totalprogress.setValue(0);
             totalprogress.setString("Image: " + totalprogress.getValue() + "/" + totalprogress.getMaximum());
             totalprogress.setVisible(true);
             overviewButton.setVisible(true);
             overviewButton.setEnabled(false);
+            multipleRendersTrendButton.setEnabled(true);
             enableStop();
             setOptions(false);
             runsOnLargePolarImageMode = true;
@@ -2906,6 +2911,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(false);
             overviewButton.setEnabled(true);
             disableStop();
+            multipleRendersTrendButton.setEnabled(false);
             stopGlobalTimer();
         });
     }
@@ -2941,6 +2947,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                     settings_label.setVisible(true);
 
                     settingsName = fileNames.get(k).substring(0, fileNames.get(k).lastIndexOf("."));
+
+                    zss = new ZoomSequenceSettings();
 
                     render();
                 }
@@ -3037,6 +3045,11 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                 total = Math.min(zss.stop_after_n_steps, numberOfSequenceSteps);
             }
 
+            Apfloat setOverrideMaxIterationsSizeLimit2 = MyApfloat.fp.divide(zss.overrideMaxIterationsSizeLimit, new MyApfloat(50));
+            if(setOverrideMaxIterationsSizeLimit2.compareTo(s.size) < 0) {
+                setOverrideMaxIterationsSizeLimit2 = s.size;
+            }
+
             int max_steps = 1000000;
             long divisor = total > max_steps ? total / 100 : 1;
             totalprogress.setMaximum((int)(total > max_steps ? 100 : total));
@@ -3053,6 +3066,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             totalprogress.setVisible(true);
             overviewButton.setVisible(true);
             overviewButton.setEnabled(false);
+            multipleRendersTrendButton.setEnabled(true);
             enableStop();
             setOptions(false);
             runsOnSequenceMode = true;
@@ -3076,6 +3090,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
             int originalMaxIterations = s.max_iterations;
 
+            LinearInterpolation lerp = new LinearInterpolation();
+
             if(zss.rotation_adjusting_value != 0) {
                 s.fns.rotation_center[0] = s.xCenter;
                 s.fns.rotation_center[1] = s.yCenter;
@@ -3089,6 +3105,18 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
             for(int k = 1; k <= numberOfSequenceSteps; k++) {
 
+                if (s.size.compareTo(zss.overrideMaxIterationsSizeLimit) > 0 && zss.override_max_iterations > 0 && originalMaxIterations > zss.override_max_iterations) {
+                    s.max_iterations = zss.override_max_iterations;
+                } else if (s.size.compareTo(setOverrideMaxIterationsSizeLimit2) >= 0 && zss.override_max_iterations > 0 && originalMaxIterations > zss.override_max_iterations) {
+                    double coef = MyApfloat.fp.divide(MyApfloat.fp.subtract(zss.overrideMaxIterationsSizeLimit, s.size),
+                    MyApfloat.fp.subtract(zss.overrideMaxIterationsSizeLimit, setOverrideMaxIterationsSizeLimit2)).doubleValue();
+
+                    s.max_iterations = lerp.interpolate(zss.override_max_iterations, originalMaxIterations, coef);
+                }
+                else {
+                    s.max_iterations = originalMaxIterations;
+                }
+
                 if(zss.startAtSequenceIndex == 0 || (!zss.flipSequenceIndexing && sequenceIndex >= zss.startAtSequenceIndex) || (zss.flipSequenceIndexing && sequenceIndex <= zss.startAtSequenceIndex) ) {
                     render();
 
@@ -3101,37 +3129,9 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                     catch (ExecutionException ex) {
                     }
 
-                    if(USE_LESS_INITIAL_ITERATIONS_ON_SEQUENCE_RENDER && Fractal.total_min_iterations != null && Fractal.total_min_iterations_get() != Long.MAX_VALUE) {
-                        long minStat = Fractal.total_min_iterations_get();
-
-                        int iterLimit = 500000;
-                        double limit = 1000;
-                        double limit2 = 10000;
-                        if(minStat < limit && originalMaxIterations > iterLimit) {
-                            s.max_iterations = iterLimit;
-                        }
-                        else if(minStat >= limit && minStat <= limit2 && originalMaxIterations > iterLimit) {
-                            s.max_iterations = (int)(iterLimit + (originalMaxIterations - iterLimit) * ((minStat - limit) / (limit2 - limit)) + 0.5);
-                        }
-                        else {
-                            s.max_iterations = originalMaxIterations;
-                        }
-
-                        if(renderCount == 0 && s.max_iterations != originalMaxIterations) {
-                            render();
-
-                            try {
-                                for(Future<?> future : futures) {
-                                    future.get();
-                                }
-                            } catch (InterruptedException ex) {
-                            }
-                            catch (ExecutionException ex) {
-                            }
-                        }
-                    }
-
                     writeInfo(path);
+
+                    addTrendData(renderCount, progress.getToolTipText());
 
                     renderCount++;
                 }
@@ -3222,11 +3222,17 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             setOptions(true);
             totalprogress.setVisible(false);
             overviewButton.setEnabled(true);
+            multipleRendersTrendButton.setEnabled(false);
+            closeTrendDialog();
             disableStop();
             stopGlobalTimer();
         });
 
 
+    }
+
+    private void closeTrendDialog() {
+        RenderingTrendDialog.closeInstance();
     }
 
     private String normalizeValue(String val, int digits) {
@@ -3276,7 +3282,40 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         catch (Exception ex) {}
     }
 
-    public void setOutputDirectory() {
+    private void writeStats(Path path, String fileName, String stats) {
+        String infoName = "";
+        if(!zss.file_name_pattern.isEmpty()) {
+            if (Files.exists(path) && Files.isDirectory(path)) {
+                infoName = path.resolve(fileName + ".stats").toString();
+            } else {
+                infoName = fileName + ".stats";
+            }
+        }
+        else {
+            if (Files.exists(path) && Files.isDirectory(path)) {
+                infoName = path.resolve(fileName + ".stats").toString();
+            } else {
+                infoName = fileName + ".stats";
+            }
+        }
+
+        stats = stats.replace("<br>", "\n");
+        stats = stats.replace("<html>", "");
+        stats = stats.replace("</html>", "");
+        stats = stats.replace("<li>", "");
+        stats = stats.replace("</li>", "");
+        stats = stats.replace("<ul>", "");
+        stats = stats.replace("</ul>", "");
+        stats = stats.replace("<b>", "");
+        stats = stats.replace("</b>", "");
+
+        try {
+            Files.write(Paths.get(infoName), stats.getBytes());
+        }
+        catch (Exception ex) {}
+    }
+
+     private void setOutputDirectory() {
 
         file_chooser = new JFileChooser(outputDirectory);
 
@@ -3292,11 +3331,11 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         }
     }
 
-    public void Metrics() {
+    private void Metrics() {
         MetricsDialog.getInstance(ptr).setVisible(true);
     }
 
-    public void Stats() {
+    private void Stats() {
 
         try {
 
@@ -3307,13 +3346,24 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
     }
 
-    public void TaskStats() {
+    private void TaskStats() {
 
         try {
             common.taskStats(ptr, tasks);
         } catch (Exception ex) {
         }
 
+    }
+
+    private void TrendStats() {
+        RenderingTrendDialog.getInstance(ptr).setVisible(true);
+    }
+
+    private void addTrendData(long render, String report) {
+        RenderingTrendDialog d = RenderingTrendDialog.getInstance(ptr);
+        if(d != null && d.isVisible()) {
+            d.addSampleData(render, report, imageWriteTime);
+        }
     }
 
     public static void main(String[] args) throws Exception {

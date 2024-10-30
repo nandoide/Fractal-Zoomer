@@ -11,9 +11,9 @@ public class MultiwaveSimple {
     private static double TWO_PI = Math.PI * 2;
     public static MultiwaveSimpleColorParams[] empty = new MultiwaveSimpleColorParams[] {new MultiwaveSimpleColorParams(), new MultiwaveSimpleColorParams()};
     public static MultiwaveSimpleColorParams[] defaultParams = new MultiwaveSimpleColorParams[] {
-            new MultiwaveSimpleColorParams(10.0, 1.0, 0.0, WaveType.R),
-            new MultiwaveSimpleColorParams(15.0, 0.5, 0.0, WaveType.G),
-            new MultiwaveSimpleColorParams(21.0, 0.8, 0.0, WaveType.B),
+            new MultiwaveSimpleColorParams(100.0, 1.0, 0.0, WaveType.R),
+            new MultiwaveSimpleColorParams(50.0, 0.5, 0.0, WaveType.G),
+            new MultiwaveSimpleColorParams(210.0, 0.8, 0.0, WaveType.B),
             new MultiwaveSimpleColorParams(100.0, 0.4, 10.0, WaveType.R),
     };
     public static MultiwaveSimpleColorParams[] user_params_out = empty;

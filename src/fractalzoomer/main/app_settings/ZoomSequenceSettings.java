@@ -1,6 +1,7 @@
 package fractalzoomer.main.app_settings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fractalzoomer.core.MyApfloat;
 import fractalzoomer.main.Constants;
 import org.apfloat.Apfloat;
 
@@ -28,11 +29,17 @@ public class ZoomSequenceSettings {
 
     public long stop_after_n_steps;
 
+    public int override_max_iterations;
+    public String overrideMaxIterationsSizeLimitStr;
+
     @JsonIgnore
     public Apfloat startSize;
 
     @JsonIgnore
     public Apfloat endSize;
+
+    @JsonIgnore
+    public Apfloat overrideMaxIterationsSizeLimit;
 
 
     public ZoomSequenceSettings() {
@@ -59,6 +66,9 @@ public class ZoomSequenceSettings {
         file_name_pattern = "";
 
         stop_after_n_steps = 0;
+        override_max_iterations = 0;
+        overrideMaxIterationsSizeLimitStr = "0";
+        overrideMaxIterationsSizeLimit = new MyApfloat(0);
     }
 
     public void setStartSize(Apfloat startSize) {
@@ -69,5 +79,10 @@ public class ZoomSequenceSettings {
     public void setEndSize(Apfloat endSize) {
         this.endSize = endSize;
         endSizeStr = endSize.toString();
+    }
+
+    public void setOverrideMaxIterationsSizeLimit(Apfloat overrideMaxIterationsSizeLimit) {
+        this.overrideMaxIterationsSizeLimit = overrideMaxIterationsSizeLimit;
+        overrideMaxIterationsSizeLimitStr = overrideMaxIterationsSizeLimit.toString();
     }
 }

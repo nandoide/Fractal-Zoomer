@@ -1970,11 +1970,11 @@ public abstract class TaskRender implements Runnable {
 
             progress.setValue(progress.getMaximum());
 
+            setFullToolTipMessage(image_width * image_height);
+
             ptrMinimalRenderer.writeImageToDisk();
 
             ptrMinimalRenderer.setOptions(true);
-
-            setFullToolTipMessage(image_width * image_height);
         }
     }
 
@@ -2319,7 +2319,7 @@ public abstract class TaskRender implements Runnable {
 
         boolean usesBLA = (APPROXIMATION_ALGORITHM == 2 && fractal.supportsBilinearApproximation()) ||  (APPROXIMATION_ALGORITHM == 4 && fractal.supportsBilinearApproximation2()) || (APPROXIMATION_ALGORITHM == 5 && fractal.supportsBilinearApproximation3());
 
-        progress.setToolTipText("<html><li>Total Elapsed Time: <b>" + total_time + " ms</b><br>" +
+        progress.setToolTipText("<html>" + TOTAL_ELAPSED_TIME_STRING_LABEL + total_time + " ms</b><br>" +
                 getPixelsString(total, total_calculated_pixels, total_calculated_extra_pixels, total_completed_pixels, total_pp, supersampling_num) +
                 "<li>Logical Processors: <b>" + Runtime.getRuntime().availableProcessors() + "</b><br>" +
                 "<li>Threads Used: <b>" + threads + "</b><br>" +
@@ -2332,11 +2332,11 @@ public abstract class TaskRender implements Runnable {
                 (!quickRender && FilterCalculationTime > 0? IMAGE_FILTERS_TIME_STRING_LABEL + FilterCalculationTime + " ms</b><br>" : "")+
                 (d3 && D3RenderingCalculationTime > 0? D3_RENDER_TIME_STRING_LABEL + D3RenderingCalculationTime + " ms</b><br>" : "") +
                 (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation && Fractal.ReferenceCalculationTime > 0 ? REFERENCE_CALCULATION_ELAPSED_TIME_STRING_LABEL + Fractal.ReferenceCalculationTime + " ms</b><br>" : "") +
-                (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation  ? "<li>Reference Point Iterations: <b>" + refPointIterations + "</b><br>" : "") +
+                (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation  ? REFERENCE_POINT_ITERATIONS_STRING_LABEL + refPointIterations + "</b><br>" : "") +
                 (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation && Fractal.ReferenceCalculationTime > 0 && Fractal.calculatedReferenceIterations > 0 ? "<li>Reference Point Iterations per second: <b>" + String.format("%.4f", Fractal.calculatedReferenceIterations / (Fractal.ReferenceCalculationTime / 1000.0)) + "</b><br>" : "") +
 
                 (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation && fractal.needsSecondReference() && Fractal.SecondReferenceCalculationTime > 0 ? JULIA_EXTRA_REFERENCE_CALCULATION_ELAPSED_TIME_STRING_LABEL + Fractal.SecondReferenceCalculationTime + " ms</b><br>" : "") +
-                (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation  && fractal.needsSecondReference() ? "<li>Julia Extra Reference Point Iterations: <b>" + secondRefPointIterations + "</b><br>" : "") +
+                (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation  && fractal.needsSecondReference() ? JULIA_EXTRA_REFERENCE_POINT_ITERATIONS_STRING_LABEL + secondRefPointIterations + "</b><br>" : "") +
                 (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation  && fractal.needsSecondReference() && Fractal.SecondReferenceCalculationTime > 0 && Fractal.calculatedSecondReferenceIterations > 0 ? "<li>Julia Extra Reference Point Iterations per second: <b>" + String.format("%.4f", Fractal.calculatedSecondReferenceIterations / (Fractal.SecondReferenceCalculationTime / 1000.0)) + "</b><br>" : "") +
                 (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation && COMPRESS_REFERENCE_IF_POSSIBLE && fractal.supportsReferenceCompression() ? getCompressionInfo(refPointIterations, secondRefPointIterations) : "") +
                 (!HIGH_PRECISION_CALCULATION && PERTURBATION_THEORY && supportsPerturbation && DETECT_PERIOD && fractal.supportsPeriod()  ? "<li>Detected Period: <b>" + (Fractal.DetectedPeriod != 0 ? Fractal.DetectedPeriod : "N/A") + "</b><br>" : "") + //&& Fractal.DetectedPeriod != 0
@@ -2369,10 +2369,10 @@ public abstract class TaskRender implements Runnable {
                 (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY && supportsPerturbation && !usesBLA && !isDeep ? NORMAL_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL +  (String.format("%.4f", Fractal.total_double_iterations_sum() / ((double) total_calculated_pixels * (supersampling_num)))) + "</b><br>" : "") +
                 (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY && supportsPerturbation && !usesBLA && TaskRender.PERTUBATION_PIXEL_ALGORITHM == 1 && fractal.supportsScaledIterations() && isDeep ? "<li>Re-Aligns Per Pixel: <b>" +  (String.format("%.4f", Fractal.total_realigns_sum() / ((double) total_calculated_pixels * (supersampling_num)))) + "</b><br>" : "") +
                 (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY && supportsPerturbation ? "<li>Rebases Per Pixel: <b>" +  String.format("%.4f", Fractal.total_rebases_sum() / ((double) total_calculated_pixels * (supersampling_num))) + "</b><br>" : "") +
-                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? "<li>Average Iterations Per Pixel: <b>" +  String.format("%.4f", (Fractal.total_iterations_sum())/ ((double) total_calculated_pixels * (supersampling_num))) + "</b><br>" : "") +
-                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? "<li>Minimum Iterations: <b>" +  Fractal.total_min_iterations_get() + "</b><br>" : "") +
-                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? "<li>Maximum Iterations: <b>" +  Fractal.total_max_iterations_get() + "</b><br>" : "") +
-                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? "<li>Maximum Iterations (Ignore Not Escaped Points): <b>" +  Fractal.total_max_iterations_ignore_max_iter_get() + "</b><br>" : "") +
+                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? AVERAGE_ITERATIONS_PER_PIXEL_STRING_LABEL +  String.format("%.4f", (Fractal.total_iterations_sum())/ ((double) total_calculated_pixels * (supersampling_num))) + "</b><br>" : "") +
+                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? MINIMUM_ITERATIONS_STRING_LABEL +  Fractal.total_min_iterations_get() + "</b><br>" : "") +
+                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? MAXIMUM_ITERATIONS_STRING_LABEL +  Fractal.total_max_iterations_get() + "</b><br>" : "") +
+                (((HIGH_PRECISION_CALCULATION && GATHER_HIGHPRECISION_STATISTICS) || (!HIGH_PRECISION_CALCULATION && GATHER_PERTURBATION_STATISTICS && PERTURBATION_THEORY)) && supportsPerturbation ? MAXIMUM_ITERATIONS_IGNORE_NOT_ESCAPED_STRING_LABEL +  Fractal.total_max_iterations_ignore_max_iter_get() + "</b><br>" : "") +
                 getPixelGroupingString(supersampling_num) +
 
 
@@ -2399,6 +2399,13 @@ public abstract class TaskRender implements Runnable {
     public static final String SCALED_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Scaled Double Iterations Per Pixel: <b>";
     public static final String SA_SKIPPED_ITERATIONS_STRING_LABEL = "<li>SA Skipped Iterations: <b>";
     public static final String NANOMB1_SKIPPED_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Nanomb1 Skipped Iterations Per Pixel: <b>";
+
+    public static final String AVERAGE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Average Iterations Per Pixel: <b>";
+    public static final String MINIMUM_ITERATIONS_STRING_LABEL = "<li>Minimum Iterations: <b>";
+    public static final String MAXIMUM_ITERATIONS_STRING_LABEL = "<li>Maximum Iterations: <b>";
+    public static final String MAXIMUM_ITERATIONS_IGNORE_NOT_ESCAPED_STRING_LABEL = "<li>Maximum Iterations (Ignore Not Escaped Points): <b>";
+    public static final String REFERENCE_POINT_ITERATIONS_STRING_LABEL = "<li>Reference Point Iterations: <b>";
+    public static final String JULIA_EXTRA_REFERENCE_POINT_ITERATIONS_STRING_LABEL = "<li>Julia Extra Reference Point Iterations: <b>";
     public static int getExtraSamples(int aaSamplesIndex, int aaMethod) {
         int supersampling_num;
         if(aaSamplesIndex == 0) {
@@ -2457,7 +2464,7 @@ public abstract class TaskRender implements Runnable {
 
         long total_pp = total_post_processed.sum();
 
-        progress.setToolTipText("<html><li>Total Elapsed Time: <b>" + total_time + " ms</b><br>" +
+        progress.setToolTipText("<html>" + TOTAL_ELAPSED_TIME_STRING_LABEL + total_time + " ms</b><br>" +
                 getPixelStringSmall(juliaMap, afterAA, total, total_pp, supersampling_num) +
                 "<li>Logical Processors: <b>" + Runtime.getRuntime().availableProcessors() + "</b><br>" +
                 "<li>Threads Used: <b>" + threads + "</b><br>" +
@@ -2488,6 +2495,8 @@ public abstract class TaskRender implements Runnable {
     public static final String SA_CALCULATION_ELAPSED_TIME_LABEL = "<li>SA Calculation Elapsed Time: <b>";
     public static final String NANOMB1_CALCULATION_ELAPSED_TIME_LABEL = "<li>Nanomb1 Calculation Elapsed Time: <b>";
     public static final String BLA_CALCULATION_ELAPSED_TIME_LABEL = "<li>BLA Calculation Elapsed Time: <b>";
+
+    public static final String TOTAL_ELAPSED_TIME_STRING_LABEL = "<li>Total Elapsed Time: <b>";
 
     private void domainPolarMinimalRendererRendering() throws StopExecutionException {
 
@@ -2523,11 +2532,11 @@ public abstract class TaskRender implements Runnable {
 
             progress.setValue(progress.getMaximum());
 
+            setFullToolTipMessage(image_width * image_height);
+
             ptrMinimalRenderer.writeImageToDisk();
 
             ptrMinimalRenderer.setOptions(true);
-
-            setFullToolTipMessage(image_width * image_height);
         }
     }
 
@@ -2571,11 +2580,11 @@ public abstract class TaskRender implements Runnable {
 
             progress.setValue(progress.getMaximum());
 
+            setFullToolTipMessage(image_width * image_height);
+
             ptrMinimalRenderer.writeImageToDisk();
 
             ptrMinimalRenderer.setOptions(true);
-
-            setFullToolTipMessage(image_width * image_height);
 
         }
     }
@@ -2620,11 +2629,11 @@ public abstract class TaskRender implements Runnable {
 
             progress.setValue(progress.getMaximum());
 
+            setFullToolTipMessage(image_width * image_height);
+
             ptrMinimalRenderer.writeImageToDisk();
 
             ptrMinimalRenderer.setOptions(true);
-
-            setFullToolTipMessage(image_width * image_height);
         }
     }
 
@@ -10080,6 +10089,9 @@ public abstract class TaskRender implements Runnable {
     public void setTaskId(int taskId) {
 
         this.taskId = taskId;
+        if(fractal != null) {
+            fractal.setTaskId(taskId);
+        }
 
     }
 
@@ -11901,7 +11913,6 @@ public abstract class TaskRender implements Runnable {
             values[i] = new Complex(variable_re[i], variable_im[i]);
         }
         fractal.setInitialVariablesValues(values);
-        fractal.setTaskId(taskId);
 
         return fractal;
 
@@ -12347,8 +12358,6 @@ public abstract class TaskRender implements Runnable {
             values[i] = new Complex(variable_re[i], variable_im[i]);
         }
         fractal.setInitialVariablesValues(values);
-
-        fractal.setTaskId(taskId);
 
         return fractal;
 

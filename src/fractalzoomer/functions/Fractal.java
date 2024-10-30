@@ -1026,7 +1026,6 @@ public abstract class Fractal {
 
     public void calculateSeriesWrapper(Apfloat dsize, boolean deepZoom, Location externalLocation, JProgressBar progress) {
 
-        long time = System.currentTimeMillis();
         if (progress != null) {
             progress.setMaximum(referenceData.MaxRefIteration);
             progress.setValue(0);
@@ -1036,12 +1035,13 @@ public abstract class Fractal {
         initializeReferenceDecompressor();
         SAOOMDiff = TaskRender.SERIES_APPROXIMATION_OOM_DIFFERENCE;
         SAMaxSkip = TaskRender.SERIES_APPROXIMATION_MAX_SKIP_ITER;
+        long time = System.currentTimeMillis();
         calculateSeries(dsize, deepZoom, externalLocation, progress);
+        SACalculationTime = System.currentTimeMillis() - time;
         if (progress != null) {
             progress.setValue(progress.getMaximum());
             progress.setString(SA_CALCULATION_STR + " 100%");
         }
-        SACalculationTime = System.currentTimeMillis() - time;
     }
 
     protected void calculateNanomb1(boolean deepZoom, JProgressBar progress) {
@@ -1050,7 +1050,6 @@ public abstract class Fractal {
 
     public void calculateNanomb1Wrapper(boolean deepZoom, JProgressBar progress) {
 
-        long time = System.currentTimeMillis();
         if (progress != null) {
             long value = ((long)getNanomb1MaxIterations() * 2 - 1);
             progress.setMaximum((int)(value > Constants.MAX_PROGRESS_VALUE ? Constants.PROGRESS_SCALE : value));
@@ -1059,18 +1058,18 @@ public abstract class Fractal {
             progress.setString(NANOMB1_CALCULATION_STR + " " + String.format("%3d", 0) + "%");
         }
         initializeReferenceDecompressor();
+        long time = System.currentTimeMillis();
         calculateNanomb1(deepZoom, progress);
+        Nanomb1CalculationTime = System.currentTimeMillis() - time;
         if (progress != null) {
             progress.setValue(progress.getMaximum());
             progress.setString(NANOMB1_CALCULATION_STR + " 100%");
         }
-        Nanomb1CalculationTime = System.currentTimeMillis() - time;
         total_nanomb1_skipped_iterations = new long[TaskRender.TOTAL_NUM_TASKS];
     }
 
     public void calculateBLAWrapper(boolean deepZoom, Location externalLocation, JProgressBar progress) {
 
-        long time = System.currentTimeMillis();
         if (progress != null) {
             progress.setValue(0);
             progress.setForeground(MainWindow.progress_bla_color);
@@ -1079,13 +1078,14 @@ public abstract class Fractal {
         initializeReferenceDecompressor();
         BLAbits = TaskRender.BLA_BITS;
         BLAStartingLevel = TaskRender.BLA_STARTING_LEVEL;
+        long time = System.currentTimeMillis();
         calculateBLA(deepZoom, externalLocation, progress);
+        BLACalculationTime = System.currentTimeMillis() - time;
 
         if (progress != null) {
             progress.setValue(progress.getMaximum());
             progress.setString(BLA_CALCULATION_STR + " 100%");
         }
-        BLACalculationTime = System.currentTimeMillis() - time;
         total_bla_iterations = new long[TaskRender.TOTAL_NUM_TASKS];
         total_bla_steps = new long[TaskRender.TOTAL_NUM_TASKS];
         total_perturb_iterations = new long[TaskRender.TOTAL_NUM_TASKS];
@@ -1093,7 +1093,6 @@ public abstract class Fractal {
 
     public void calculateBLA2Wrapper(boolean deepZoom, Location externalLocation, JProgressBar progress) {
 
-        long time = System.currentTimeMillis();
         if (progress != null) {
             try {
                 SwingUtilities.invokeAndWait(() -> {
@@ -1107,9 +1106,12 @@ public abstract class Fractal {
             catch (Exception ex) {}
         }
 
+
         initializeReferenceDecompressor();
 
+        long time = System.currentTimeMillis();
         calculateBLA2(deepZoom, externalLocation, progress);
+        BLACalculationTime = System.currentTimeMillis() - time;
 
         if (progress != null) {
             try {
@@ -1125,16 +1127,12 @@ public abstract class Fractal {
             catch (Exception ex) {}
         }
 
-        BLACalculationTime = System.currentTimeMillis() - time;
-
         total_bla_iterations = new long[TaskRender.TOTAL_NUM_TASKS];
         total_bla_steps = new long[TaskRender.TOTAL_NUM_TASKS];
         total_perturb_iterations = new long[TaskRender.TOTAL_NUM_TASKS];
     }
 
     public void calculateBLA3Wrapper(boolean deepZoom, JProgressBar progress) {
-
-        long time = System.currentTimeMillis();
 
         initializeReferenceDecompressor();
 
@@ -1144,14 +1142,14 @@ public abstract class Fractal {
             progress.setString(BLA_CALCULATION_STR + " " + String.format("%3d", 0) + "%");
         }
 
+        long time = System.currentTimeMillis();
         calculateBLA3(deepZoom, progress);
+        BLACalculationTime = System.currentTimeMillis() - time;
 
         if (progress != null) {
             progress.setValue(progress.getMaximum());
             progress.setString(BLA_CALCULATION_STR + " 100%");
         }
-
-        BLACalculationTime = System.currentTimeMillis() - time;
 
         total_bla_iterations = new long[TaskRender.TOTAL_NUM_TASKS];
         total_bla_steps = new long[TaskRender.TOTAL_NUM_TASKS];
@@ -1161,7 +1159,6 @@ public abstract class Fractal {
 
     public void calculateBLA2ATWrapper(Location externalLocation, JProgressBar progress) {
 
-        long time = System.currentTimeMillis();
         if (progress != null) {
             try {
                 SwingUtilities.invokeAndWait(() -> {
@@ -1177,7 +1174,9 @@ public abstract class Fractal {
 
         initializeReferenceDecompressor();
 
+        long time = System.currentTimeMillis();
         calculateBLA2AT(externalLocation);
+        BLACalculationTime = System.currentTimeMillis() - time;
 
         if (progress != null) {
             try {
@@ -1192,8 +1191,6 @@ public abstract class Fractal {
             }
             catch (Exception ex) {}
         }
-
-        BLACalculationTime = System.currentTimeMillis() - time;
 
         total_bla_iterations = new long[TaskRender.TOTAL_NUM_TASKS];
         total_bla_steps = new long[TaskRender.TOTAL_NUM_TASKS];
