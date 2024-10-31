@@ -1,6 +1,7 @@
 
 package fractalzoomer.gui;
 
+import fractalzoomer.main.CommonFunctions;
 import fractalzoomer.main.Constants;
 import fractalzoomer.main.MainWindow;
 import fractalzoomer.main.app_settings.GeneratedPaletteSettings;
@@ -137,10 +138,22 @@ public class MultiwaveDialog extends JDialog {
 
         buttons_panel.add(view_colors);
 
-        //Todo add help
+        JButton info_user = new MyButton("Help");
+        info_user.setToolTipText("Shows info for the multiwave palette editor.");
+        info_user.setFocusable(false);
+        info_user.setIcon(MainWindow.getIcon("help2.png"));
+        info_user.setPreferredSize(new Dimension(105, 23));
+
+        info_user.addActionListener(e -> help());
+
+        JPanel info_panel = new JPanel();
+        info_panel.setLayout(new FlowLayout());
+        info_panel.add(info_user);
 
         Object[] message = {
             " ",
+                info_panel,
+                " ",
                 "Templates:",
                 templates,
                 " ",
@@ -334,6 +347,41 @@ public class MultiwaveDialog extends JDialog {
 
         JOptionPane.showMessageDialog(ptr, message,  "Colors", JOptionPane.INFORMATION_MESSAGE, MainWindow.getIcon("colors_large.png"));
 
+    }
+
+    private void help() {
+        JEditorPane textArea = new JEditorPane();
+
+        textArea.setEditable(false);
+        textArea.setContentType("text/html");
+        textArea.setPreferredSize(new Dimension(500, 160));
+
+        JScrollPane scroll_pane_2 = new JScrollPane(textArea);
+
+        String help = "<html><center><font size='5' face='arial' color='blue'><b><u>Multiwave Palette Editor</u></b></font></center><br>"
+                + "<font size='4' face='arial'>"
+                + "A color wave can have the following options.<br><br>" +
+                "  <b>period</b>: The period of the color wave. (If missing then the period is defined as end - start)<br><br>" +
+                "  <b>mapping</b>: Value mapping (NORMAL, SQUARE, SQRT, LOG).<br><br>" +
+                "  <b>start</b>: The start of the color wave.<br><br>" +
+                "  <b>end</b>: The end of the color wave.<br><br>" +
+                "  <b>blend</b>: Color blending (HSL_BIAS, HSL_BIAS_UFCOMPAT).<br><br>" +
+                "  <b>tricubic_rgb</b>: Array of RGB values (0-255): [{\"r\" : 192, \"g\" : 64, \"b\" : 64},...]<br><br>" +
+                "  <b>tricubic_hsl</b>: Array of HSL values: [{\"h\" : -1.0, \"s\" : 0.0, \"l\" : 0.0},...]<br><br>" +
+                "  <b>linear_rgb</b>: Array of linear RGB points (x defines the point) with values (0-255): [{\"x\" : 0.0, \"rgb\" : {\"r\" : 11, \"g\" : 25, \"b\" : 12}}, {\"x\" : 0.375, \"rgb\" : {...}},...]<br><br>" +
+                "  <b>linear_hsl</b>: Array of linear HSL points (x defines the point): [{\"x\" : 0.0, \"hsl\" : {\"h\" : -1.0, \"s\" : 0.0, \"l\" : 0.0}}, {\"x\" : 0.375, \"hsl\" : {...}},...]<br><br>" +
+                "  <b>meta_tricubic_rgb</b>: 2 dimensional array of RGB values (0-255), with 2 period values: \"meta_tricubic_rgb\" : {\"rgb_colors\" : [ [ {\"r\" : 15, \"g\" : 91, \"b\" : 30},...],...], \"period1\" : 0.3, \"period2\" : 0.001}<br><br>" +
+                "  <b>meta_tricubic_hsl</b>: 2 dimensional array of HSL values, with 2 period values: \"meta_tricubic_hsl\" : {\"hsl_colors\" : [ [ {\"h\" : -2.0, \"s\" : 0.3, \"l\" : 0.5},...],...], \"period1\" : 0.3, \"period2\" : 0.001}<br><br>"
+                + "</font></html>";
+
+        textArea.setText(help);
+
+        Object[] message = {
+                scroll_pane_2,};
+
+        textArea.setCaretPosition(0);
+
+        JOptionPane.showMessageDialog(this, message, "Help", JOptionPane.QUESTION_MESSAGE);
     }
 
 }

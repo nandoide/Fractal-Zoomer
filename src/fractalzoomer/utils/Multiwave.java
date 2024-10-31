@@ -619,11 +619,15 @@ public class Multiwave {
             }
         }
 
-        if(b.x >= a.x) {
-            fval = (fval - a.x) / (b.x - a.x);
+        if (a == null || b == null) {
+            return rgbToHsl2(new int[] {0, 0, 0});
         }
         else {
-            fval = (fval - a.x) / (1.0 - a.x);
+            if (b.x >= a.x) {
+                fval = (fval - a.x) / (b.x - a.x);
+            } else {
+                fval = (fval - a.x) / (1.0 - a.x);
+            }
         }
 
         double pfval = 1.0 - fval;
@@ -638,7 +642,7 @@ public class Multiwave {
     private static double[] metaTricubicGradientRgb(double fval, MetaTricubicRGB o) {
         double period1 = o.period1;
         double period2 = o.period2;
-        RGB[][] rgbs = o.colors;
+        RGB[][] rgbs = o.rgb_colors;
 
         double fval1 = (fval % period1) / period1;
         double fval2 = (fval % period2) / period2;
@@ -656,7 +660,7 @@ public class Multiwave {
     private static double[] metaTricubicGradientHsl(double fval, MetaTricubicHSL o) {
         double period1 = o.period1;
         double period2 = o.period2;
-        HSL[][] hsls = o.colors;
+        HSL[][] hsls = o.hsl_colors;
 
         double fval1 = (fval % period1) / period1;
         double fval2 = (fval % period2) / period2;
@@ -697,8 +701,8 @@ public class Multiwave {
         public MetaTricubicRGB() {
 
         }
-        public void setColors(RGB[][] colors) {
-            this.colors = colors;
+        public void setRgb_colors(RGB[][] rgb_colors) {
+            this.rgb_colors = rgb_colors;
         }
 
         public void setPeriod1(Double period1) {
@@ -709,8 +713,8 @@ public class Multiwave {
             this.period2 = period2;
         }
 
-        public RGB[][] getColors() {
-            return colors;
+        public RGB[][] getRgb_colors() {
+            return rgb_colors;
         }
 
         public Double getPeriod1() {
@@ -722,7 +726,7 @@ public class Multiwave {
         }
 
         @JsonProperty
-        RGB[][] colors;
+        RGB[][] rgb_colors;
 
         @JsonProperty
         Double period1;
@@ -731,19 +735,19 @@ public class Multiwave {
         Double period2;
 
         public MetaTricubicRGB(int[][][] colors_in, double period1, double period2) {
-            colors = new RGB[colors_in.length][];
-            for(int i = 0; i < colors.length; i++) {
-                colors[i] = new RGB[colors_in[i].length];
-                for(int j = 0; j < colors[i].length; j++) {
-                    colors[i][j] = new RGB(colors_in[i][j]);
+            rgb_colors = new RGB[colors_in.length][];
+            for(int i = 0; i < rgb_colors.length; i++) {
+                rgb_colors[i] = new RGB[colors_in[i].length];
+                for(int j = 0; j < rgb_colors[i].length; j++) {
+                    rgb_colors[i][j] = new RGB(colors_in[i][j]);
                 }
             }
             this.period1 = period1;
             this.period2 = period2;
         }
 
-        public MetaTricubicRGB(RGB[][] colors, double period1, double period2) {
-            this.colors = colors;
+        public MetaTricubicRGB(RGB[][] rgb_colors, double period1, double period2) {
+            this.rgb_colors = rgb_colors;
             this.period1 = period1;
             this.period2 = period2;
         }
@@ -754,8 +758,8 @@ public class Multiwave {
         public MetaTricubicHSL() {
 
         }
-        public HSL[][] getColors() {
-            return colors;
+        public HSL[][] getHsl_colors() {
+            return hsl_colors;
         }
 
         public Double getPeriod1() {
@@ -766,8 +770,8 @@ public class Multiwave {
             return period2;
         }
 
-        public void setColors(HSL[][] colors) {
-            this.colors = colors;
+        public void setHsl_colors(HSL[][] hsl_colors) {
+            this.hsl_colors = hsl_colors;
         }
 
         public void setPeriod1(Double period1) {
@@ -779,26 +783,26 @@ public class Multiwave {
         }
 
         @JsonProperty
-        HSL[][] colors;
+        HSL[][] hsl_colors;
         @JsonProperty
         Double period1;
         @JsonProperty
         Double period2;
 
         public MetaTricubicHSL(double[][][] colors_in, double period1, double period2) {
-            colors = new HSL[colors_in.length][];
-            for(int i = 0; i < colors.length; i++) {
-                colors[i] = new HSL[colors_in[i].length];
-                for(int j = 0; j < colors[i].length; j++) {
-                    colors[i][j] = new HSL(colors_in[i][j]);
+            hsl_colors = new HSL[colors_in.length][];
+            for(int i = 0; i < hsl_colors.length; i++) {
+                hsl_colors[i] = new HSL[colors_in[i].length];
+                for(int j = 0; j < hsl_colors[i].length; j++) {
+                    hsl_colors[i][j] = new HSL(colors_in[i][j]);
                 }
             }
             this.period1 = period1;
             this.period2 = period2;
         }
 
-        public MetaTricubicHSL(HSL[][] colors, double period1, double period2) {
-            this.colors = colors;
+        public MetaTricubicHSL(HSL[][] hsl_colors, double period1, double period2) {
+            this.hsl_colors = hsl_colors;
             this.period1 = period1;
             this.period2 = period2;
         }
@@ -1085,22 +1089,22 @@ public class Multiwave {
                 if(meta_tricubic_rgb.period1 <= 0 || meta_tricubic_rgb.period2 <= 0) {
                     throw new Exception("Meta tricubic periods must be greater than zero.");
                 }
-                if(meta_tricubic_rgb.colors == null) {
+                if(meta_tricubic_rgb.rgb_colors == null) {
                     throw new Exception("Meta tricubic rgb colors are missing.");
                 }
 
-                if(meta_tricubic_rgb.colors.length == 0) {
+                if(meta_tricubic_rgb.rgb_colors.length == 0) {
                     throw new Exception("The meta tricubic RGB cannot be empty.");
                 }
 
-                for(int i = 0; i < meta_tricubic_rgb.colors.length; i++) {
+                for(int i = 0; i < meta_tricubic_rgb.rgb_colors.length; i++) {
 
-                    if(meta_tricubic_rgb.colors[i].length == 0) {
+                    if(meta_tricubic_rgb.rgb_colors[i].length == 0) {
                         throw new Exception("The meta tricubic RGB cannot be empty.");
                     }
 
-                    for(int j = 0; j < meta_tricubic_rgb.colors[i].length; j++) {
-                        if(!meta_tricubic_rgb.colors[i][j].isValid()) {
+                    for(int j = 0; j < meta_tricubic_rgb.rgb_colors[i].length; j++) {
+                        if(!meta_tricubic_rgb.rgb_colors[i][j].isValid()) {
                             throw new Exception("The meta tricubic r, g, b values must be present and in the range of [0, 255].");
                         }
                     }
@@ -1114,22 +1118,22 @@ public class Multiwave {
                 if(meta_tricubic_hsl.period1 <= 0 || meta_tricubic_hsl.period2 <= 0) {
                     throw new Exception("Meta tricubic periods must be greater than zero.");
                 }
-                if(meta_tricubic_hsl.colors == null) {
+                if(meta_tricubic_hsl.hsl_colors == null) {
                     throw new Exception("Meta tricubic hsl colors are missing.");
                 }
 
-                if(meta_tricubic_hsl.colors.length == 0) {
+                if(meta_tricubic_hsl.hsl_colors.length == 0) {
                     throw new Exception("The meta tricubic HSL cannot be empty.");
                 }
 
-                for(int i = 0; i < meta_tricubic_hsl.colors.length; i++) {
+                for(int i = 0; i < meta_tricubic_hsl.hsl_colors.length; i++) {
 
-                    if(meta_tricubic_hsl.colors[i].length == 0) {
+                    if(meta_tricubic_hsl.hsl_colors[i].length == 0) {
                         throw new Exception("The meta tricubic HSL cannot be empty.");
                     }
 
-                    for(int j = 0; j < meta_tricubic_hsl.colors[i].length; j++) {
-                        if(!meta_tricubic_hsl.colors[i][j].isValid()) {
+                    for(int j = 0; j < meta_tricubic_hsl.hsl_colors[i].length; j++) {
+                        if(!meta_tricubic_hsl.hsl_colors[i][j].isValid()) {
                             throw new Exception("The meta tricubic h, s, l values must be present.");
                         }
                     }
@@ -1214,11 +1218,11 @@ public class Multiwave {
             if(meta_tricubic_rgb == null) {
                 return null;
             }
-            Color[][] colors = new Color[meta_tricubic_rgb.colors.length][];
+            Color[][] colors = new Color[meta_tricubic_rgb.rgb_colors.length][];
             for(int i = 0; i < colors.length; i++) {
-                colors[i] = new Color[meta_tricubic_rgb.colors[i].length];
+                colors[i] = new Color[meta_tricubic_rgb.rgb_colors[i].length];
                 for(int j = 0; j < colors[i].length; j++) {
-                    colors[i][j] = new Color(meta_tricubic_rgb.colors[i][j].getR(), meta_tricubic_rgb.colors[i][j].getG(), meta_tricubic_rgb.colors[i][j].getB());
+                    colors[i][j] = new Color(meta_tricubic_rgb.rgb_colors[i][j].getR(), meta_tricubic_rgb.rgb_colors[i][j].getG(), meta_tricubic_rgb.rgb_colors[i][j].getB());
                 }
             }
             return colors;
@@ -1229,11 +1233,11 @@ public class Multiwave {
             if(meta_tricubic_hsl == null) {
                 return null;
             }
-            Color[][] colors = new Color[meta_tricubic_hsl.colors.length][];
+            Color[][] colors = new Color[meta_tricubic_hsl.hsl_colors.length][];
             for(int i = 0; i < colors.length; i++) {
-                colors[i] = new Color[meta_tricubic_hsl.colors[i].length];
+                colors[i] = new Color[meta_tricubic_hsl.hsl_colors[i].length];
                 for(int j = 0; j < colors[i].length; j++) {
-                    int[] rgb = hslToRgb2(meta_tricubic_hsl.colors[i][j].getHSL());
+                    int[] rgb = hslToRgb2(meta_tricubic_hsl.hsl_colors[i][j].getHSL());
                     colors[i][j] = new Color(rgb[0], rgb[1], rgb[2]);
                 }
             }

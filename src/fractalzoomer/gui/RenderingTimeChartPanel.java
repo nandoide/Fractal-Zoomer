@@ -14,9 +14,11 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-public class RenderingTimeChartPanel extends JPanel {
+public class RenderingTimeChartPanel extends JPanel implements ActionListener {
     public static  final  String[] labels = new String[] {
             TaskRender.TOTAL_ELAPSED_TIME_STRING_LABEL,
             TaskRender.REFERENCE_CALCULATION_ELAPSED_TIME_STRING_LABEL,
@@ -31,6 +33,7 @@ public class RenderingTimeChartPanel extends JPanel {
     };
     private final XYSeries[] times;
     private final boolean[] has_data;
+    private XYItemRenderer renderer;
     public RenderingTimeChartPanel(int maxCount) {
         super(new BorderLayout());
 
@@ -65,7 +68,7 @@ public class RenderingTimeChartPanel extends JPanel {
         domain.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
         range.setNumberFormatOverride(new DecimalFormat("#,##0"));
-        XYItemRenderer renderer = new XYLineAndShapeRenderer(true, true);
+        renderer = new XYLineAndShapeRenderer(true, true);
         renderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
 
         XYPlot plot = new XYPlot(dataset, domain, range, renderer);
@@ -77,7 +80,21 @@ public class RenderingTimeChartPanel extends JPanel {
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createLineBorder(Color.BLACK)));
+        JPanel boxPanel = new JPanel();
+
+        for(int i = 0; i < times.length; i++) {
+            JCheckBox box1 = new JCheckBox("" + (i + 1));
+            box1.setActionCommand("" + (i + 1));
+            box1.addActionListener(this);
+            box1.setSelected(true);
+            boxPanel.add(box1);
+            box1.setFocusable(false);
+            box1.setForeground((Color) renderer.getItemPaint(i, 0));
+            box1.setFont(box1.getFont().deriveFont(Font.BOLD));
+            box1.setToolTipText(times[i].getKey().toString());
+        }
         this.add(chartPanel);
+        this.add(boxPanel, "South");
     }
 
     public void addTimeData(int id, long render, long y) {
@@ -90,4 +107,16 @@ public class RenderingTimeChartPanel extends JPanel {
         }
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            int series = Integer.parseInt(e.getActionCommand()) - 1;
+
+            if (series >= 0) {
+                boolean visible = renderer.getItemVisible(series, 0);
+                renderer.setSeriesVisible(series, !visible);
+            }
+        }
+        catch (Exception ex) {}
+    }
 }

@@ -750,19 +750,19 @@ public class StatisticsColoringDialog extends JDialog {
         panel89.setBackground(MainWindow.bg_color);
         panel89.add(combineNormalMap);
 
-        demFactor.setEnabled(sts.normalMapOverrideColoring && (normal_map_color_method_combo.getSelectedIndex() == 2 || normal_map_color_method_combo.getSelectedIndex() == 3));
+        demFactor.setEnabled(sts.normalMapOverrideColoring && (normal_map_color_method_combo.getSelectedIndex() == 2 || normal_map_color_method_combo.getSelectedIndex() == 3 || normal_map_color_method_combo.getSelectedIndex() == 4 || normal_map_color_method_combo.getSelectedIndex() == 5));
 
         normal_map_color_method_combo.setEnabled(sts.normalMapOverrideColoring);
 
 
-        normal_map_color_method_combo.addActionListener(e -> demFactor.setEnabled(sts.normalMapOverrideColoring && (normal_map_color_method_combo.getSelectedIndex() == 2 || normal_map_color_method_combo.getSelectedIndex() == 3)));
+        normal_map_color_method_combo.addActionListener(e -> demFactor.setEnabled(sts.normalMapOverrideColoring && (normal_map_color_method_combo.getSelectedIndex() == 2 || normal_map_color_method_combo.getSelectedIndex() == 3 || normal_map_color_method_combo.getSelectedIndex() == 4 || normal_map_color_method_combo.getSelectedIndex() == 5)));
 
         normalMapOverrideColoring.addActionListener(e -> {
             normal_map_color_method_combo.setEnabled(normalMapOverrideColoring.isSelected());
             nmLightFactor.setEnabled(normalMapOverrideColoring.isSelected() && normalMap.isSelected());
             color_method_combo.setEnabled(normalMapOverrideColoring.isSelected() && normalMap.isSelected());
             color_blend_opt.setEnabled(normalMapOverrideColoring.isSelected() && normalMap.isSelected() && color_method_combo.getSelectedIndex() == 3);
-            demFactor.setEnabled(sts.normalMapOverrideColoring && (normal_map_color_method_combo.getSelectedIndex() == 2 || normal_map_color_method_combo.getSelectedIndex() == 3));
+            demFactor.setEnabled(sts.normalMapOverrideColoring && (normal_map_color_method_combo.getSelectedIndex() == 2 || normal_map_color_method_combo.getSelectedIndex() == 3 || normal_map_color_method_combo.getSelectedIndex() == 4 || normal_map_color_method_combo.getSelectedIndex() == 5));
         });
 
         panel8.add(panel84);

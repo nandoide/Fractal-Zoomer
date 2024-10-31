@@ -393,6 +393,8 @@ class ColorPoint implements Comparable<ColorPoint> {
 
         private static int mouse_color_label_x;
 
+        public static int presetPaletteDistance = 32;
+
         private Cursor grab_cursor;
         private Cursor grabbing_cursor;
         private static int procedural_length = 500;
@@ -1101,7 +1103,7 @@ class ColorPoint implements Comparable<ColorPoint> {
                 greenComponent.eraseAll();
                 blueComponent.eraseAll();
 
-                int max = width / 16;
+                int max = width / presetPaletteDistance;
                 if(palette1.size() > max) {
                     ArrayList<ArrayList<Integer>> scaledPalette = new ArrayList<>();
                     double s = palette1.size() / ((double)max);
@@ -1122,7 +1124,7 @@ class ColorPoint implements Comparable<ColorPoint> {
                         redComponent.addWithFirstAnchor(x, rgb.get(0));
                         greenComponent.addWithFirstAnchor(x, rgb.get(1));
                         blueComponent.addWithFirstAnchor(x, rgb.get(2));
-                        x += 16;
+                        x += presetPaletteDistance;
                     }
                     else if(rgb.size() == 4) {
                         redComponent.addWithFirstAnchor(x, rgb.get(1));

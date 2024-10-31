@@ -1954,9 +1954,9 @@ public class CustomPaletteEditorDialog extends JDialog {
 
             ArrayList<ArrayList<Integer>> palette1 = extraPalettes.getPalette(extra_presets_box.getSelectedIndex(), labels.length);
 
-            if(palette1.size() > 32) {
+            if(palette1.size() > temp_custom_palette.length) {
                 ArrayList<ArrayList<Integer>> scaledPalette = new ArrayList<>();
-                double s = palette1.size() / 32.0;
+                double s = palette1.size() / ((double)temp_custom_palette.length);
                 for(double k = 0; (int)(k + 0.5) < palette1.size(); k+= s) {
                     scaledPalette.add(palette1.get((int)(k + 0.5)));
                 }
@@ -1967,7 +1967,7 @@ public class CustomPaletteEditorDialog extends JDialog {
                 if(m < palette1.size()) {
                     ArrayList<Integer> rgb = palette1.get(m);
                     if (rgb.size() == 3) {
-                        temp_custom_palette[m][0] = 16;
+                        temp_custom_palette[m][0] = temp_custom_palette.length;
                         temp_custom_palette[m][1] = rgb.get(0);
                         temp_custom_palette[m][2] = rgb.get(1);
                         temp_custom_palette[m][3] = rgb.get(2);

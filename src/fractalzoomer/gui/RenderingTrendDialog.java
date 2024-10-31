@@ -67,6 +67,8 @@ public class RenderingTrendDialog extends JDialog {
             int labelsLength = labels.length - 1;
 
             long[] times = new long[labelsLength];
+            String[] labels2 = RenderingIterationsChartPanel.labels;
+            double[] iterations = new double[labels2.length];
 
             for (String line : lines) {
                 int index = -1;
@@ -87,22 +89,8 @@ public class RenderingTrendDialog extends JDialog {
                     } catch (Exception ex) {
                     }
                 }
-            }
 
-            for (int i = 0; i < labelsLength; i++) {
-                p.addTimeData(i, render, times[i]);
-            }
-
-            p.addTimeData(labelsLength, render, imageWriteTime);
-        }
-
-        {
-            String[] labels2 = RenderingIterationsChartPanel.labels;
-            double[] iterations = new double[labels2.length];
-
-            for (String line : lines) {
-                int index = -1;
-                int i;
+                index = -1;
                 for (i = 0; i < labels2.length; i++) {
                     index = line.indexOf(labels2[i]);
                     if (index != -1) {
@@ -120,6 +108,12 @@ public class RenderingTrendDialog extends JDialog {
                     }
                 }
             }
+
+            for (int i = 0; i < labelsLength; i++) {
+                p.addTimeData(i, render, times[i]);
+            }
+
+            p.addTimeData(labelsLength, render, imageWriteTime);
 
             for (int i = 0; i < iterations.length; i++) {
                 p2.addIterationData(i, render, iterations[i]);

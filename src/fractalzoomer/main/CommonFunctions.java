@@ -1576,7 +1576,7 @@ public class CommonFunctions implements Constants {
                     if(s.pps.sts.normalMapOverrideColoring) {
                         overview += tab + "Coloring Algorithm = " + normalMapColoringMethods[s.pps.sts.normalMapColoring] + "<br>";
 
-                        if(s.pps.sts.normalMapColoring == 2 || s.pps.sts.normalMapColoring == 3) {
+                        if(s.pps.sts.normalMapColoring == 2 || s.pps.sts.normalMapColoring == 3 || s.pps.sts.normalMapColoring == 4 || s.pps.sts.normalMapColoring == 5) {
                             overview += tab2 + "Distance Estimator Factor = " + s.pps.sts.normalMapDistanceEstimatorfactor + "<br>";
                         }
                     }

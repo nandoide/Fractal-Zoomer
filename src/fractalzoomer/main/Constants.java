@@ -90,7 +90,7 @@ public interface Constants {
     public static final String[] rootInitializationMethod = {"(a^i) * z", "z's circle", "z * cos(a * i)", "z * e^(a * i)"};
     public static final String[] equicontinuityColorMethods = {"HSL", "HSB", "LCH_ab", "Arg-Palette", "Palette"};
     public static final String[] equicontinuityArgs = {"Final Z value", "Start Z value", "Pixel Value", "C Value"};
-    public static final String[] normalMapColoringMethods = {"Original Color", "Rainbow Palette", "Distance Estimator", "Distance Estimator Variation"};
+    public static final String[] normalMapColoringMethods = {"Original Color", "Rainbow Palette", "Distance Estimator", "Distance Estimator Variation", "Distance Estimator Variation 2", "Distance Estimator Variation 3"};
     public static final String[] rootShadingFunction = {"Linear", "Square Root", "Cube Root", "Cosine", "Exponential", "Constant", "Square", "Sine", "Deceleration", "3rd Degree Poly", "5th Degree Poly", "Fourth Root", "Smooth Transition", "Quarter Sine"};
     public static final String[] twinLampsFunction = {"Linear", "Sqrt"};
     public static final String[] langNormTypes = {"Norm Squared", "Norm", "Rhombus-Norm", "Square-Norm", "N-Norm"};

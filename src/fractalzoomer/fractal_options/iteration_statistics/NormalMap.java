@@ -700,7 +700,7 @@ public class NormalMap extends GenericStatistic {
             }
 
         }
-        else if(normalMapColoring == 2 || normalMapColoring == 3){
+        else if(normalMapColoring == 2 || normalMapColoring == 3) {
             //double norm_z = z_val.norm();
             //Complex temp = z_val.times(Math.log(norm_z)).times2().divide(derivative);
             //return 1 / Math.tanh(temp.norm());
@@ -722,6 +722,21 @@ public class NormalMap extends GenericStatistic {
                 return temp < 0 ? 0 : temp;
             }
 
+        }
+        else if(normalMapColoring == 4 || normalMapColoring == 5) {
+            double FinalMagDzdc = 0, FinalMagnitude = 0;
+            if(supportsDeepCalculations()) {
+                FinalMagDzdc = derivative_m.norm().toDouble();
+                FinalMagnitude = z_val_deep.norm().toDouble();
+            }
+            else {
+                FinalMagDzdc = derivative.norm();
+                FinalMagnitude = z_val.norm();
+            }
+            double LogMagnitude = Math.log(FinalMagnitude);
+            double InvDE = (FinalMagDzdc + FinalMagDzdc) / (FinalMagnitude * LogMagnitude);
+            double LogInvDE = Math.log(InvDE + 1);
+            return LogInvDE * 8 * normalMapDistanceEstimatorfactor;
         }
 
         return 0;
@@ -829,7 +844,7 @@ public class NormalMap extends GenericStatistic {
 
     @Override
     public boolean isAdditive() {
-        if(normalMapOverrideColoring && normalMapColoring == 2) {
+        if(normalMapOverrideColoring && (normalMapColoring == 2 || normalMapColoring == 4)) {
             return false;
         }
         return true;

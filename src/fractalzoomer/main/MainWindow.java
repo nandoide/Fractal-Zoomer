@@ -9646,6 +9646,7 @@ public class MainWindow extends JFrame implements Constants {
             writer.println("dragging_transforms_image " + DRAGGING_TRANSFORMS_IMAGE);
             writer.println("reuse_data_on_iteration_change " + REUSE_DATA_ON_ITERATION_CHANGE);
             writer.println("first_run " + false);
+            writer.println("preset_palette_distance " + ColorPaletteEditorPanel.presetPaletteDistance);
 
             writer.println();
             writer.println("[Window]");
@@ -9851,6 +9852,16 @@ public class MainWindow extends JFrame implements Constants {
 
                             if (temp > 0) {
                                 BigNum.SQRT_MAX_ITERATIONS = temp;
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("preset_palette_distance") && tokenizer.countTokens() == 1) {
+                        try {
+                            int temp = Integer.parseInt(tokenizer.nextToken());
+
+                            if (temp > 0) {
+                                ColorPaletteEditorPanel.presetPaletteDistance = temp;
                             }
                         } catch (Exception ex) {
                         }

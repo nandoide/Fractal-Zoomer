@@ -14,24 +14,30 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-public class RenderingIterationsChartPanel extends JPanel {
+public class RenderingIterationsChartPanel extends JPanel implements ActionListener {
     public static  final  String[] labels = new String[] {
             TaskRender.REFERENCE_POINT_ITERATIONS_STRING_LABEL,
             TaskRender.JULIA_EXTRA_REFERENCE_POINT_ITERATIONS_STRING_LABEL,
             TaskRender.MINIMUM_ITERATIONS_STRING_LABEL,
+            TaskRender.MAXIMUM_ITERATIONS_STRING_LABEL,
+            TaskRender.MAXIMUM_ITERATIONS_IGNORE_NOT_ESCAPED_STRING_LABEL,
             TaskRender.AVERAGE_ITERATIONS_PER_PIXEL_STRING_LABEL,
             TaskRender.SA_SKIPPED_ITERATIONS_STRING_LABEL,
             TaskRender.NANOMB1_SKIPPED_ITERATIONS_PER_PIXEL_STRING_LABEL,
             TaskRender.BLA_ITERATIONS_PER_PIXEL_STRING_LABEL,
-            //TaskRender.PERTURBATION_ITERATIONS_PER_PIXEL_STRING_LABEL,
+            TaskRender.PERTURBATION_ITERATIONS_PER_PIXEL_STRING_LABEL,
             TaskRender.EXTENDED_RANGE_ITERATIONS_PER_PIXEL_STRING_LABEL,
             TaskRender.SCALED_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL,
             TaskRender.NORMAL_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL
 };
     private final XYSeries[] iterations;
     private final boolean[] has_data;
+    private XYItemRenderer renderer;
+
     public RenderingIterationsChartPanel(int maxCount) {
         super(new BorderLayout());
 
@@ -66,7 +72,7 @@ public class RenderingIterationsChartPanel extends JPanel {
         domain.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
         range.setNumberFormatOverride(new DecimalFormat("#,##0"));
-        XYItemRenderer renderer = new XYLineAndShapeRenderer(true, true);
+        renderer = new XYLineAndShapeRenderer(true, true);
         renderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
 
         XYPlot plot = new XYPlot(dataset, domain, range, renderer);
@@ -77,7 +83,28 @@ public class RenderingIterationsChartPanel extends JPanel {
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createLineBorder(Color.BLACK)));
+
+        JPanel boxPanel = new JPanel();
+        for(int i = 0; i < iterations.length; i++) {
+            JCheckBox box1 = new JCheckBox("" + (i + 1));
+            box1.setActionCommand("" + (i + 1));
+            box1.addActionListener(this);
+            if(i == 3 || i == 4) {
+                box1.setSelected(false);
+                renderer.setSeriesVisible(i, false);
+            }
+            else {
+                box1.setSelected(true);
+                renderer.setSeriesVisible(i, true);
+            }
+            boxPanel.add(box1);
+            box1.setFocusable(false);
+            box1.setForeground((Color) renderer.getItemPaint(i, 0));
+            box1.setFont(box1.getFont().deriveFont(Font.BOLD));
+            box1.setToolTipText(iterations[i].getKey().toString());
+        }
         this.add(chartPanel);
+        this.add(boxPanel, "South");
     }
 
     public void addIterationData(int id, long render, double y) {
@@ -90,4 +117,16 @@ public class RenderingIterationsChartPanel extends JPanel {
         }
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            int series = Integer.parseInt(e.getActionCommand()) - 1;
+
+            if (series >= 0) {
+                boolean visible = renderer.getItemVisible(series, 0);
+                renderer.setSeriesVisible(series, !visible);
+            }
+        }
+        catch (Exception ex) {}
+    }
 }
