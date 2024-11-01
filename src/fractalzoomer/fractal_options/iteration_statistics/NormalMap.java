@@ -687,6 +687,7 @@ public class NormalMap extends GenericStatistic {
                 double norm_z = z_val_deep.norm().toDouble();
                 MantExpComplex u = z_val_deep.divide(derivative_m);
                 MantExpComplex temp = u.times(Math.log(norm_z)).times(MantExp.TWO);
+                temp.Normalize();
                 return ((1 + temp.toComplex().arg() / (2 * Math.PI)) % 1.0);//Todo: Bug here
 
             }
@@ -709,7 +710,9 @@ public class NormalMap extends GenericStatistic {
                 double temp2 = z_val_deep.norm().toDouble();
                 double temp3 = Math.log(temp2);
                 MantExp temp4 = new MantExp(temp2).divide(derivative_m.norm());
-                double temp = -4.0 * new MantExp(temp3 * normalMapDistanceEstimatorfactor).multiply(temp4).multiply_mutable(MantExp.TWO).log();
+                MantExp res = new MantExp(temp3 * normalMapDistanceEstimatorfactor).multiply(temp4).multiply_mutable(MantExp.TWO);
+                res.Normalize();
+                double temp = -4.0 * res.log();
 
                 return temp < 0 ? 0 : temp;
             }
@@ -724,19 +727,24 @@ public class NormalMap extends GenericStatistic {
 
         }
         else if(normalMapColoring == 4 || normalMapColoring == 5) {
-            double FinalMagDzdc = 0, FinalMagnitude = 0;
             if(supportsDeepCalculations()) {
-                FinalMagDzdc = derivative_m.norm().toDouble();
-                FinalMagnitude = z_val_deep.norm().toDouble();
+                MantExp FinalMagDzdc = derivative_m.norm();
+                MantExp FinalMagnitude = z_val_deep.norm();
+                double LogMagnitude = FinalMagnitude.log();
+                MantExp InvDE = (FinalMagDzdc.multiply2()).divide(FinalMagnitude.multiply(LogMagnitude)).add(MantExp.ONE);
+                InvDE.Normalize();
+                double LogInvDE = InvDE.log();
+                return LogInvDE * 8 * normalMapDistanceEstimatorfactor;
             }
             else {
-                FinalMagDzdc = derivative.norm();
-                FinalMagnitude = z_val.norm();
+                double FinalMagDzdc = derivative.norm();
+                double FinalMagnitude = z_val.norm();
+                double LogMagnitude = Math.log(FinalMagnitude);
+                double InvDE = (FinalMagDzdc + FinalMagDzdc) / (FinalMagnitude * LogMagnitude);
+                double LogInvDE = Math.log(InvDE + 1);
+                return LogInvDE * 8 * normalMapDistanceEstimatorfactor;
             }
-            double LogMagnitude = Math.log(FinalMagnitude);
-            double InvDE = (FinalMagDzdc + FinalMagDzdc) / (FinalMagnitude * LogMagnitude);
-            double LogInvDE = Math.log(InvDE + 1);
-            return LogInvDE * 8 * normalMapDistanceEstimatorfactor;
+
         }
 
         return 0;
@@ -752,6 +760,7 @@ public class NormalMap extends GenericStatistic {
 
             MantExp d = new MantExp(temp2).multiply(new MantExp(temp3)).divide_mutable(derivative_m.norm());
             MantExp t_m = d.divide(DELimit_m);
+            t_m.Normalize();
             t = t_m.toDouble();
         }
         else {

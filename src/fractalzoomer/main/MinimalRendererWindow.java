@@ -2799,6 +2799,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
                 totalprogress.setValue(k + 1);
                 totalprogress.setString("Image: " + totalprogress.getValue() + "/" + totalprogress.getMaximum());
+                addTrendData(k, progress.getToolTipText());
 
                 if(stopped) {
                     break;
@@ -2813,6 +2814,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             overviewButton.setEnabled(true);
             disableStop();
             multipleRendersTrendButton.setEnabled(false);
+            closeTrendDialog();
             stopGlobalTimer();
         });
     }
@@ -2895,6 +2897,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                 totalprogress.setValue(k + 1);
                 totalprogress.setString("Image: " + totalprogress.getValue() + "/" + totalprogress.getMaximum());
                 updatePreview();
+                addTrendData(k, progress.getToolTipText());
 
                 if(stopped) {
                     break;
@@ -2912,6 +2915,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             overviewButton.setEnabled(true);
             disableStop();
             multipleRendersTrendButton.setEnabled(false);
+            closeTrendDialog();
             stopGlobalTimer();
         });
     }

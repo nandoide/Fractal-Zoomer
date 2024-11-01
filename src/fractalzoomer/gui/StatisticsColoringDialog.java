@@ -1625,8 +1625,8 @@ public class StatisticsColoringDialog extends JDialog {
                 return;
             }
 
-            if (temp10 < 1) {
-                JOptionPane.showMessageDialog(this_frame, "The normal map height factor must be greater or equal to 1.", "Error!", JOptionPane.ERROR_MESSAGE);
+            if (temp10 < 0) {
+                JOptionPane.showMessageDialog(this_frame, "The normal map height factor must be greater or equal to 0.", "Error!", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 

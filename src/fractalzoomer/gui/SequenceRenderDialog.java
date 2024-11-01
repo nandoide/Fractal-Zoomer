@@ -194,7 +194,7 @@ public class SequenceRenderDialog extends JDialog {
         override_max_iterations_size.setLineWrap(true);
         override_max_iterations_size.setFont(TEMPLATE_TFIELD.getFont());
         override_max_iterations_size.setText("" + zss.overrideMaxIterationsSizeLimit);
-        //Todo add magnigification
+        //Todo add magnigification?
 
         JScrollPane scrollOverrideMaxIterSize = new JScrollPane (override_max_iterations_size,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
