@@ -44,7 +44,7 @@ public class RenderingTrendDialog extends JDialog {
             }
         });
 
-        int maxCount = 100;
+        int maxCount = 75;
         p = new RenderingTimeChartPanel(maxCount);
         p2 = new RenderingIterationsChartPanel(maxCount);
 

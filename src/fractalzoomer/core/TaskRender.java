@@ -2394,16 +2394,16 @@ public abstract class TaskRender implements Runnable {
 
     public static final String PERTURBATION_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Perturbation Iterations Per Pixel: <b>";
     public static final String BLA_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>BLA Iterations Per Pixel: <b>";
-    public static final String NORMAL_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Normal Double Iterations Per Pixel: <b>";
-    public static final String EXTENDED_RANGE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Extended Range Iterations Per Pixel: <b>";
-    public static final String SCALED_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Scaled Double Iterations Per Pixel: <b>";
+    public static final String NORMAL_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>[Double] Perturbation Iterations Per Pixel: <b>";
+    public static final String EXTENDED_RANGE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>[Extended Range] Perturbation Iterations Per Pixel: <b>";
+    public static final String SCALED_DOUBLE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>[Scaled Double] Perturbation Iterations Per Pixel: <b>";
     public static final String SA_SKIPPED_ITERATIONS_STRING_LABEL = "<li>SA Skipped Iterations: <b>";
     public static final String NANOMB1_SKIPPED_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Nanomb1 Skipped Iterations Per Pixel: <b>";
 
     public static final String AVERAGE_ITERATIONS_PER_PIXEL_STRING_LABEL = "<li>Average Iterations Per Pixel: <b>";
     public static final String MINIMUM_ITERATIONS_STRING_LABEL = "<li>Minimum Iterations: <b>";
     public static final String MAXIMUM_ITERATIONS_STRING_LABEL = "<li>Maximum Iterations: <b>";
-    public static final String MAXIMUM_ITERATIONS_IGNORE_NOT_ESCAPED_STRING_LABEL = "<li>Maximum Iterations (Ignore Not Escaped Points): <b>";
+    public static final String MAXIMUM_ITERATIONS_IGNORE_NOT_ESCAPED_STRING_LABEL = "<li>Maximum Iterations (Escaped Points Only): <b>";
     public static final String REFERENCE_POINT_ITERATIONS_STRING_LABEL = "<li>Reference Point Iterations: <b>";
     public static final String JULIA_EXTRA_REFERENCE_POINT_ITERATIONS_STRING_LABEL = "<li>Julia Extra Reference Point Iterations: <b>";
     public static int getExtraSamples(int aaSamplesIndex, int aaMethod) {
