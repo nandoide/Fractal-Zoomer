@@ -11,6 +11,8 @@ public class PaletteColorSmooth extends PaletteColor {
     private InterpolationMethod interpolator;
     private int fractional_transfer_method;
 
+    private boolean use_interpolation = true;
+
     public static int SMOOTHING_COLOR_SELECTION = 0;
 
     public PaletteColorSmooth(int[] palette, Color special_color, int color_smoothing_method, boolean special_use_palette_color, int fractional_transfer_method, int color_space) {
@@ -142,6 +144,10 @@ public class PaletteColorSmooth extends PaletteColor {
             color = palette[(int)(((long)((result))) % palette.length)];
         }
 
+        if(!use_interpolation) {
+            return color;
+        }
+
         int color_red = (color >> 16) & 0xff;
         int color_green = (color >> 8) & 0xff;
         int color_blue = color & 0xff;
@@ -157,12 +163,12 @@ public class PaletteColorSmooth extends PaletteColor {
     }
 
     @Override
-    public int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring) {
+    public int calculateColor(double result, int paletteId,  int color_cycling_location, int extra_offset, int cycle, CosinePaletteSettings iqps, boolean outcoloring) {
 
         result = fractional_transfer(result, fractional_transfer_method);
 
         if((paletteId == 3) && interpolator instanceof LinearInterpolation) {
-            return getGeneratedColor(result, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+            return getGeneratedColor(result, paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
         }
 
         int color;
@@ -170,22 +176,26 @@ public class PaletteColorSmooth extends PaletteColor {
 
         if(result == 0) {
             if(SMOOTHING_COLOR_SELECTION == 0) {
-                color = color2 = getGeneratedColor(0, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+                color = color2 = getGeneratedColor(0, paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
             }
             else {
-                color = getGeneratedColor(0, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
-                color2 = getGeneratedColor(1, paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+                color = getGeneratedColor(0, paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
+                color2 = getGeneratedColor(1, paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
             }
         }
         else {
             if(SMOOTHING_COLOR_SELECTION == 0) {
-                color = getGeneratedColor(((long)result - 1), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
-                color2 = getGeneratedColor(((long)result), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+                color = getGeneratedColor(((long)result - 1), paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
+                color2 = getGeneratedColor(((long)result), paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
             }
             else {
-                color = getGeneratedColor(((long)result), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
-                color2 = getGeneratedColor(((long)result + 1), paletteId, color_cycling_location, cycle, iqps, outcoloring, null, null, null);
+                color = getGeneratedColor(((long)result), paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
+                color2 = getGeneratedColor(((long)result + 1), paletteId, color_cycling_location, extra_offset, cycle, iqps, outcoloring, null, null, null);
             }
+        }
+
+        if(!use_interpolation) {
+            return color;
         }
 
         int color_red = (color >> 16) & 0xff;

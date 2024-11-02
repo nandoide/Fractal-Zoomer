@@ -75,11 +75,11 @@ public abstract class PaletteColor {
         
     }
 
-    public abstract int calculateColor(double result, int paletteId,  int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring);
+    public abstract int calculateColor(double result, int paletteId,  int color_cycling_location, int extra_offset, int cycle, CosinePaletteSettings iqps, boolean outcoloring);
 
     private static double twoPi = Math.PI * 2;
-    public static int getGeneratedColor(double result, int id, int color_cycling_location, int cycle, CosinePaletteSettings iqps, boolean outcoloring, Multiwave.MultiwaveColorParams[] mw, InfiniteWave.InfiniteColorWaveParams[] iw, MultiwaveSimple.MultiwaveSimpleColorParams[] smw) {
-        double value = (Math.abs(result) + color_cycling_location) % cycle;
+    public static int getGeneratedColor(double result, int id, int color_cycling_location, int extra_offset, int cycle, CosinePaletteSettings iqps, boolean outcoloring, Multiwave.MultiwaveColorParams[] mw, InfiniteWave.InfiniteColorWaveParams[] iw, MultiwaveSimple.MultiwaveSimpleColorParams[] smw) {
+        double value = (Math.abs(result) + color_cycling_location + extra_offset) % cycle;
         switch (id) {
             case 0:
                 try {

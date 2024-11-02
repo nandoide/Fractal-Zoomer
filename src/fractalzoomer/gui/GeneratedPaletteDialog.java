@@ -39,6 +39,9 @@ public class GeneratedPaletteDialog extends JDialog {
         JTextField generated_palette_restart_field = new JTextField();
         generated_palette_restart_field.setText("" + (outcoloring ? s.gps.restartGeneratedOutColoringPaletteAt : s.gps.restartGeneratedInColoringPaletteAt));
 
+        JTextField generated_palette_offset_field = new JTextField();
+        generated_palette_offset_field.setText("" + (outcoloring ? s.gps.GeneratedOutColoringPaletteOffset : s.gps.GeneratedInColoringPaletteOffset));
+
         final JCheckBox enable_generated_palette = new JCheckBox("Generated Palette");
         enable_generated_palette.setSelected(outcoloring ? s.gps.useGeneratedPaletteOutColoring : s.gps.useGeneratedPaletteInColoring);
         enable_generated_palette.setFocusable(false);
@@ -121,6 +124,7 @@ public class GeneratedPaletteDialog extends JDialog {
         overview.addActionListener(e -> {
             try {
                 int temp2 = Integer.parseInt(generated_palette_restart_field.getText());
+                int temp3 = Integer.parseInt(generated_palette_offset_field.getText());
 
                 if (temp2 < 0) {
                     JOptionPane.showMessageDialog(ptra, "The generated palette length value must be greater than -1.", "Error!", JOptionPane.ERROR_MESSAGE);
@@ -132,7 +136,12 @@ public class GeneratedPaletteDialog extends JDialog {
                     return;
                 }
 
-                new GeneratedPaletteOverviewDialog(this, outcoloring, currentGps, generated_palettes_combon.getSelectedIndex(), temp2);
+                if(temp3 < 0) {
+                    JOptionPane.showMessageDialog(ptra, "The generated palette offset value must be greater or equal to 0.", "Error!", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                new GeneratedPaletteOverviewDialog(this, outcoloring, currentGps, generated_palettes_combon.getSelectedIndex(), temp2, temp3);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
             }
@@ -152,8 +161,9 @@ public class GeneratedPaletteDialog extends JDialog {
                 buttons_panel,
                 buttons_panel2,
             " ",
-            "Set the Palette Length.",
-            "Palette Length:", generated_palette_restart_field,
+            "Set the Palette Length and Offset.",
+            "Length:", generated_palette_restart_field,
+                "Offset:", generated_palette_offset_field,
                 " ",
                 panel2,
             " "};
@@ -194,6 +204,7 @@ public class GeneratedPaletteDialog extends JDialog {
 
                         try {
                             int temp2 = Integer.parseInt(generated_palette_restart_field.getText());
+                            int temp3 = Integer.parseInt(generated_palette_offset_field.getText());
 
                             if (temp2 < 0) {
                                 JOptionPane.showMessageDialog(ptra, "The generated palette length value must be greater than -1.", "Error!", JOptionPane.ERROR_MESSAGE);
@@ -205,6 +216,11 @@ public class GeneratedPaletteDialog extends JDialog {
                                 return;
                             }
 
+                            if(temp3 < 0) {
+                                JOptionPane.showMessageDialog(ptra, "The generated palette offset value must be greater or equal to 0.", "Error!", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+
                             s.gps = currentGps;
 
                             if(outcoloring) {
@@ -213,6 +229,7 @@ public class GeneratedPaletteDialog extends JDialog {
                                 s.gps.generatedPaletteOutColoringId = generated_palettes_combon.getSelectedIndex();
                                 s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring = blend_generated_and_normal_palette.isSelected();
                                 s.gps.blendingOutColoring = color_blend_opt.getValue() / 100.0;
+                                s.gps.GeneratedOutColoringPaletteOffset = temp3;
                             }
                             else {
                                 s.gps.useGeneratedPaletteInColoring = enable_generated_palette.isSelected();
@@ -220,6 +237,7 @@ public class GeneratedPaletteDialog extends JDialog {
                                 s.gps.generatedPaletteInColoringId = generated_palettes_combon.getSelectedIndex();
                                 s.gps.blendNormalPaletteWithGeneratedPaletteInColoring = blend_generated_and_normal_palette.isSelected();
                                 s.gps.blendingInColoring = color_blend_opt.getValue() / 100.0;
+                                s.gps.GeneratedInColoringPaletteOffset = temp3;
                             }
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);

@@ -479,7 +479,6 @@ public abstract class TaskRender implements Runnable {
     private int gaussian_kernel_size;
     public static double[][] vert;
     public static int[][] vert_color;
-    private static float[][][] vert1;
     private static float[][][] Norm1z;
     private static double[] gaussian_kernel;
     private static double[][] temp_array;
@@ -2058,6 +2057,7 @@ public abstract class TaskRender implements Runnable {
             long totalPPWithSuperSampling = total_pp * supersampling_num;
 
             String val = "<li>Anti-Aliasing Samples: <b>" +  supersampling_num + "x</b><br>" +
+                    (d3 && image != null ? "<li>Actual Image Size: <b>" + image.getWidth() + "x" +  image.getHeight() + " (" + (image.getWidth() * image.getHeight()) + " Pixels)</b><br>" : "") +
                     IMAGE_SIZE_LABEL + supersampling_num + "x" +  WIDTH + "x" +  HEIGHT + " (" + (supersampling_num * WIDTH * HEIGHT) + " Pixels)</b><br>" +
                     PIXELS_CALCULATED_COUNT_LABEL +  totalCalculatedWithSuperSampling + " / " + totalWithSuperSampling + " (" +String.format("%f", (((double) totalCalculatedWithSuperSampling) / totalWithSuperSampling) * 100) + "%)</b><br>";
 
@@ -2080,7 +2080,8 @@ public abstract class TaskRender implements Runnable {
             return val;
         }
         else {
-            String val = IMAGE_SIZE_LABEL + WIDTH + "x" +  HEIGHT + " (" + (WIDTH * HEIGHT) + " Pixels)</b><br>" +
+            String val = (d3 && image != null ? "<li>Actual Image Size: <b>" + image.getWidth() + "x" +  image.getHeight() + " (" + (image.getWidth() * image.getHeight()) + " Pixels)</b><br>" : "");
+            val += IMAGE_SIZE_LABEL + WIDTH + "x" +  HEIGHT + " (" + (WIDTH * HEIGHT) + " Pixels)</b><br>" +
                     PIXELS_CALCULATED_COUNT_LABEL + total_calculated_pixels + " / " + (total) + " (" + String.format("%f", (((double) total_calculated_pixels) / (total)) * 100) + "%)</b><br>";
 
             if(total_completed_pixels >= 0) {
@@ -3291,7 +3292,7 @@ public abstract class TaskRender implements Runnable {
 
         if(gps.blendNormalPaletteWithGeneratedPaletteOutColoring) {
             int color1 = transfered_result < 0 ? palette_outcoloring.getPaletteColor(transfered_result - color_cycling_location_outcoloring) : palette_outcoloring.getPaletteColor(transfered_result + color_cycling_location_outcoloring);
-            int color2 = palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
+            int color2 = palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.GeneratedOutColoringPaletteOffset, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
 
             int red1 = (color1 >> 16) & 0xff;
             int green1 = (color1 >> 8) & 0xff;
@@ -3306,7 +3307,7 @@ public abstract class TaskRender implements Runnable {
             return transfered_result < 0 ? palette_outcoloring.getPaletteColor(transfered_result - color_cycling_location_outcoloring) : palette_outcoloring.getPaletteColor(transfered_result + color_cycling_location_outcoloring);
         }
         else {
-            return palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
+            return palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.GeneratedOutColoringPaletteOffset, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
         }
     }
 
@@ -3314,7 +3315,7 @@ public abstract class TaskRender implements Runnable {
 
         if(gps.blendNormalPaletteWithGeneratedPaletteInColoring) {
             int color1 = transfered_result < 0 ? palette_incoloring.getPaletteColor(transfered_result - color_cycling_location_incoloring) : palette_incoloring.getPaletteColor(transfered_result + color_cycling_location_incoloring);
-            int color2 = palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
+            int color2 = palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.GeneratedInColoringPaletteOffset, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
 
             int red1 = (color1 >> 16) & 0xff;
             int green1 = (color1 >> 8) & 0xff;
@@ -3329,7 +3330,7 @@ public abstract class TaskRender implements Runnable {
             return transfered_result < 0 ? palette_incoloring.getPaletteColor(transfered_result - color_cycling_location_incoloring) : palette_incoloring.getPaletteColor(transfered_result + color_cycling_location_incoloring);
         }
         else {
-            return palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
+            return palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.GeneratedInColoringPaletteOffset, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
         }
 
     }
@@ -4001,14 +4002,11 @@ public abstract class TaskRender implements Runnable {
         int n1 = detail - 1;
 
         int image_size = Math.min(image_width, image_height);
-        double w2 = image_size * 0.5;
         int w2x = (int)(image_width * 0.5);
         int w2y = (int)(image_height * 0.5);
         double d = image_size / (detail / (double)tile_size);
 
-
         double ct = Math.cos(fiX), cf = Math.cos(fiY), st = Math.sin(fiX), sf = Math.sin(fiY);
-        double m00 = scale * cf, m02 = scale * sf, m10 = scale * st * sf, m11 = scale * ct, m12 = -scale * st * cf;
         m20 = -ct * sf;
         m21 = st;
         m22 = ct * cf;
@@ -4021,7 +4019,6 @@ public abstract class TaskRender implements Runnable {
         for (int x1 = FROMx; x1 < TOx; x1++) {
             x = x1 * tile_size;
             int xp1 = (x1 + 1) * tile_size;
-            double c1 = d * x1 - w2;
             for (int y1 = FROMy; y1 < TOy; y1++) {
                 y = y1 * tile_size;
                 if (y < n1 && x < n1) {
@@ -4048,10 +4045,6 @@ public abstract class TaskRender implements Runnable {
                     }
                 }
 
-                double c2 = d * y1 - w2;
-                vert1[x][y][0] = (float) (m00 * c1 + m02 * c2);
-                vert1[x][y][1] = (float) (m10 * c1 + m11 * vert[x][y] + m12 * c2);
-
                 if (update_progress) {
                     rendering_done++;
                 }
@@ -4067,7 +4060,7 @@ public abstract class TaskRender implements Runnable {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, update_progress, tile_size);
+            paint3D(image_size, w2x, w2y, update_progress, tile_size);
 
         }
 
@@ -4138,7 +4131,7 @@ public abstract class TaskRender implements Runnable {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
@@ -4202,7 +4195,7 @@ public abstract class TaskRender implements Runnable {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
@@ -4315,7 +4308,7 @@ public abstract class TaskRender implements Runnable {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
@@ -4428,7 +4421,7 @@ public abstract class TaskRender implements Runnable {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
@@ -6908,7 +6901,6 @@ public abstract class TaskRender implements Runnable {
 
         double mod;
         double ct = Math.cos(fiX), cf = Math.cos(fiY), st = Math.sin(fiX), sf = Math.sin(fiY);
-        double m00 = scale * cf, m02 = scale * sf, m10 = scale * st * sf, m11 = scale * ct, m12 = -scale * st * cf;
         m20 = -ct * sf;
         m21 = st;
         m22 = ct * cf;
@@ -6932,8 +6924,6 @@ public abstract class TaskRender implements Runnable {
 
             for (int x = FROMx; x < TOx; x++) {
 
-                double c1 = d * x - w2;
-
                 for (int y = FROMy; y < TOy; y++) {
                     if (x < n1 && y < n1) {
 
@@ -6956,10 +6946,6 @@ public abstract class TaskRender implements Runnable {
                         Norm1z[x][y][0] = (float) (m20 * norm_0_0 + m21 * norm_0_1 + m22 * norm_0_2);
                         Norm1z[x][y][1] = (float) (m20 * norm_1_0 + m21 * norm_1_1 + m22 * norm_1_2);
                     }
-
-                    double c2 = d * y - w2;
-                    vert1[x][y][0] = (float) (m00 * c1 + m02 * c2);
-                    vert1[x][y][1] = (float) (m10 * c1 + m11 * vert[x][y] + m12 * c2);
                 }
             }
             iteration++;
@@ -6974,9 +6960,9 @@ public abstract class TaskRender implements Runnable {
         return Math.max(Math.max(val0, val1), val2);
     }
 
-   protected void paint3D(int w2x, int w2y, boolean updateProgress, int tile_size) {
+   protected void paint3D(int image_size, int w2x, int w2y, boolean updateProgress, int tile_size) {
 
-       ptr.setP3Render(true);
+        ptr.setP3Render(true);
 
         long time = System.currentTimeMillis();
 
@@ -7022,6 +7008,11 @@ public abstract class TaskRender implements Runnable {
         int red3, green3, blue3;
         int red, green, blue;
 
+        double ct = Math.cos(fiX), cf = Math.cos(fiY), st = Math.sin(fiX), sf = Math.sin(fiY);
+        double m00 = scale * cf, m02 = scale * sf, m10 = scale * st * sf, m11 = scale * ct, m12 = -scale * st * cf;
+        double d = image_size / (detail / (double)tile_size);
+        double w2 = image_size * 0.5;
+
         color_3d_blending = 1 - color_3d_blending;
 
         int count = 0;
@@ -7031,22 +7022,37 @@ public abstract class TaskRender implements Runnable {
                 int i = i1 * tile_size;
                 int j = j1 * tile_size;
 
-                int ip1 = (i1 + 1) * tile_size;
-                int jp1 = (j1 + 1) * tile_size;
+                int i1p1 = i1 + 1;
+                int j1p1 = j1 + 1;
+
+                int ip1 = i1p1 * tile_size;
+                int jp1 = j1p1 * tile_size;
 
                 count++;
 
+                double c1 = d * i1 - w2;
+                double c2 = d * j1 - w2;
+                double c1p1 = d * i1p1 - w2;
+                double c2p1 = d * j1p1 - w2;
+
                if(ip1 < detail && ip1 >= 0 && jp1 < detail && jp1 >= 0) {
+                   double v_i_j_0 = m00 * c1 + m02 * c2;
+                   double v_ip1_j_0 = m00 * c1p1 + m02 * c2;
+                   double v_ip1_jp1_0 = m00 * c1p1 + m02 * c2p1;
+                   double v_i_jp1_0 = m00 * c1 + m02 * c2p1;
 
-
+                   double v_i_j_1 = m10 * c1 + m12 * c2 + vert[i][j] * m11;
+                   double v_ip1_j_1 = m10 * c1p1 + m12 * c2 + vert[ip1][j] * m11;
+                   double v_ip1_jp1_1 = m10 * c1p1 + m12 * c2p1 + vert[ip1][jp1] * m11;
+                   double v_i_jp1_1 = m10 * c1 + m12 * c2p1 + vert[i][jp1] * m11;
 
                     if (Norm1z[i][j][0] > 0) {
-                        xPol[0] = w2x + (int) vert1[i][j][0];
-                        xPol[1] = w2x + (int) vert1[ip1][j][0];
-                        xPol[2] = w2x + (int) vert1[ip1][jp1][0];
-                        yPol[0] = w2y - (int) vert1[i][j][1];
-                        yPol[1] = w2y - (int) vert1[ip1][j][1];
-                        yPol[2] = w2y - (int) vert1[ip1][jp1][1];
+                        xPol[0] = w2x + (int)v_i_j_0;
+                        xPol[1] = w2x + (int)v_ip1_j_0;
+                        xPol[2] = w2x + (int)v_ip1_jp1_0;
+                        yPol[0] = w2y - (int)(v_i_j_1);
+                        yPol[1] = w2y - (int)(v_ip1_j_1);
+                        yPol[2] = w2y - (int)(v_ip1_jp1_1);
 
                         red1 = (((vert_color[i][j]) >> 16) & 0xff);
                         green1 = (((vert_color[i][j]) >> 8) & 0xff);
@@ -7122,12 +7128,12 @@ public abstract class TaskRender implements Runnable {
                     }
 
                     if (Norm1z[i][j][1] > 0) {
-                        xPol[0] = w2x + (int) vert1[i][j][0];
-                        xPol[1] = w2x + (int) vert1[i][jp1][0];
-                        xPol[2] = w2x + (int) vert1[ip1][jp1][0];
-                        yPol[0] = w2y - (int) vert1[i][j][1];
-                        yPol[1] = w2y - (int) vert1[i][jp1][1];
-                        yPol[2] = w2y - (int) vert1[ip1][jp1][1];
+                        xPol[0] = w2x + (int)v_i_j_0;
+                        xPol[1] = w2x + (int)v_i_jp1_0;
+                        xPol[2] = w2x + (int)v_ip1_jp1_0;
+                        yPol[0] = w2y - (int)(v_i_j_1);
+                        yPol[1] = w2y - (int)(v_i_jp1_1);
+                        yPol[2] = w2y - (int)(v_ip1_jp1_1);
 
                         red1 = (((vert_color[i][j]) >> 16) & 0xff);
                         green1 = (((vert_color[i][j]) >> 8) & 0xff);
@@ -8884,6 +8890,12 @@ public abstract class TaskRender implements Runnable {
         return val;
     }
 
+    private double capValue(double val, double upperFence, double lowerFence, boolean intVals) {
+        val = val > upperFence ? upperFence : val;
+        val = val < lowerFence ? lowerFence : val;
+        return intVals ? (long)val : val;
+    }
+
     protected int[] applyScalingToPixel(int index, int[] colors, PixelExtraData[] data, int mapping, double[] image_iterations, boolean[] escaped) {
 
         int[] output = new int[colors.length];
@@ -9423,13 +9435,13 @@ public abstract class TaskRender implements Runnable {
 
                     if (escaped[i]) {
 
-                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
+                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped, hss.use_integer_iterations);
 
                         maxIterationEscaped = val > maxIterationEscaped ? val : maxIterationEscaped;
                         minIterationsEscaped = val < minIterationsEscaped ? val : minIterationsEscaped;
                     } else {
 
-                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
+                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped, hss.use_integer_iterations);
 
                         maxIterationNotEscaped = val > maxIterationNotEscaped ? val : maxIterationNotEscaped;
                         minIterationsNotEscaped = val < minIterationsNotEscaped ? val : minIterationsNotEscaped;
@@ -9861,7 +9873,6 @@ public abstract class TaskRender implements Runnable {
 
         vert = null;
         vert_color = null;
-        vert1 = null;
         Norm1z = null;
 
         if(image_iterations == null || image_iterations.length != width * height) {
@@ -9946,7 +9957,6 @@ public abstract class TaskRender implements Runnable {
 
         vert = new double[detail][detail];
         vert_color = new int[detail][detail];
-        vert1 = new float[detail][detail][2];
         Norm1z = new float[detail][detail][2];
 
 

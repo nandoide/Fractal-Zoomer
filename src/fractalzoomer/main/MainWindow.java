@@ -14064,8 +14064,9 @@ public class MainWindow extends JFrame implements Constants {
 
             }
 
+            int color_method = 0;
             try {
-                int color_method = Integer.parseInt(colorMethod);
+                color_method = Integer.parseInt(colorMethod);
 
                 switch (color_method) {
                     case 0:
@@ -14083,6 +14084,7 @@ public class MainWindow extends JFrame implements Constants {
                     case 4:
                         s.pps.hss.histogramColoring = true;
                         s.pps.hss.hmapping = 1;
+                        s.pps.hss.use_integer_iterations = true;
                         break;
                     case 5:
                         s.ps.transfer_function = DEFAULT;
@@ -14279,7 +14281,10 @@ public class MainWindow extends JFrame implements Constants {
                 }
             }
 
-            if(iterDivD < 1) {
+            if(color_method == 4 && s.fns.banded) {
+                s.fns.smoothing = false;
+            }
+            else if(iterDivD < 1) {
                 s.fns.smoothing = true;
             }
 
@@ -14287,11 +14292,13 @@ public class MainWindow extends JFrame implements Constants {
             s.ps.color_cycling_location = 0;
 
             if(s.isConvergingType()) {
-                int val = (int)(maxColors - 1 / iterDivD);
-                while (val < 0) {
-                    val += maxColors;
+                if(color_method == 0) {
+                    int val = (int) (maxColors - 1 / iterDivD);
+                    while (val < 0) {
+                        val += maxColors;
+                    }
+                    s.ps.color_cycling_location = val;
                 }
-                s.ps.color_cycling_location = val;
             }
             else if(s.fns.smoothing) {
                 s.fns.smoothing_color_selection = 1;

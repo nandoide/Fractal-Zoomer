@@ -27,6 +27,8 @@ public class GeneratedPaletteSettings {
     public String incoloring_infinite_wave_user_palette;
     public String outcoloring_simple_multiwave_user_palette;
     public String incoloring_simple_multiwave_user_palette;
+    public int GeneratedOutColoringPaletteOffset;
+    public int GeneratedInColoringPaletteOffset;
 
 
 
@@ -84,6 +86,8 @@ public class GeneratedPaletteSettings {
         blendNormalPaletteWithGeneratedPaletteInColoring = false;
         blendingOutColoring = 0.5;
         blendingInColoring = 0.5;
+        GeneratedOutColoringPaletteOffset = 0;
+        GeneratedInColoringPaletteOffset = 0;
 
     }
 
@@ -106,5 +110,7 @@ public class GeneratedPaletteSettings {
         blendNormalPaletteWithGeneratedPaletteOutColoring = other.blendNormalPaletteWithGeneratedPaletteOutColoring;
         blendingOutColoring = other.blendingOutColoring;
         blendingInColoring = other.blendingInColoring;
+        GeneratedOutColoringPaletteOffset = other.GeneratedOutColoringPaletteOffset;
+        GeneratedInColoringPaletteOffset = other.GeneratedInColoringPaletteOffset;
     }
 }

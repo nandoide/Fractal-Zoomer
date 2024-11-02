@@ -62,6 +62,10 @@ public class HistogramColoringDialog extends JDialog {
         removeOutliers.setSelected(s.pps.hss.hs_remove_outliers);
         removeOutliers.setFocusable(false);
 
+        final JCheckBox use_integer_iterations = new JCheckBox("Use Integer Values for Min/Max");
+        use_integer_iterations.setSelected(s.pps.hss.use_integer_iterations);
+        use_integer_iterations.setFocusable(false);
+
         JComboBox<String> outliersAlgorithm = new JComboBox<>(new String[] {"Tukey's Fences", "Z-score"});
         outliersAlgorithm.setSelectedIndex(s.pps.hss.hs_outliers_method);
         outliersAlgorithm.setFocusable(false);
@@ -148,6 +152,8 @@ public class HistogramColoringDialog extends JDialog {
                 "Outliers Removal Method:",
                 outliersAlgorithm,
                 " ",
+                use_integer_iterations,
+                " ",
             "Set the image noise reduction factor.",
             "Noise Reduction Factor:",
             noise_factor_field,
@@ -225,6 +231,7 @@ public class HistogramColoringDialog extends JDialog {
                             s.pps.hss.rank_order_digits_grouping = rankOrderDigitGrouping.getSelectedIndex();
                             s.pps.hss.hs_color_blending = blend_modes.getSelectedIndex();
                             s.pps.hss.hs_reverse_color_blending = reverse_blending.isSelected();
+                            s.pps.hss.use_integer_iterations = use_integer_iterations.isSelected();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                             return;

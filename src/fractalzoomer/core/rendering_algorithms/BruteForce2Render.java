@@ -385,7 +385,7 @@ public class BruteForce2Render extends TaskRender {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
@@ -500,7 +500,7 @@ public class BruteForce2Render extends TaskRender {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
@@ -565,7 +565,7 @@ public class BruteForce2Render extends TaskRender {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
@@ -678,7 +678,7 @@ public class BruteForce2Render extends TaskRender {
 
         if (painting_sync.incrementAndGet() == ptr.getNumberOfThreads()) {
 
-            paint3D(w2x, w2y, true, 1);
+            paint3D(image_size, w2x, w2y, true, 1);
 
         }
 
