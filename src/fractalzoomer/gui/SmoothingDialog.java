@@ -7,6 +7,7 @@ import fractalzoomer.main.app_settings.Settings;
 import fractalzoomer.utils.Item;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -39,6 +40,17 @@ public class SmoothingDialog extends JDialog {
         final JCheckBox enable_flat = new JCheckBox("Banding");
         enable_flat.setSelected(s.fns.banded);
         enable_flat.setFocusable(false);
+        enable_flat.setToolTipText("Truncates the floating point result into integer during color transfer.");
+
+        final JCheckBox color_smoothing = new JCheckBox("Color Smoothing");
+        color_smoothing.setSelected(s.color_smoothing);
+        color_smoothing.setFocusable(false);
+        color_smoothing.setToolTipText("Enables the use of color interpolation.");
+
+        JPanel settings_panel = new JPanel();
+        settings_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        settings_panel.add(enable_flat);
+        settings_panel.add(color_smoothing);
 
         JComboBox<String> fractional_transfer = new JComboBox<>(Constants.smoothingFractionalTransfer);
         fractional_transfer.setSelectedIndex(s.fns.smoothing_fractional_transfer_method);
@@ -100,6 +112,9 @@ public class SmoothingDialog extends JDialog {
         if (s.ds.domain_coloring && s.ds.domain_coloring_mode != 1) {
             enable_smoothing.setEnabled(false);
             fractional_transfer.setEnabled(false);
+            color_smoothing.setEnabled(false);
+            color_selection.setEnabled(false);
+            enable_flat.setEnabled(false);
         }
 
         JTextField gamma_field = new JTextField();
@@ -113,7 +128,7 @@ public class SmoothingDialog extends JDialog {
             " ",
             enable_smoothing,
                 " ",
-                enable_flat,
+                settings_panel,
             " ",
                 "Fractional Transfer:",
                 fractional_transfer,
@@ -207,6 +222,7 @@ public class SmoothingDialog extends JDialog {
                             s.color_smoothing_method = combo_box_color_interp.getSelectedIndex();
                             s.fns.smoothing_fractional_transfer_method = fractional_transfer.getSelectedIndex();
                             s.color_space = ((Item)combo_box_color_space.getSelectedItem()).value;
+                            s.color_smoothing = color_smoothing.isSelected();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                             return;

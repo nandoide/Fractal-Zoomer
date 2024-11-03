@@ -1640,9 +1640,13 @@ public class CommonFunctions implements Constants {
             if(s.gps.blendNormalPaletteWithGeneratedPaletteOutColoring) {
                 overview += "<b><font color='red'>Palette(Out):</font></b> " + PaletteMenu.paletteNames[s.ps.color_choice] + ", " + Constants.generatedPalettes[s.gps.generatedPaletteOutColoringId] + "<br>";
                 overview += tab + "Color Blending = " + s.gps.blendingOutColoring + "<br>";
+                overview += tab + "Generated Palette Offset = " + s.gps.GeneratedOutColoringPaletteOffset + "<br>";
+                overview += tab + "Generated Scale Factor = " + s.gps.GeneratedOutColoringPaletteFactor + "<br>";
             }
             else if(s.gps.useGeneratedPaletteOutColoring) {
                 overview += "<b><font color='red'>Palette(Out):</font></b> " + Constants.generatedPalettes[s.gps.generatedPaletteOutColoringId] + "<br>";
+                overview += tab + "Generated Palette Offset = " + s.gps.GeneratedOutColoringPaletteOffset + "<br>";
+                overview += tab + "Generated Scale Factor = " + s.gps.GeneratedOutColoringPaletteFactor + "<br>";
             }
             else {
                 overview += "<b><font color='red'>Palette(Out):</font></b> " + PaletteMenu.paletteNames[s.ps.color_choice] + "<br>";
@@ -1658,9 +1662,13 @@ public class CommonFunctions implements Constants {
                 if(s.gps.blendNormalPaletteWithGeneratedPaletteInColoring) {
                     overview += "<b><font color='red'>Palette(In):</font></b> " + PaletteMenu.paletteNames[s.ps2.color_choice] + ", " + Constants.generatedPalettes[s.gps.generatedPaletteInColoringId] + "<br>";
                     overview += tab + "Color Blending = " + s.gps.blendingInColoring + "<br>";
+                    overview += tab + "Generated Palette Offset = " + s.gps.GeneratedInColoringPaletteOffset + "<br>";
+                    overview += tab + "Generated Scale Factor = " + s.gps.GeneratedInColoringPaletteFactor + "<br>";
                 }
                 else if(s.gps.useGeneratedPaletteInColoring) {
                     overview += "<b><font color='red'>Palette(In):</font></b> " + Constants.generatedPalettes[s.gps.generatedPaletteInColoringId] + "<br>";
+                    overview += tab + "Generated Palette Offset = " + s.gps.GeneratedInColoringPaletteOffset + "<br>";
+                    overview += tab + "Generated Scale Factor = " + s.gps.GeneratedInColoringPaletteFactor + "<br>";
                 }
                 else {
                     overview += "<b><font color='red'>Palette(In):</font></b> " + PaletteMenu.paletteNames[s.ps2.color_choice] + "<br>";
@@ -2120,9 +2128,9 @@ public class CommonFunctions implements Constants {
             overview += tab + "Interpolation = " + color_interp_str[s.color_smoothing_method] + "<br>";
             overview += tab + "Color Space = " + colorSpaces[s.color_space] + "<br><br>";
 
-            overview += "<b><font color='red'>Contour Factor:</font></b> " + s.contourFactor + "<br>";
-            overview += "<b><font color='red'>Gamma:</font></b> " + s.gamma + "<br>";
-            overview += "<b><font color='red'>Interpolation Exponent:</font></b> " + s.interpolation_exponent + "<br>";
+            overview += "<b><font color='red'>Contour Factor:</font></b> " + s.contourFactor + "<br><br>";
+            overview += "<b><font color='red'>Gamma:</font></b> " + s.gamma + "<br><br>";
+            overview += "<b><font color='red'>Interpolation Exponent:</font></b> " + s.interpolation_exponent + "<br><br>";
             overview += "<b><font color='red'>Intensity Exponent:</font></b> " + s.intesity_exponent + "<br><br>";
         }
 

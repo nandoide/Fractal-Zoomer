@@ -14,7 +14,7 @@ import java.awt.*;
  */
 public class CustomPalette extends Palette {
 
-    public CustomPalette(int[][] custom_palette, int color_interpolation, int color_space, boolean reverse, double scale_factor_palette_val, int processing_alg, boolean smoothing, Color special_color, int color_smoothing_method, boolean special_use_palette_color, int fractional_transfer_method, int smoothing_color_space) {
+    public CustomPalette(int[][] custom_palette, int color_interpolation, int color_space, boolean reverse, double scale_factor_palette_val, int processing_alg, boolean smoothing, Color special_color, int color_smoothing_method, boolean special_use_palette_color, int fractional_transfer_method, int smoothing_color_space, boolean color_smoothing) {
         super();
 
         int[] palette = createPalette(custom_palette, reverse, processing_alg, scale_factor_palette_val, color_interpolation, color_space, 0);
@@ -22,7 +22,7 @@ public class CustomPalette extends Palette {
         if (!smoothing) {
             palette_color = new PaletteColorNormal(palette, special_color, special_use_palette_color);
         } else {
-            palette_color = new PaletteColorSmooth(palette, special_color, color_smoothing_method, special_use_palette_color, fractional_transfer_method, smoothing_color_space);
+            palette_color = new PaletteColorSmooth(palette, special_color, color_smoothing_method, special_use_palette_color, fractional_transfer_method, smoothing_color_space, color_smoothing);
         }
     }
 

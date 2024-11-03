@@ -29,6 +29,8 @@ public class GeneratedPaletteSettings {
     public String incoloring_simple_multiwave_user_palette;
     public int GeneratedOutColoringPaletteOffset;
     public int GeneratedInColoringPaletteOffset;
+    public double GeneratedOutColoringPaletteFactor;
+    public double GeneratedInColoringPaletteFactor;
 
 
 
@@ -88,6 +90,8 @@ public class GeneratedPaletteSettings {
         blendingInColoring = 0.5;
         GeneratedOutColoringPaletteOffset = 0;
         GeneratedInColoringPaletteOffset = 0;
+        GeneratedOutColoringPaletteFactor = 1;
+        GeneratedInColoringPaletteFactor = 1;
 
     }
 
@@ -112,5 +116,7 @@ public class GeneratedPaletteSettings {
         blendingInColoring = other.blendingInColoring;
         GeneratedOutColoringPaletteOffset = other.GeneratedOutColoringPaletteOffset;
         GeneratedInColoringPaletteOffset = other.GeneratedInColoringPaletteOffset;
+        GeneratedOutColoringPaletteFactor = other.GeneratedOutColoringPaletteFactor;
+        GeneratedInColoringPaletteFactor = other.GeneratedInColoringPaletteFactor;
     }
 }

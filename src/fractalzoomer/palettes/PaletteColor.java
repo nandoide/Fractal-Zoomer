@@ -18,6 +18,8 @@ public abstract class PaletteColor {
     protected boolean special_use_palette_color;
     protected int generatedPaletteLength;
     protected boolean useGeneratedPalette;
+
+    protected boolean color_smoothing;
     
 
     public PaletteColor(int[] palette, Color special_color, boolean special_use_palette_color) {
@@ -43,6 +45,8 @@ public abstract class PaletteColor {
                 this.special_colors[1] = last_color.getRGB();
             }
         }
+
+        color_smoothing = true;
 
     }
 
@@ -75,11 +79,11 @@ public abstract class PaletteColor {
         
     }
 
-    public abstract int calculateColor(double result, int paletteId,  int color_cycling_location, int extra_offset, int cycle, CosinePaletteSettings iqps, boolean outcoloring);
+    public abstract int calculateColor(double result, int paletteId,  int color_cycling_location, int extra_offset, int cycle, double factor, CosinePaletteSettings iqps, boolean outcoloring);
 
     private static double twoPi = Math.PI * 2;
-    public static int getGeneratedColor(double result, int id, int color_cycling_location, int extra_offset, int cycle, CosinePaletteSettings iqps, boolean outcoloring, Multiwave.MultiwaveColorParams[] mw, InfiniteWave.InfiniteColorWaveParams[] iw, MultiwaveSimple.MultiwaveSimpleColorParams[] smw) {
-        double value = (Math.abs(result) + color_cycling_location + extra_offset) % cycle;
+    public static int getGeneratedColor(double result, int id, int color_cycling_location, int extra_offset, int cycle, double factor, CosinePaletteSettings iqps, boolean outcoloring, Multiwave.MultiwaveColorParams[] mw, InfiniteWave.InfiniteColorWaveParams[] iw, MultiwaveSimple.MultiwaveSimpleColorParams[] smw) {
+        double value = (Math.abs(result) * factor + color_cycling_location + extra_offset) % cycle;
         switch (id) {
             case 0:
                 try {
@@ -138,6 +142,14 @@ public abstract class PaletteColor {
         }
 
         return 0;
+    }
+
+    public void setColorSmoothing(boolean color_smoothing) {
+        this.color_smoothing = color_smoothing;
+    }
+
+    public boolean getColorSmoothing() {
+        return color_smoothing;
     }
 
 }

@@ -33,7 +33,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
     MultiwaveSimple.MultiwaveSimpleColorParams[] smw;
 
-    public GeneratedPaletteOverviewDialog(GeneratedPaletteDialog ptra, boolean outcoloring, GeneratedPaletteSettings gps, int id, int cycle, int offset) {
+    public GeneratedPaletteOverviewDialog(GeneratedPaletteDialog ptra, boolean outcoloring, GeneratedPaletteSettings gps, int id, int cycle, int offset, double factor) {
 
         super();
 
@@ -102,7 +102,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
         Color[] c = new Color[colors.getWidth()];
         for(int i = 0; i < c.length; i++) {
-            c[i] = new Color(PaletteColor.getGeneratedColor(i, id, color_offset, offset, cycle, cps, outcoloring, mw, iw, smw));
+            c[i] = new Color(PaletteColor.getGeneratedColor(i, id, color_offset, offset, cycle, factor, cps, outcoloring, mw, iw, smw));
         }
 
         try {
@@ -249,7 +249,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
                     Color[] c = new Color[colors.getWidth()];
                     for(int i = 0; i < c.length; i++) {
-                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, offset, cycle, cps, outcoloring, mw, iw, smw));
+                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, offset, cycle, factor, cps, outcoloring, mw, iw, smw));
                     }
 
                     paintGradient(c);
@@ -273,7 +273,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
                     Color[] c = new Color[colors.getWidth()];
                     for(int i = 0; i < c.length; i++) {
-                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, offset, cycle, cps, outcoloring, mw, iw, smw));
+                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, offset, cycle, factor, cps, outcoloring, mw, iw, smw));
                     }
 
                     paintGradient(c);
@@ -297,7 +297,7 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
                     Color[] c = new Color[colors.getWidth()];
                     for(int i = 0; i < c.length; i++) {
-                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, offset, cycle, cps, outcoloring, mw, iw, smw));
+                        c[i] = new Color(PaletteColor.getGeneratedColor(i, id, temp3, offset, cycle, factor, cps, outcoloring, mw, iw, smw));
                     }
 
                     paintGradient(c);

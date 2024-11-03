@@ -3039,15 +3039,15 @@ public class MainWindow extends JFrame implements Constants {
         }
 
         if (s.ps.color_choice == CUSTOM_PALETTE_ID) {
-            TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         } else {
-            TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         }
 
         if (s.ps2.color_choice == CUSTOM_PALETTE_ID) {
-            TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         } else {
-            TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         }
 
         TaskRender.palette_outcoloring.setGeneratedPaletteSettings(true, s.gps);
@@ -3230,9 +3230,9 @@ public class MainWindow extends JFrame implements Constants {
             options_menu.getOutColoringPalette()[s.ps.color_choice].setSelected(true);
 
             if (s.ps.color_choice == CUSTOM_PALETTE_ID) {
-                TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             } else {
-                TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             }
 
             s.ps2.color_choice = temp2;
@@ -3243,9 +3243,9 @@ public class MainWindow extends JFrame implements Constants {
             options_menu.getInColoringPalette()[s.ps2.color_choice].setSelected(true);
 
             if (s.ps2.color_choice == CUSTOM_PALETTE_ID) {
-                TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             } else {
-                TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             }
         } else if (mode == 0) {
             s.ps.color_choice = temp2;
@@ -3260,9 +3260,9 @@ public class MainWindow extends JFrame implements Constants {
             options_menu.getOutColoringPalette()[s.ps.color_choice].setSelected(true);
 
             if (s.ps.color_choice == CUSTOM_PALETTE_ID) {
-                TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             } else {
-                TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             }
         } else {
             s.ps2.color_choice = temp2;
@@ -3277,9 +3277,9 @@ public class MainWindow extends JFrame implements Constants {
             options_menu.getInColoringPalette()[s.ps2.color_choice].setSelected(true);
 
             if (s.ps2.color_choice == CUSTOM_PALETTE_ID) {
-                TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             } else {
-                TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+                TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
             }
         }
 
@@ -7306,15 +7306,15 @@ public class MainWindow extends JFrame implements Constants {
         ColorCorrection.set(s.gamma, s.intesity_exponent, s.interpolation_exponent);
 
         if (s.ps.color_choice == CUSTOM_PALETTE_ID) {
-            TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_outcoloring = new CustomPalette(s.ps.custom_palette, s.ps.color_interpolation, s.ps.color_space, s.ps.reversed_palette, s.ps.scale_factor_palette_val, s.ps.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         } else {
-            TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_outcoloring = new PresetPalette(s.ps.color_choice, s.ps.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         }
 
         if (s.ps2.color_choice == CUSTOM_PALETTE_ID) {
-            TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_incoloring = new CustomPalette(s.ps2.custom_palette, s.ps2.color_interpolation, s.ps2.color_space, s.ps2.reversed_palette, s.ps2.scale_factor_palette_val, s.ps2.processing_alg, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         } else {
-            TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space).getRawPalette();
+            TaskRender.palette_incoloring = new PresetPalette(s.ps2.color_choice, s.ps2.direct_palette, s.fns.smoothing, s.special_color, s.color_smoothing_method, s.special_use_palette_color, s.fns.smoothing_fractional_transfer_method, s.color_space, s.color_smoothing).getRawPalette();
         }
 
         TaskRender.palette_outcoloring.setGeneratedPaletteSettings(true, s.gps);
@@ -14281,10 +14281,7 @@ public class MainWindow extends JFrame implements Constants {
                 }
             }
 
-            if(color_method == 4 && s.fns.banded) {
-                s.fns.smoothing = false;
-            }
-            else if(iterDivD < 1) {
+            if(iterDivD < 1) {
                 s.fns.smoothing = true;
             }
 

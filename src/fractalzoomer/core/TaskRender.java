@@ -3022,7 +3022,7 @@ public abstract class TaskRender implements Runnable {
             color = fractal.getTrueColorValue();
 
             if (pbs.palette_gradient_merge) {
-                color = result < 0 ? getPaletteMergedColor(result * pbs.gradient_intensity - 2 * color_cycling_location_outcoloring, color) : getPaletteMergedColor(result * pbs.gradient_intensity + 2 * color_cycling_location_outcoloring, color);
+                color = result < 0 ? getPaletteMergedColor(result * pbs.gradient_intensity - 2.0 * color_cycling_location_outcoloring, color) : getPaletteMergedColor(result * pbs.gradient_intensity + 2.0 * color_cycling_location_outcoloring, color);
             }
         }
         else if(sts.statistic) {
@@ -3292,7 +3292,7 @@ public abstract class TaskRender implements Runnable {
 
         if(gps.blendNormalPaletteWithGeneratedPaletteOutColoring) {
             int color1 = transfered_result < 0 ? palette_outcoloring.getPaletteColor(transfered_result - color_cycling_location_outcoloring) : palette_outcoloring.getPaletteColor(transfered_result + color_cycling_location_outcoloring);
-            int color2 = palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.GeneratedOutColoringPaletteOffset, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
+            int color2 = palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.GeneratedOutColoringPaletteOffset, gps.restartGeneratedOutColoringPaletteAt, gps.GeneratedOutColoringPaletteFactor, gps.outColoringIQ, true);
 
             int red1 = (color1 >> 16) & 0xff;
             int green1 = (color1 >> 8) & 0xff;
@@ -3307,7 +3307,7 @@ public abstract class TaskRender implements Runnable {
             return transfered_result < 0 ? palette_outcoloring.getPaletteColor(transfered_result - color_cycling_location_outcoloring) : palette_outcoloring.getPaletteColor(transfered_result + color_cycling_location_outcoloring);
         }
         else {
-            return palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.GeneratedOutColoringPaletteOffset, gps.restartGeneratedOutColoringPaletteAt, gps.outColoringIQ, true);
+            return palette_outcoloring.calculateColor(transfered_result, gps.generatedPaletteOutColoringId, color_cycling_location_outcoloring, gps.GeneratedOutColoringPaletteOffset, gps.restartGeneratedOutColoringPaletteAt, gps.GeneratedOutColoringPaletteFactor, gps.outColoringIQ, true);
         }
     }
 
@@ -3315,7 +3315,7 @@ public abstract class TaskRender implements Runnable {
 
         if(gps.blendNormalPaletteWithGeneratedPaletteInColoring) {
             int color1 = transfered_result < 0 ? palette_incoloring.getPaletteColor(transfered_result - color_cycling_location_incoloring) : palette_incoloring.getPaletteColor(transfered_result + color_cycling_location_incoloring);
-            int color2 = palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.GeneratedInColoringPaletteOffset, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
+            int color2 = palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.GeneratedInColoringPaletteOffset, gps.restartGeneratedInColoringPaletteAt, gps.GeneratedInColoringPaletteFactor, gps.inColoringIQ, false);
 
             int red1 = (color1 >> 16) & 0xff;
             int green1 = (color1 >> 8) & 0xff;
@@ -3330,7 +3330,7 @@ public abstract class TaskRender implements Runnable {
             return transfered_result < 0 ? palette_incoloring.getPaletteColor(transfered_result - color_cycling_location_incoloring) : palette_incoloring.getPaletteColor(transfered_result + color_cycling_location_incoloring);
         }
         else {
-            return palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.GeneratedInColoringPaletteOffset, gps.restartGeneratedInColoringPaletteAt, gps.inColoringIQ, false);
+            return palette_incoloring.calculateColor(transfered_result, gps.generatedPaletteInColoringId, color_cycling_location_incoloring, gps.GeneratedInColoringPaletteOffset, gps.restartGeneratedInColoringPaletteAt, gps.GeneratedInColoringPaletteFactor, gps.inColoringIQ, false);
         }
 
     }
@@ -3352,13 +3352,13 @@ public abstract class TaskRender implements Runnable {
             double transfered_result = color_transfer_incoloring.transfer(result);
             colorA = getInPaletteColor(transfered_result);
             if (pbs.palette_gradient_merge) {
-                colorA = result < 0 ? getPaletteMergedColor(result * pbs.gradient_intensity - 2 * color_cycling_location_outcoloring, colorA) : getPaletteMergedColor(result * pbs.gradient_intensity + 2 * color_cycling_location_outcoloring, colorA);
+                colorA = result < 0 ? getPaletteMergedColor(result * pbs.gradient_intensity - 2.0 * color_cycling_location_outcoloring, colorA) : getPaletteMergedColor(result * pbs.gradient_intensity + 2.0 * color_cycling_location_outcoloring, colorA);
             }
         } else {
             double transfered_result = color_transfer_outcoloring.transfer(result);
             colorA = getOutPaletteColor(transfered_result);
             if (pbs.palette_gradient_merge) {
-                colorA = result < 0 ? getPaletteMergedColor(result * pbs.gradient_intensity - 2 * color_cycling_location_outcoloring, colorA) : getPaletteMergedColor(result * pbs.gradient_intensity + 2 * color_cycling_location_outcoloring, colorA);
+                colorA = result < 0 ? getPaletteMergedColor(result * pbs.gradient_intensity - 2.0 * color_cycling_location_outcoloring, colorA) : getPaletteMergedColor(result * pbs.gradient_intensity + 2.0 * color_cycling_location_outcoloring, colorA);
             }
         }
 
@@ -8884,12 +8884,6 @@ public abstract class TaskRender implements Runnable {
         return val;
     }
 
-    private double capValue(double val, double upperFence, double lowerFence) {
-        val = val > upperFence ? upperFence : val;
-        val = val < lowerFence ? lowerFence : val;
-        return val;
-    }
-
     private double capValue(double val, double upperFence, double lowerFence, boolean intVals) {
         val = val > upperFence ? upperFence : val;
         val = val < lowerFence ? lowerFence : val;
@@ -8920,7 +8914,7 @@ public abstract class TaskRender implements Runnable {
             double tempVal = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
 
             if (esc) {
-                tempVal = capValue(tempVal, upperFenceEscaped, lowerFenceEscaped);
+                tempVal = capValue(tempVal, upperFenceEscaped, lowerFenceEscaped, banded);
                 switch (mapping) {
                     case 1:
                         val = (tempVal - minIterationsEscaped) / (maxIterationEscaped - minIterationsEscaped);
@@ -8940,7 +8934,7 @@ public abstract class TaskRender implements Runnable {
                 }
 
             } else {
-                tempVal = capValue(tempVal, upperFenceNotEscaped, lowerFenceNotEscaped);
+                tempVal = capValue(tempVal, upperFenceNotEscaped, lowerFenceNotEscaped, banded);
                 switch (mapping) {
                     case 1:
                         val = (tempVal - minIterationsNotEscaped) / (maxIterationNotEscaped - minIterationsNotEscaped);
@@ -9033,11 +9027,11 @@ public abstract class TaskRender implements Runnable {
 
             long valIndex = 0;
             if (esc) {
-                tempVal = capValue(tempVal, upperFenceEscaped, lowerFenceEscaped);
+                tempVal = capValue(tempVal, upperFenceEscaped, lowerFenceEscaped, banded);
                 diff = tempVal - minIterationsEscaped;
                 valIndex = (long) ((diff) / denominatorEscaped * histogramGranularity);
             } else {
-                tempVal = capValue(tempVal, upperFenceNotEscaped, lowerFenceNotEscaped);
+                tempVal = capValue(tempVal, upperFenceNotEscaped, lowerFenceNotEscaped, banded);
                 diff = tempVal - minIterationsNotEscaped;
                 valIndex = (long) ((diff) / denominatorNotEscaped * histogramGranularity);
             }
@@ -9134,9 +9128,9 @@ public abstract class TaskRender implements Runnable {
             double tempVal = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
 
             if (esc) {
-                tempVal = capValue(tempVal, upperFenceEscaped, lowerFenceEscaped);
+                tempVal = capValue(tempVal, upperFenceEscaped, lowerFenceEscaped, banded);
             } else {
-                tempVal = capValue(tempVal, upperFenceNotEscaped, lowerFenceNotEscaped);
+                tempVal = capValue(tempVal, upperFenceNotEscaped, lowerFenceNotEscaped, banded);
             }
 
             double originalVal = tempVal;
@@ -9435,13 +9429,13 @@ public abstract class TaskRender implements Runnable {
 
                     if (escaped[i]) {
 
-                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped, hss.use_integer_iterations);
+                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped, hss.use_integer_iterations || banded);
 
                         maxIterationEscaped = val > maxIterationEscaped ? val : maxIterationEscaped;
                         minIterationsEscaped = val < minIterationsEscaped ? val : minIterationsEscaped;
                     } else {
 
-                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped, hss.use_integer_iterations);
+                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped, hss.use_integer_iterations || banded);
 
                         maxIterationNotEscaped = val > maxIterationNotEscaped ? val : maxIterationNotEscaped;
                         minIterationsNotEscaped = val < minIterationsNotEscaped ? val : minIterationsNotEscaped;
@@ -9495,7 +9489,7 @@ public abstract class TaskRender implements Runnable {
                     val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
 
                     if (escaped[i]) {
-                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
+                        val = capValue(val, upperFenceEscaped, lowerFenceEscaped, banded);
 
                         if(mapping == 6) {
                             setEscaped.add(roundForRankOrder(val));
@@ -9509,7 +9503,7 @@ public abstract class TaskRender implements Runnable {
                         totalEscaped++;
                     } else {
 
-                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
+                        val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped, banded);
                         if(mapping == 6) {
                             setnotEscaped.add(roundForRankOrder(val));
                         }
@@ -9687,13 +9681,13 @@ public abstract class TaskRender implements Runnable {
 
                         if (data[j].escaped[i]) {
 
-                            val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
+                            val = capValue(val, upperFenceEscaped, lowerFenceEscaped, banded);
 
                             maxIterationEscaped = val > maxIterationEscaped ? val : maxIterationEscaped;
                             minIterationsEscaped = val < minIterationsEscaped ? val : minIterationsEscaped;
                         } else {
 
-                            val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
+                            val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped, banded);
 
                             maxIterationNotEscaped = val > maxIterationNotEscaped ? val : maxIterationNotEscaped;
                             minIterationsNotEscaped = val < minIterationsNotEscaped ? val : minIterationsNotEscaped;
@@ -9755,7 +9749,7 @@ public abstract class TaskRender implements Runnable {
                         val = Math.abs(ColorAlgorithm.transformResultToHeight(val, max_iterations));
 
                         if (data[j].escaped[i]) {
-                            val = capValue(val, upperFenceEscaped, lowerFenceEscaped);
+                            val = capValue(val, upperFenceEscaped, lowerFenceEscaped, banded);
 
                             if(mapping == 6) {
                                 setEscaped.add(roundForRankOrder(val));
@@ -9768,7 +9762,7 @@ public abstract class TaskRender implements Runnable {
                             }
                             totalEscaped++;
                         } else {
-                            val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped);
+                            val = capValue(val, upperFenceNotEscaped, lowerFenceNotEscaped, banded);
                             if(mapping == 6) {
                                 setnotEscaped.add(roundForRankOrder(val));
                             }
@@ -9828,16 +9822,34 @@ public abstract class TaskRender implements Runnable {
         double histogramDensity = hss.histogramDensity;
         int mapping = hss.hmapping;
         int histogramGranularity = hss.histogramBinGranularity;
-        if(mapping == 0) {
-            return applyHistogramToPixel(i * image_width + j, colors, data, histogramGranularity, histogramDensity, image_iterations, escaped);
-        }
-        else if(mapping == 6) {
-            return applyRankOrderMappingToPixel(i * image_width + j, colors, data, image_iterations, escaped);
-        }
-        else {
-            return applyScalingToPixel(i * image_width + j, colors, data, mapping, image_iterations, escaped);
+
+        boolean color_smoothing = true;
+        if(banded) {
+            color_transfer_outcoloring.setBanded(false);
+            color_transfer_incoloring.setBanded(false);
+            color_smoothing = palette_outcoloring.getColorSmoothing();
+            palette_outcoloring.setColorSmoothing(false);
+            palette_incoloring.setColorSmoothing(false);
         }
 
+        int[] res;
+        if(mapping == 0) {
+            res = applyHistogramToPixel(i * image_width + j, colors, data, histogramGranularity, histogramDensity, image_iterations, escaped);
+        }
+        else if(mapping == 6) {
+            res = applyRankOrderMappingToPixel(i * image_width + j, colors, data, image_iterations, escaped);
+        }
+        else {
+            res = applyScalingToPixel(i * image_width + j, colors, data, mapping, image_iterations, escaped);
+        }
+
+        if(banded) {
+            color_transfer_outcoloring.setBanded(true);
+            color_transfer_incoloring.setBanded(true);
+            palette_outcoloring.setColorSmoothing(color_smoothing);
+            palette_incoloring.setColorSmoothing(color_smoothing);
+        }
+        return res;
     }
 
     public static String getDefaultInitialValue() {
