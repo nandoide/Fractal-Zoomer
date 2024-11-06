@@ -34,6 +34,8 @@ public class GradientDialog extends JDialog {
     private JComboBox<String> combo_box_color_space;
     private JCheckBox check_box_reveres_palette;
     private JSpinner offset_textfield;
+
+    private JTextField gradient_length_textfield;
     private int mouse_color_label_x;
     private Cursor grab_cursor;
     private Cursor grabbing_cursor;
@@ -47,7 +49,7 @@ public class GradientDialog extends JDialog {
         this_frame = this;
 
         setModal(true);
-        int custom_palette_window_width = 760;
+        int custom_palette_window_width = 800;
         int custom_palette_window_height = 260;
         setTitle("Gradient");
         setIconImage(MainWindow.getIcon("gradient.png").getImage());
@@ -70,7 +72,7 @@ public class GradientDialog extends JDialog {
 
         JPanel gradient_panel = new JPanel();
 
-        gradient_panel.setPreferredSize(new Dimension(680, 130));
+        gradient_panel.setPreferredSize(new Dimension(720, 130));
         gradient_panel.setLayout(new GridLayout(2, 1));
         gradient_panel.setBackground(MainWindow.bg_color);
 
@@ -155,12 +157,13 @@ public class GradientDialog extends JDialog {
         check_box_reveres_palette.addActionListener(e -> {
             try {
                 int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                int temp4 = Integer.parseInt(gradient_length_textfield.getText());
 
-                if (temp3 < 0) {
+                if (temp3 < 0 || temp4 <= 0) {
                     throw new NumberFormatException();
                 }
 
-                Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), MainWindow.GRADIENT_LENGTH, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+                Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
 
                 paintGradient(c);
             } catch (Exception ex) {
@@ -178,12 +181,13 @@ public class GradientDialog extends JDialog {
         combo_box_color_interp.addActionListener(e -> {
             try {
                 int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                int temp4 = Integer.parseInt(gradient_length_textfield.getText());
 
-                if (temp3 < 0) {
+                if (temp3 < 0 || temp4 <= 0) {
                     throw new NumberFormatException();
                 }
 
-                Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), MainWindow.GRADIENT_LENGTH, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+                Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
 
                 paintGradient(c);
             } catch (Exception ex) {
@@ -210,12 +214,13 @@ public class GradientDialog extends JDialog {
         combo_box_color_space.addActionListener(e -> {
             try {
                 int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                int temp4 = Integer.parseInt(gradient_length_textfield.getText());
 
-                if (temp3 < 0) {
+                if (temp3 < 0 || temp4 <= 0) {
                     throw new NumberFormatException();
                 }
 
-                Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), MainWindow.GRADIENT_LENGTH, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+                Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
 
                 paintGradient(c);
             } catch (Exception ex) {
@@ -241,7 +246,7 @@ public class GradientDialog extends JDialog {
         options_panel.setBackground(MainWindow.bg_color);
 
         JPanel color_panel = new JPanel();
-        color_panel.setPreferredSize(new Dimension(340, 60));
+        color_panel.setPreferredSize(new Dimension(380, 60));
         color_panel.setLayout(new FlowLayout());
         color_panel.setBackground(MainWindow.bg_color);
 
@@ -255,9 +260,9 @@ public class GradientDialog extends JDialog {
         options_panel.add(color_space_panel);
         options_panel.add(color_interp_panel);
 
-        colors = new BufferedImage(652, 45, BufferedImage.TYPE_INT_ARGB);
+        colors = new BufferedImage(692, 45, BufferedImage.TYPE_INT_ARGB);
 
-        Color[] c = CustomPalette.getGradient(gs.colorA.getRGB(), gs.colorB.getRGB(), MainWindow.GRADIENT_LENGTH, gs.gradient_interpolation, gs.gradient_color_space, gs.gradient_reversed, gs.gradient_offset);
+        Color[] c = CustomPalette.getGradient(gs.colorA.getRGB(), gs.colorB.getRGB(), gs.gradient_length, gs.gradient_interpolation, gs.gradient_color_space, gs.gradient_reversed, gs.gradient_offset);
 
         try {
             Graphics2D g = colors.createGraphics();
@@ -374,6 +379,78 @@ public class GradientDialog extends JDialog {
 
         gp.add(gradient_label);
 
+        gradient_length_textfield = new JTextField(4);
+        gradient_length_textfield.setText("" + gs.gradient_length);
+        gradient_length_textfield.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                try {
+                    int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                    int temp4 = Integer.parseInt(gradient_length_textfield.getText());
+
+                    if (temp3 < 0 || temp4 <= 0) {
+                        throw new NumberFormatException();
+                    }
+
+                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+
+                    paintGradient(c);
+                } catch (Exception ex) {
+                    Graphics2D g = colors.createGraphics();
+                    g.setColor(Color.LIGHT_GRAY);
+                    g.fillRect(0, 0, colors.getWidth(), colors.getHeight());
+                    gradient_label.repaint();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                try {
+                    int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                    int temp4 = Integer.parseInt(gradient_length_textfield.getText());
+
+                    if (temp3 < 0 || temp4 <= 0) {
+                        throw new NumberFormatException();
+                    }
+
+                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+
+                    paintGradient(c);
+                } catch (Exception ex) {
+                    Graphics2D g = colors.createGraphics();
+                    g.setColor(Color.LIGHT_GRAY);
+                    g.fillRect(0, 0, colors.getWidth(), colors.getHeight());
+                    gradient_label.repaint();
+                }
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                try {
+                    int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                    int temp4 = Integer.parseInt(gradient_length_textfield.getText());
+
+                    if (temp3 < 0 || temp4 <= 0) {
+                        throw new NumberFormatException();
+                    }
+
+                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+
+                    paintGradient(c);
+                } catch (Exception ex) {
+                    Graphics2D g = colors.createGraphics();
+                    g.setColor(Color.LIGHT_GRAY);
+                    g.fillRect(0, 0, colors.getWidth(), colors.getHeight());
+                    gradient_label.repaint();
+                }
+            }
+        });
+
+        color_panel.add(new JLabel(" Length"));
+        color_panel.add(gradient_length_textfield);
+
         JLabel offset_label = new JLabel(" Offset");
 
         color_panel.add(offset_label);
@@ -398,12 +475,13 @@ public class GradientDialog extends JDialog {
 
                 try {
                     int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                    int temp4 = Integer.parseInt(gradient_length_textfield.getText());
 
-                    if (temp3 < 0) {
+                    if (temp3 < 0 || temp4 <= 0) {
                         throw new NumberFormatException();
                     }
 
-                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), MainWindow.GRADIENT_LENGTH, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
 
                     paintGradient(c);
                 } catch (Exception ex) {
@@ -419,12 +497,13 @@ public class GradientDialog extends JDialog {
 
                 try {
                     int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                    int temp4 = Integer.parseInt(gradient_length_textfield.getText());
 
-                    if (temp3 < 0) {
+                    if (temp3 < 0 || temp4 <= 0) {
                         throw new NumberFormatException();
                     }
 
-                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), MainWindow.GRADIENT_LENGTH, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
 
                     paintGradient(c);
                 } catch (Exception ex) {
@@ -440,12 +519,13 @@ public class GradientDialog extends JDialog {
 
                 try {
                     int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                    int temp4 = Integer.parseInt(gradient_length_textfield.getText());
 
-                    if (temp3 < 0) {
+                    if (temp3 < 0 || temp4 <= 0) {
                         throw new NumberFormatException();
                     }
 
-                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), MainWindow.GRADIENT_LENGTH, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+                    Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
 
                     paintGradient(c);
                 } catch (Exception ex) {
@@ -474,21 +554,28 @@ public class GradientDialog extends JDialog {
         ok.addActionListener(e -> {
 
             int temp2;
+            int temp4;
             try {
                 temp2 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+                temp4 = Integer.parseInt(gradient_length_textfield.getText());
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this_frame, "Illegal Argument!", "Error!", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (temp2 < 0) {
-                JOptionPane.showMessageDialog(this_frame, "Offset must be greater than -1.", "Error!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this_frame, "The offset must be greater than -1.", "Error!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (temp4 <= 0) {
+                JOptionPane.showMessageDialog(this_frame, "The length must be greater than 0.", "Error!", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             dispose();
 
-            ptra2.gradientChanged(color_a_label.getBackground(), color_b_label.getBackground(), combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp2);
+            ptra2.gradientChanged(color_a_label.getBackground(), color_b_label.getBackground(), combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp2, temp4);
 
         });
 
@@ -529,7 +616,7 @@ public class GradientDialog extends JDialog {
 
         RoundedPanel round_panel = LAFManager.createRoundedPanel();
         round_panel.setBackground(MainWindow.bg_color);
-        round_panel.setPreferredSize(new Dimension(690, 180));
+        round_panel.setPreferredSize(new Dimension(730, 180));
         round_panel.setLayout(new GridBagLayout());
 
         GridBagConstraints con = new GridBagConstraints();
@@ -563,6 +650,8 @@ public class GradientDialog extends JDialog {
 
         try {
             Graphics2D g = colors.createGraphics();
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, colors.getWidth(), colors.getHeight());
             for (int i = 0; i < c.length - 1; i++) {
                 GradientPaint gp = new GradientPaint(i * colors.getWidth() / ((float)c.length), 0, c[i], (i + 1) * colors.getWidth() / ((float)c.length), 0, c[(i + 1) % c.length]);
                 g.setPaint(gp);
@@ -581,12 +670,13 @@ public class GradientDialog extends JDialog {
     public void colorChanged() {
         try {
             int temp3 = Integer.parseInt(((DefaultEditor) offset_textfield.getEditor()).getTextField().getText());
+            int temp4 = Integer.parseInt(gradient_length_textfield.getText());
 
-            if (temp3 < 0) {
+            if (temp3 < 0 || temp4 <= 0) {
                 throw new NumberFormatException();
             }
 
-            Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), MainWindow.GRADIENT_LENGTH, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
+            Color[] c = CustomPalette.getGradient(color_a_label.getBackground().getRGB(), color_b_label.getBackground().getRGB(), temp4, combo_box_color_interp.getSelectedIndex(), combo_box_color_space.getSelectedIndex(), check_box_reveres_palette.isSelected(), temp3);
 
             paintGradient(c);
         } catch (Exception ex) {

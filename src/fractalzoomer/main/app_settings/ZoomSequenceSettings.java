@@ -22,6 +22,7 @@ public class ZoomSequenceSettings {
 
     public boolean flipSequenceIndexing;
     public long startAtSequenceIndex;
+    public long sequenceIndexOffset;
     public  String sizeStr;
     public  String endSizeStr;
 
@@ -69,6 +70,7 @@ public class ZoomSequenceSettings {
         override_max_iterations = 0;
         overrideMaxIterationsSizeLimitStr = "0";
         overrideMaxIterationsSizeLimit = new MyApfloat(0);
+        sequenceIndexOffset = 0;
     }
 
     public void setStartSize(Apfloat startSize) {

@@ -90,9 +90,9 @@ public class SequenceMagnificationDialog extends JDialog {
         Object[] message = {
             " ",
             "Set the magnification/zoom.",
-            "Magnification/Zoom:",
+            "Start Magnification/Zoom:",
                 magnScroll,
-                "Settings Magnification/Zoom:",
+                "End Magnification/Zoom:",
                 magnScroll2,
             " ",
             };

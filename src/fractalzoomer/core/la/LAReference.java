@@ -28,7 +28,7 @@ class  LAInfoI {
 
 class LAData {
     public GenericLAInfo la;
-    int StepLength, NextStageLAIndex; //Info
+    int StepLength, NextStageLAIndex; //Info //Todo Try to add those inside GenericLAInfo
 
     public LAData() {
         StepLength = 0;

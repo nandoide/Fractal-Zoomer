@@ -3289,7 +3289,7 @@ public class Settings implements Constants {
 
         ColorAlgorithm.GlobalUsingIncrement = globalIncrementBypass;
 
-        TaskRender.gradient = CustomPalette.createGradient(gs.colorA.getRGB(), gs.colorB.getRGB(), Constants.GRADIENT_LENGTH, gs.gradient_interpolation, gs.gradient_color_space, gs.gradient_reversed, 0);
+        TaskRender.gradient = CustomPalette.createGradient(gs.colorA.getRGB(), gs.colorB.getRGB(), gs.gradient_length, gs.gradient_interpolation, gs.gradient_color_space, gs.gradient_reversed, 0);
 
         TaskRender.COLOR_SMOOTHING_METHOD = color_smoothing_method;
         TaskRender.COLOR_SPACE = color_space;

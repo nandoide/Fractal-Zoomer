@@ -2383,7 +2383,7 @@ public class CommonFunctions implements Constants {
 
     public static BufferedImage getGradientPreview(GradientSettings gs, int offset, int width, int height) {
 
-        Color[] c = CustomPalette.getGradient(gs.colorA.getRGB(), gs.colorB.getRGB(), GRADIENT_LENGTH, gs.gradient_interpolation, gs.gradient_color_space, gs.gradient_reversed, offset);
+        Color[] c = CustomPalette.getGradient(gs.colorA.getRGB(), gs.colorB.getRGB(), gs.gradient_length, gs.gradient_interpolation, gs.gradient_color_space, gs.gradient_reversed, offset);
 
         gradientLength = c.length;
 

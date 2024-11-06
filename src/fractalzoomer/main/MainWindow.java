@@ -12467,7 +12467,7 @@ public class MainWindow extends JFrame implements Constants {
 
     }
 
-    public void gradientChanged(Color colorA, Color colorB, int interpolation, int color_space, boolean reverse, int gradient_offset) {
+    public void gradientChanged(Color colorA, Color colorB, int interpolation, int color_space, boolean reverse, int gradient_offset, int length) {
 
         resetOrbit();
 
@@ -12477,8 +12477,9 @@ public class MainWindow extends JFrame implements Constants {
         s.gs.gradient_color_space = color_space;
         s.gs.gradient_reversed = reverse;
         s.gs.gradient_offset = gradient_offset;
+        s.gs.gradient_length = length;
 
-        TaskRender.gradient = CustomPalette.createGradient(colorA.getRGB(), colorB.getRGB(), Constants.GRADIENT_LENGTH, interpolation, color_space, reverse, 0);
+        TaskRender.gradient = CustomPalette.createGradient(colorA.getRGB(), colorB.getRGB(), length, interpolation, color_space, reverse, 0);
 
         updateGradientPreview(s.gs.gradient_offset);
 

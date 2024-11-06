@@ -58,6 +58,8 @@ public class SequenceRenderDialog extends JDialog {
     private JTextField startAtIndex;
 
     private JTextField stopAfterNSteps;
+
+    private JTextField indexOffset;
     private JTextField namePattern;
 
     private JTextField overrideMaxIterations;
@@ -184,6 +186,9 @@ public class SequenceRenderDialog extends JDialog {
         startAtIndex = new JTextField();
         startAtIndex.setText("" + zss.startAtSequenceIndex);
 
+        indexOffset = new JTextField();
+        indexOffset.setText("" + zss.sequenceIndexOffset);
+
         stopAfterNSteps = new JTextField();
         stopAfterNSteps.setText("" + zss.stop_after_n_steps);
 
@@ -222,17 +227,17 @@ public class SequenceRenderDialog extends JDialog {
                 fieldZoom,
                 "Zoom Every N Frame:",
                 fieldZoomEveryNFrame,
-                "Rotation Adjusting Value (in degrees):",
+                "Rotation Adjusting Value in degrees:",
                 fieldRotation,
                 "Color Cycling Adjusting Value:",
                 fieldColorCycling,
                 "Gradient Color Cycling Adjusting Value:",
                 fieldGradientColorCycling,
-                "Light Direction Adjusting Value (When Light is Enabled):",
+                "Light Direction Adjusting Value in degrees (When Light is Enabled):",
                 fieldLightCycling,
-                "Bump Mapping Light Direction Adjusting Value (When Bump Mapping is Enabled):",
+                "Bump Mapping Light Direction Adjusting Value in degrees (When Bump Mapping is Enabled):",
                 filedBumpLightCycling,
-                "Slope Direction Adjusting Value (When Slopes is Enabled):",
+                "Slope Direction Adjusting Value in degrees (When Slopes is Enabled):",
                 fieldSlopesCycling,
                 " ",
                 "Set the max iterations override.",
@@ -245,6 +250,8 @@ public class SequenceRenderDialog extends JDialog {
                 flipIndex,
                 "Start Rendering at Sequence Index:",
                 startAtIndex,
+                "Sequence Index Offset:",
+                indexOffset,
                 "Stop Rendering After N Steps:",
                 stopAfterNSteps,
                 " ",
@@ -299,6 +306,7 @@ public class SequenceRenderDialog extends JDialog {
                             int tempGradientColorCycling = Integer.parseInt(fieldGradientColorCycling.getText());
                             long startAtIdx = Long.parseLong(startAtIndex.getText());
                             long stopAfterN = Long.parseLong(stopAfterNSteps.getText());
+                            long indexOffs = Long.parseLong(indexOffset.getText());
                             int max_iterations_override = Integer.parseInt(overrideMaxIterations.getText());
 
                             if(MyApfloat.setAutomaticPrecision) {
@@ -379,6 +387,11 @@ public class SequenceRenderDialog extends JDialog {
                                 return;
                             }
 
+                            if(indexOffs < 0) {
+                                JOptionPane.showMessageDialog(ptra, "The sequence index offset value must be greater than -1.", "Error!", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+
                             if(stopAfterN < 0) {
                                 JOptionPane.showMessageDialog(ptra, "The stopping value must be greater than -1.", "Error!", JOptionPane.ERROR_MESSAGE);
                                 return;
@@ -401,6 +414,7 @@ public class SequenceRenderDialog extends JDialog {
                             zss.file_name_pattern = namePattern.getText();
                             zss.stop_after_n_steps = stopAfterN;
                             zss.override_max_iterations = max_iterations_override;
+                            zss.sequenceIndexOffset = indexOffs;
 
                             ptr.startSequenceRender();
 
@@ -504,6 +518,7 @@ public class SequenceRenderDialog extends JDialog {
         flipIndex.setSelected(zss.flipSequenceIndexing);
         startAtIndex.setText("" + zss.startAtSequenceIndex);
         stopAfterNSteps.setText("" + zss.stop_after_n_steps);
+        indexOffset.setText("" + zss.sequenceIndexOffset);
         namePattern.setText(zss.file_name_pattern);
         override_max_iterations_size.setText("" + zss.overrideMaxIterationsSizeLimit);
         overrideMaxIterations.setText("" + zss.override_max_iterations);

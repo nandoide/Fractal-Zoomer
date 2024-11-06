@@ -1354,8 +1354,6 @@ public interface Constants {
     public static final int CUSTOM_PALETTE_ID = 18;
     public static final int DIRECT_PALETTE_ID = 19;
     
-    public static final int GRADIENT_LENGTH = 512;
-    
     public static final Color bg_color = Color.white;
     public static final Color progress_color = new Color(190, 81, 69);//new Color(255, 185, 15);
     public static final Color progress_filters_color = new Color(24, 161, 110);

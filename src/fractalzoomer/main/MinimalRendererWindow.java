@@ -111,6 +111,8 @@ public class MinimalRendererWindow extends JFrame implements Constants {
     private int batchIndex;
     private long sequenceIndex;
 
+    private long sequenceIndexOffset;
+
     private long numberOfSequenceSteps;
 
     public static String outputDirectory = ".";
@@ -1038,10 +1040,10 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             String name;
             if (runsOnSequenceMode) {
                 if(!zss.file_name_pattern.isEmpty()) {
-                    baseName = String.format(zss.file_name_pattern, sequenceIndex);
+                    baseName = String.format(zss.file_name_pattern, sequenceIndex + sequenceIndexOffset);
                 }
                 else {
-                    baseName = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")";
+                    baseName = settingsName + " - zoom sequence - " + " (" + (sequenceIndex + sequenceIndexOffset) + ")";
                 }
                 if (Files.exists(path) && Files.isDirectory(path)) {
                     name = path.resolve(baseName + extension).toString();
@@ -3000,6 +3002,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         Location.offset = new PixelOffset();
 
         numberOfSequenceSteps = 0;
+        sequenceIndexOffset = zss.sequenceIndexOffset;
 
         Apfloat original_size = s.size;
 
@@ -3179,7 +3182,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                 }
 
                 if(zss.gradient_color_cycling_adjusting_value != 0) {
-                    s.gs.gradient_offset = CommonFunctions.adjustPaletteOffset(s.gs.gradient_offset, zss.gradient_color_cycling_adjusting_value, GRADIENT_LENGTH);
+                    s.gs.gradient_offset = CommonFunctions.adjustPaletteOffset(s.gs.gradient_offset, zss.gradient_color_cycling_adjusting_value, s.gs.gradient_length);
                 }
 
                 if (s.pps.bms.bump_map && zss.bump_direction_adjusting_value != 0) {
@@ -3262,16 +3265,16 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         String infoName = "";
         if(!zss.file_name_pattern.isEmpty()) {
             if (Files.exists(path) && Files.isDirectory(path)) {
-                infoName = path.resolve(String.format(zss.file_name_pattern, sequenceIndex) + ".info").toString();
+                infoName = path.resolve(String.format(zss.file_name_pattern, sequenceIndex + sequenceIndexOffset) + ".info").toString();
             } else {
-                infoName = String.format(zss.file_name_pattern, sequenceIndex) + ".info";
+                infoName = String.format(zss.file_name_pattern, sequenceIndex + sequenceIndexOffset) + ".info";
             }
         }
         else {
             if (Files.exists(path) && Files.isDirectory(path)) {
-                infoName = path.resolve(settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + ".info").toString();
+                infoName = path.resolve(settingsName + " - zoom sequence - " + " (" + (sequenceIndex + sequenceIndexOffset) + ")" + ".info").toString();
             } else {
-                infoName = settingsName + " - zoom sequence - " + " (" + sequenceIndex + ")" + ".info";
+                infoName = settingsName + " - zoom sequence - " + " (" + (sequenceIndex + sequenceIndexOffset) + ")" + ".info";
             }
         }
 

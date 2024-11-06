@@ -5501,7 +5501,7 @@ public abstract class TaskRender implements Runnable {
             int image_height = image.getHeight();
 
             if (ccs.gradient_cycling_adjusting_value != 0) {
-                gradient_offset = CommonFunctions.adjustPaletteOffset(gradient_offset, ccs.gradient_cycling_adjusting_value, Constants.GRADIENT_LENGTH);
+                gradient_offset = CommonFunctions.adjustPaletteOffset(gradient_offset, ccs.gradient_cycling_adjusting_value, gradient.length);
             }
 
             if (ccs.color_cycling_adjusting_value != 0) {
