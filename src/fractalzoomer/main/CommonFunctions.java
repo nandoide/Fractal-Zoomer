@@ -1961,6 +1961,9 @@ public class CommonFunctions implements Constants {
                                 overview += tab2 + "Bin Granularity = " + s.pps.hss.histogramBinGranularity + "<br>";
                                 overview += tab2 + "Density = " + s.pps.hss.histogramDensity + "<br>";
                             }
+                            if(s.pps.hss.hmapping != 0) {
+                                overview += tab2 + "Mapping Exponent = " + s.pps.hss.mapping_exponent + "<br>";
+                            }
                             overview += tab2 + "Min Scaling = " + s.pps.hss.histogramScaleMin + "<br>";
                             overview += tab2 + "Max Scaling = " + s.pps.hss.histogramScaleMax + "<br>";
                             overview += tab + "Color Blending Mode = " + Constants.blend_algorithms[s.pps.hss.hs_color_blending] + "<br>";

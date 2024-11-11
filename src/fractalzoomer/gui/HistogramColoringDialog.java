@@ -47,6 +47,10 @@ public class HistogramColoringDialog extends JDialog {
         density_field.setText("" + s.pps.hss.histogramDensity);
         density_field.setEnabled(mapping.getSelectedIndex() == 0);
 
+        JTextField exponent_field = new JTextField();
+        exponent_field.setText("" + s.pps.hss.mapping_exponent);
+        exponent_field.setEnabled(mapping.getSelectedIndex() != 0);
+
         JPanel temp_p4 = new JPanel();
         temp_p4.setLayout(new GridLayout(2, 2));
         temp_p4.add(new JLabel("Bin Granularity:", SwingConstants.HORIZONTAL));
@@ -103,6 +107,7 @@ public class HistogramColoringDialog extends JDialog {
             density_field.setEnabled(mapping.getSelectedIndex() == 0);
             granularity_field.setEnabled(mapping.getSelectedIndex() == 0);
             rankOrderDigitGrouping.setEnabled(mapping.getSelectedIndex() == 6);
+            exponent_field.setEnabled(mapping.getSelectedIndex() != 0);
         });
 
         rankOrderDigitGrouping.setEnabled(mapping.getSelectedIndex() == 6);
@@ -139,6 +144,10 @@ public class HistogramColoringDialog extends JDialog {
             " ",
             "Set the histogram bin granularity/density.",
                 temp_p4,
+                " ",
+                "Set the mapping exponent.",
+                "Mapping Exponent:",
+                exponent_field,
             " ",
                 "Set the rank order fractional digits grouping.",
                 "Fractional Digits Grouping:",
@@ -197,6 +206,7 @@ public class HistogramColoringDialog extends JDialog {
                             double temp2 = Double.parseDouble(noise_factor_field.getText());
                             double temp3 = Double.parseDouble(density_field.getText());
                             int temp = Integer.parseInt(granularity_field.getText());
+                            double temp4 = Double.parseDouble(exponent_field.getText());
 
                             if(temp < 1) {
                                 JOptionPane.showMessageDialog(ptra, "The histogram bin granularity must be greater than 0.", "Error!", JOptionPane.ERROR_MESSAGE);
@@ -218,6 +228,11 @@ public class HistogramColoringDialog extends JDialog {
                                 return;
                             }
 
+                            if (temp4 <= 0) {
+                                JOptionPane.showMessageDialog(ptra, "The mapping exponent must be greater than 0.", "Error!", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+
                             s.pps.hss.histogramColoring = enable_histogram_coloring.isSelected();
                             s.pps.hss.hs_noise_reducing_factor = temp2;
                             s.pps.hss.hs_blending = color_blend_opt.getValue() / 100.0;
@@ -232,6 +247,7 @@ public class HistogramColoringDialog extends JDialog {
                             s.pps.hss.hs_color_blending = blend_modes.getSelectedIndex();
                             s.pps.hss.hs_reverse_color_blending = reverse_blending.isSelected();
                             s.pps.hss.use_integer_iterations = use_integer_iterations.isSelected();
+                            s.pps.hss.mapping_exponent = temp4;
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                             return;

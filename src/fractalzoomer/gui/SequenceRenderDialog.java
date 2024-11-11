@@ -248,7 +248,7 @@ public class SequenceRenderDialog extends JDialog {
                 " ",
                 "Set the zoom sequence index parameters.",
                 flipIndex,
-                "Start Rendering at Sequence Index:",
+                "Skip Rendering before Sequence Index:",
                 startAtIndex,
                 "Sequence Index Offset:",
                 indexOffset,

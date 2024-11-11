@@ -5410,6 +5410,10 @@ public abstract class TaskRender implements Runnable {
         }
     }
 
+    protected double scaleWithExponent(double v, double exponent) {
+        return exponent == 1 ? v : Math.pow(v, exponent);
+    }
+
     protected void applyPostProcessingPointFilter(int image_width, int image_height, double[] image_iterations, boolean[] escaped, PixelExtraData[] pixelData, AntialiasingAlgorithm aa, Location location) throws StopExecutionException {
         double sizeCorr = 0, lightx = 0, lighty = 0;
 
@@ -8954,6 +8958,7 @@ public abstract class TaskRender implements Runnable {
                 }
             }
 
+            val = scaleWithExponent(val, hss.mapping_exponent);
             val = (hss.histogramScaleMax - hss.histogramScaleMin) * val + hss.histogramScaleMin;
             val *= sign;
 
@@ -9176,6 +9181,8 @@ public abstract class TaskRender implements Runnable {
                     g1 = 0;
                 }
             }
+
+            g1 = scaleWithExponent(g1, hss.mapping_exponent);
 
             g1 = (hss.histogramScaleMax - hss.histogramScaleMin) * g1 + hss.histogramScaleMin;
 
