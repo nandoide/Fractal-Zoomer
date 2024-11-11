@@ -23,6 +23,12 @@ public class LAInfoDeepDetection2FullRI extends LAInfoDeepFullRI {
         MinMagExp = MinMag.getExp();
     }
 
+    public LAInfoDeepDetection2FullRI(LAInfoDeepDetection2FullRI other) {
+        super(other);
+        MinMagMant = other.MinMagMant;
+        MinMagExp = other.MinMagExp;
+    }
+
     @Override
     protected boolean DetectDip(MantExpComplex z) {
         return z.chebyshevNorm().compareToBothPositive(new MantExp(MinMagExp, MinMagMant).multiply(DipDetectionThreshold2)) < 0;
@@ -195,7 +201,9 @@ public class LAInfoDeepDetection2FullRI extends LAInfoDeepFullRI {
 
     @Override
     public String toString() {
-        return  ZCoeffRe + "\n" +
+        return  StepLength + "\n" +
+                NextStageLAIndex + "\n"+
+                ZCoeffRe + "\n" +
                 ZCoeffIm + "\n" +
                 ZCoeffExp + "\n" +
                 ZCoeffExpIm + "\n" +

@@ -12,10 +12,11 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
     long CCoeffExpIm;
 
     protected LAInfoDeepFullRI() {
-
+        super();
     }
 
-    protected LAInfoDeepFullRI(LAInfoDeepFullRI other) {
+    public LAInfoDeepFullRI(LAInfoDeepFullRI other) {
+        super(other);
 
         RefIndex = other.RefIndex;
 
@@ -37,6 +38,7 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
     }
 
     protected LAInfoDeepFullRI(int RefIndex) {
+        super();
         this.RefIndex = RefIndex;
 
         MantExp LAThreshold = MantExp.ONE;
@@ -271,7 +273,9 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
 
     @Override
     public String toString() {
-        return  ZCoeffRe + "\n" +
+        return  StepLength + "\n" +
+                NextStageLAIndex + "\n"+
+                ZCoeffRe + "\n" +
                 ZCoeffIm + "\n" +
                 ZCoeffExp + "\n" +
                 ZCoeffExpIm + "\n" +

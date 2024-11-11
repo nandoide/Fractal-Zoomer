@@ -30,10 +30,11 @@ public class LAInfoRI extends LAInfoBase {
     }
 
     protected LAInfoRI() {
-
+        super();
     }
 
     protected LAInfoRI(int RefIndex) {
+        super();
         this.RefIndex = RefIndex;
         ZCoeffRe = 1.0;
         ZCoeffIm = 0.0;
@@ -44,7 +45,8 @@ public class LAInfoRI extends LAInfoBase {
         LAThresholdC = 1.0;
     }
 
-    protected LAInfoRI(LAInfoRI other) {
+    public LAInfoRI(LAInfoRI other) {
+        super(other);
         RefIndex = other.RefIndex;
 
         ZCoeffRe = other.ZCoeffRe;
@@ -58,6 +60,7 @@ public class LAInfoRI extends LAInfoBase {
     }
 
     protected LAInfoRI(LAInfoDeepRI deep) {
+        super(deep);
         Complex ZCoeff = deep.getZCoeff().toComplex();
         Complex CCoeff = deep.getCCoeff().toComplex();
 
@@ -208,7 +211,9 @@ public class LAInfoRI extends LAInfoBase {
 
     @Override
     public String toString() {
-        return  ZCoeffRe + "\n" +
+        return  StepLength + "\n" +
+                NextStageLAIndex + "\n"+
+                ZCoeffRe + "\n" +
                 ZCoeffIm + "\n" +
                 CCoeffRe + "\n" +
                 CCoeffIm + "\n" +

@@ -1,13 +1,13 @@
 package fractalzoomer.core.approximation.la_zhuoran;
 
 import fractalzoomer.core.*;
-import fractalzoomer.core.approximation.la_zhuoran.impl.LAInfo;
-import fractalzoomer.core.approximation.la_zhuoran.impl.LAInfoDeep;
-import fractalzoomer.core.approximation.la_zhuoran.impl_refindex.LAInfoDeepRI;
-import fractalzoomer.core.approximation.la_zhuoran.impl_refindex.LAInfoRI;
+import fractalzoomer.core.approximation.la_zhuoran.impl.*;
+import fractalzoomer.core.approximation.la_zhuoran.impl_refindex.*;
 import fractalzoomer.functions.Fractal;
 
 public abstract class GenericLAInfo {
+    protected int StepLength;
+    protected int NextStageLAIndex;
 
     private static final int ITERATIONS_MEMORY_THRESHOLD = 50_000_000;
 
@@ -43,6 +43,79 @@ public abstract class GenericLAInfo {
                 return LAInfo.create();
             }
         }
+    }
+
+    public static GenericLAInfo copy(GenericLAInfo other) {
+        if(other instanceof LAInfoDetection2) {
+            return new LAInfoDetection2((LAInfoDetection2) other);
+        }
+
+        if(other instanceof LAInfoDeepDetection2Full) {
+            return new LAInfoDeepDetection2Full((LAInfoDeepDetection2Full) other);
+        }
+
+        if(other instanceof LAInfoDeepDetection2) {
+            return new LAInfoDeepDetection2((LAInfoDeepDetection2) other);
+        }
+
+        if(other instanceof LAInfoDeepFull) {
+            return new LAInfoDeepFull((LAInfoDeepFull) other);
+        }
+
+        if(other instanceof LAInfoDeep) {
+            return new LAInfoDeep((LAInfoDeep) other);
+        }
+
+        if(other instanceof LAInfo) {
+            return new LAInfo((LAInfo) other);
+        }
+
+        //RI
+        if(other instanceof LAInfoDetection2RI) {
+            return new LAInfoDetection2RI((LAInfoDetection2RI) other);
+        }
+
+        if(other instanceof LAInfoDeepDetection2FullRI) {
+            return new LAInfoDeepDetection2FullRI((LAInfoDeepDetection2FullRI) other);
+        }
+
+        if(other instanceof LAInfoDeepDetection2RI) {
+            return new LAInfoDeepDetection2RI((LAInfoDeepDetection2RI) other);
+        }
+
+        if(other instanceof LAInfoDeepFullRI) {
+            return new LAInfoDeepFullRI((LAInfoDeepFullRI) other);
+        }
+
+        if(other instanceof LAInfoDeepRI) {
+            return new LAInfoDeepRI((LAInfoDeepRI) other);
+        }
+
+        if(other instanceof LAInfoRI) {
+            return new LAInfoRI((LAInfoRI) other);
+        }
+
+        return null;
+    }
+
+    protected GenericLAInfo() {
+        StepLength = 0;
+        NextStageLAIndex = 0;
+    }
+
+    protected GenericLAInfo(GenericLAInfo other) {
+        StepLength = other.StepLength;
+        NextStageLAIndex = other.NextStageLAIndex;
+    }
+
+    public void invalidateInfo() {
+        StepLength = -1;
+        NextStageLAIndex = -1;
+    }
+
+    public void setInfo(LAInfoI other) {
+        StepLength = other.StepLength;
+        NextStageLAIndex = other.NextStageLAIndex;
     }
 
     protected abstract GenericLAInfo Composite(LAInfo LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;

@@ -19,6 +19,11 @@ public class LAInfoDetection2RI extends LAInfoRI {
         MinMag = 4.0;
     }
 
+    public LAInfoDetection2RI(LAInfoDetection2RI other) {
+        super(other);
+        MinMag = other.MinMag;
+    }
+
     @Override
     protected boolean DetectDip(Complex z) {
         return z.chebyshevNorm() < MinMag * DipDetectionThreshold2;
@@ -152,7 +157,9 @@ public class LAInfoDetection2RI extends LAInfoRI {
 
     @Override
     public String toString() {
-        return  ZCoeffRe + "\n" +
+        return  StepLength + "\n" +
+                NextStageLAIndex + "\n"+
+                ZCoeffRe + "\n" +
                 ZCoeffIm + "\n" +
                 CCoeffRe + "\n" +
                 CCoeffIm + "\n" +

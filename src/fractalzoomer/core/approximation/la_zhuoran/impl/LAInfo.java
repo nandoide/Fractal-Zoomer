@@ -29,10 +29,11 @@ public class LAInfo extends LAInfoBase {
     }
 
     protected LAInfo() {
-
+        super();
     }
 
     protected LAInfo(int RefIndex, ReferenceDecompressor referenceDecompressor) {
+        super();
         Complex val = LAReference.f.getArrayValue(referenceDecompressor, Fractal.reference, RefIndex);
         RefRe = val.getRe();
         RefIm = val.getIm();
@@ -45,7 +46,8 @@ public class LAInfo extends LAInfoBase {
         LAThresholdC = 1.0;
     }
 
-    protected LAInfo(LAInfo other) {
+    public LAInfo(LAInfo other) {
+        super(other);
         RefRe = other.RefRe;
         RefIm = other.RefIm;
 
@@ -60,6 +62,7 @@ public class LAInfo extends LAInfoBase {
     }
 
     protected LAInfo(LAInfoDeep deep) {
+        super(deep);
         Complex Ref = deep.getRefDouble();
         Complex ZCoeff = deep.getZCoeff().toComplex();
         Complex CCoeff = deep.getCCoeff().toComplex();
@@ -219,7 +222,9 @@ public class LAInfo extends LAInfoBase {
 
     @Override
     public String toString() {
-        return  ZCoeffRe + "\n" +
+        return  StepLength + "\n" +
+                NextStageLAIndex + "\n"+
+                ZCoeffRe + "\n" +
                 ZCoeffIm + "\n" +
                 CCoeffRe + "\n" +
                 CCoeffIm + "\n" +

@@ -43,10 +43,11 @@ public class LAInfoDeepRI extends LAInfoBaseDeep {
 
 
     protected LAInfoDeepRI() {
-
+        super();
     }
 
-    protected LAInfoDeepRI(LAInfoDeepRI other) {
+    public LAInfoDeepRI(LAInfoDeepRI other) {
+        super(other);
         RefIndex = other.RefIndex;
 
         ZCoeffRe = other.ZCoeffRe;
@@ -65,6 +66,7 @@ public class LAInfoDeepRI extends LAInfoBaseDeep {
     }
 
     protected LAInfoDeepRI(int RefIndex) {
+        super();
         this.RefIndex = RefIndex;
 
         MantExp LAThreshold = MantExp.ONE;
@@ -241,7 +243,9 @@ public class LAInfoDeepRI extends LAInfoBaseDeep {
 
     @Override
     public String toString() {
-        return  ZCoeffRe + "\n" +
+        return  StepLength + "\n" +
+                NextStageLAIndex + "\n"+
+                ZCoeffRe + "\n" +
                 ZCoeffIm + "\n" +
                 ZCoeffExp + "\n" +
                 CCoeffRe + "\n" +

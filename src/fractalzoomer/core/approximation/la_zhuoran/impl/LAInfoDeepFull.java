@@ -13,10 +13,11 @@ public class LAInfoDeepFull extends LAInfoDeep {
     long CCoeffExpIm;
 
     protected LAInfoDeepFull() {
-
+        super();
     }
 
-    protected LAInfoDeepFull(LAInfoDeepFull other) {
+    public LAInfoDeepFull(LAInfoDeepFull other) {
+        super(other);
         RefRe = other.RefRe;
         RefIm = other.RefIm;
         RefExp = other.RefExp;
@@ -40,6 +41,7 @@ public class LAInfoDeepFull extends LAInfoDeep {
     }
 
     protected LAInfoDeepFull(int refIndex, ReferenceDecompressor referenceDecompressor) {
+        super();
         MantExpComplex z = LAReference.f.getArrayDeepValue(referenceDecompressor, Fractal.referenceDeep, refIndex);
         //z.Normalize();
         RefRe = z.getMantissaReal();
@@ -288,7 +290,9 @@ public class LAInfoDeepFull extends LAInfoDeep {
 
     @Override
     public String toString() {
-        return  ZCoeffRe + "\n" +
+        return  StepLength + "\n" +
+                NextStageLAIndex + "\n"+
+                ZCoeffRe + "\n" +
                 ZCoeffIm + "\n" +
                 ZCoeffExp + "\n" +
                 ZCoeffExpIm + "\n" +

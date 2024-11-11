@@ -24,6 +24,18 @@ public abstract  class LAInfoBase extends GenericLAInfo {
     protected double CCoeffRe, CCoeffIm;
     protected double LAThreshold, LAThresholdC;
 
+    protected LAInfoBase() {
+        super();
+    }
+
+    protected LAInfoBase(LAInfoBase other) {
+        super(other);
+    }
+
+    protected LAInfoBase(LAInfoBaseDeep other) {
+        super(other);
+    }
+
     @Override
     protected boolean DetectDip(MantExpComplex z) {
         return false;

@@ -27,6 +27,14 @@ public abstract class LAInfoBaseDeep extends GenericLAInfo {
     public double LAThresholdCMant;
     public long LAThresholdCExp;
 
+    protected LAInfoBaseDeep() {
+        super();
+    }
+
+    protected LAInfoBaseDeep(LAInfoBaseDeep other) {
+        super(other);
+    }
+
     @Override
     public MantExp getLAThreshold() {
         return new MantExp(LAThresholdExp, LAThresholdMant);
