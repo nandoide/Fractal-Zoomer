@@ -2,16 +2,16 @@
 package fractalzoomer.functions.mandelbrot;
 
 import fractalzoomer.core.*;
-import fractalzoomer.core.bla.BLA;
-import fractalzoomer.core.la.LAstep;
+import fractalzoomer.core.approximation.mip_la_claude.BLA;
+import fractalzoomer.core.approximation.la_zhuoran.LAstep;
 import fractalzoomer.core.location.Location;
-import fractalzoomer.core.mipla.MipLAPair;
-import fractalzoomer.core.mipla.MipLAStep;
+import fractalzoomer.core.approximation.mip_la_zhuoran.MipLAPair;
+import fractalzoomer.core.approximation.mip_la_zhuoran.MipLAStep;
 import fractalzoomer.core.mpfr.MpfrBigNum;
 import fractalzoomer.core.mpir.MpirBigNum;
-import fractalzoomer.core.nanomb1.Nanomb1;
-import fractalzoomer.core.nanomb1.biPoly;
-import fractalzoomer.core.nanomb1.tmpPoly;
+import fractalzoomer.core.approximation.nanomb1.Nanomb1;
+import fractalzoomer.core.approximation.nanomb1.biPoly;
+import fractalzoomer.core.approximation.nanomb1.tmpPoly;
 import fractalzoomer.fractal_options.BurningShip;
 import fractalzoomer.fractal_options.MandelGrass;
 import fractalzoomer.fractal_options.MandelVariation;

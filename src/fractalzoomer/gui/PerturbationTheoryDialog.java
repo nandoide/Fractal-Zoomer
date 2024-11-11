@@ -2,10 +2,10 @@
 package fractalzoomer.gui;
 
 import fractalzoomer.core.*;
-import fractalzoomer.core.la.LAReference;
-import fractalzoomer.core.la.impl.LAInfo;
-import fractalzoomer.core.la.impl.LAInfoDeep;
-import fractalzoomer.core.mipla.MipLAStep;
+import fractalzoomer.core.approximation.la_zhuoran.LAReference;
+import fractalzoomer.core.approximation.la_zhuoran.impl.LAInfo;
+import fractalzoomer.core.approximation.la_zhuoran.impl.LAInfoDeep;
+import fractalzoomer.core.approximation.mip_la_zhuoran.MipLAStep;
 import fractalzoomer.core.mpfr.LibMpfr;
 import fractalzoomer.core.mpfr.MpfrBigNum;
 import fractalzoomer.core.mpir.LibMpir;
