@@ -1862,6 +1862,8 @@ public class StatisticsColoringDialog extends JDialog {
         add(scrollPane);
 
         setVisible(true);
+
+        repaint();
     }
 
     public void toggled(boolean toggled) {

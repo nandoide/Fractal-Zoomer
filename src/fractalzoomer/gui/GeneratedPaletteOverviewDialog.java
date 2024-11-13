@@ -107,10 +107,11 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
 
         try {
             Graphics2D g = colors.createGraphics();
-            for (int i = 0; i < c.length - 1; i++) {
-                GradientPaint gp = new GradientPaint(i * colors.getWidth() / ((float)c.length), 0, c[i], (i + 1) * colors.getWidth() / ((float)c.length), 0, c[(i + 1) % c.length]);
+            int length = c.length - 1;
+            for (int i = 0; i < length; i++) {
+                GradientPaint gp = new GradientPaint(i * colors.getWidth() / ((float)length), 0, c[i], (i + 1) * colors.getWidth() / ((float)length), 0, c[(i + 1) % c.length]);
                 g.setPaint(gp);
-                g.fill(new Rectangle2D.Double(i * colors.getWidth() / ((double)c.length), 0, (i + 1) * colors.getWidth() / ((double)c.length) - i * colors.getWidth() / ((double)c.length), colors.getHeight()));
+                g.fill(new Rectangle2D.Double(i * colors.getWidth() / ((double)length), 0, (i + 1) * colors.getWidth() / ((double)length) - i * colors.getWidth() / ((double)length), colors.getHeight()));
             }
         } catch (Exception ex) {
             Graphics2D g = colors.createGraphics();
@@ -348,16 +349,19 @@ public class GeneratedPaletteOverviewDialog extends JDialog {
         add(scrollPane);
 
         setVisible(true);
+
+        repaint();
     }
 
     private void paintGradient(Color[] c) {
 
         try {
             Graphics2D g = colors.createGraphics();
-            for (int i = 0; i < c.length - 1; i++) {
-                GradientPaint gp = new GradientPaint(i * colors.getWidth() / ((float)c.length), 0, c[i], (i + 1) * colors.getWidth() / ((float)c.length), 0, c[(i + 1) % c.length]);
+            int length = c.length - 1;
+            for (int i = 0; i < length; i++) {
+                GradientPaint gp = new GradientPaint(i * colors.getWidth() / ((float)length), 0, c[i], (i + 1) * colors.getWidth() / ((float)length), 0, c[(i + 1) % c.length]);
                 g.setPaint(gp);
-                g.fill(new Rectangle2D.Double(i * colors.getWidth() / ((double)c.length), 0, (i + 1) * colors.getWidth() / ((double)c.length) - i * colors.getWidth() / ((double)c.length), colors.getHeight()));
+                g.fill(new Rectangle2D.Double(i * colors.getWidth() / ((double)length), 0, (i + 1) * colors.getWidth() / ((double)length) - i * colors.getWidth() / ((double)length), colors.getHeight()));
             }
         } catch (Exception ex) {
             Graphics2D g = colors.createGraphics();

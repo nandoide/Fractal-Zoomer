@@ -3435,6 +3435,8 @@ public class FiltersOptionsDialog extends JDialog {
         requestFocus();
 
         setVisible(true);
+
+        repaint();
         
     }
    

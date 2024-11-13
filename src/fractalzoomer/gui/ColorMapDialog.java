@@ -297,5 +297,7 @@ public class ColorMapDialog extends JDialog {
         requestFocus();
 
         setVisible(true);
+
+        repaint();
     }
 }

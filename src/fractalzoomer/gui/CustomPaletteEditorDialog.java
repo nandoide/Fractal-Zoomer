@@ -2078,6 +2078,8 @@ public class CustomPaletteEditorDialog extends JDialog {
 
         setVisible(true);
 
+        repaint();
+
     }
 
     private void paintGradientAndGraph(Color[] c) {

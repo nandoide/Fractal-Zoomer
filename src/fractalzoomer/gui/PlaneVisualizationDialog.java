@@ -221,6 +221,8 @@ public class PlaneVisualizationDialog extends JDialog {
         requestFocus();
 
         setVisible(true);
+
+        repaint();
     }
 
 }

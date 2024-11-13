@@ -150,6 +150,8 @@ public class ColorPaletteEditorDialog extends JDialog {
         requestFocus();
 
         setVisible(true);
+
+        repaint();
     }
 
     public void colorChanged() {
