@@ -64,7 +64,8 @@ public class FieldLinesBailoutCondition extends BailoutCondition {
 
     @Override
     public boolean escaped(BigNumComplex z, BigNumComplex zold, BigNumComplex zold2, int iterations, BigNumComplex c, BigNumComplex start, BigNumComplex c0, BigNum norm_squared, BigNumComplex pixel) {
-        return escaped(z.toComplex(), zold.toComplex(), zold2.toComplex(), iterations, c.toComplex(), start.toComplex(), c0.toComplex(), norm_squared.doubleValue(), pixel.toComplex());
+        double normSquared = norm_squared != null ? norm_squared.doubleValue() : 0;
+        return escaped(z.toComplex(), zold.toComplex(), zold2.toComplex(), iterations, c.toComplex(), start.toComplex(), c0.toComplex(), normSquared, pixel.toComplex());
     }
 
     @Override
