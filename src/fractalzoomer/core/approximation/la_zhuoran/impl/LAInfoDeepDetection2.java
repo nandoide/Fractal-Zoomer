@@ -13,7 +13,7 @@ public class LAInfoDeepDetection2 extends LAInfoDeep {
     long MinMagExp;
 
     protected LAInfoDeepDetection2() {
-        super();
+        super(0);
     }
 
     protected LAInfoDeepDetection2(int refIndex, ReferenceDecompressor referenceDecompressor) {
@@ -92,6 +92,9 @@ public class LAInfoDeepDetection2 extends LAInfoDeep {
 
         out.MinMagExp = outMinMag.getExp();
         out.MinMagMant = outMinMag.getMantissa();
+
+        out.StepLength = StepLength + 1;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return outMinMag.compareToBothPositive(MinMag.multiply(LAInfoBaseDeep.Stage0DipDetectionThreshold2)) < 0;
     }
@@ -182,6 +185,9 @@ public class LAInfoDeepDetection2 extends LAInfoDeep {
 
         out.MinMagExp = outMinMag.getExp();
         out.MinMagMant = outMinMag.getMantissa();
+
+        out.StepLength = LA.StepLength + StepLength;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return temp.compareToBothPositive(MinMag.multiply(LAInfoBaseDeep.DipDetectionThreshold2)) < 0;
     }

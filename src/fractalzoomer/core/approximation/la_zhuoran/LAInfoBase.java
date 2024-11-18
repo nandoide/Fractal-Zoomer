@@ -24,8 +24,8 @@ public abstract  class LAInfoBase extends GenericLAInfo {
     protected double CCoeffRe, CCoeffIm;
     protected double LAThreshold, LAThresholdC;
 
-    protected LAInfoBase() {
-        super();
+    protected LAInfoBase(int RefIndex) {
+        super(RefIndex);
     }
 
     protected LAInfoBase(LAInfoBase other) {

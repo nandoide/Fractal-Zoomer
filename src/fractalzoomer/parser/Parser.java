@@ -710,6 +710,7 @@ public class Parser {
                     && !temp.equalsIgnoreCase("pixel")
                     && !temp.equalsIgnoreCase("width")
                     && !temp.equalsIgnoreCase("height")
+                    && !temp.equalsIgnoreCase("maxnde")
             ) {
                 throw new ParserException("Unrecognized variable %s found.", lookahead);
             }

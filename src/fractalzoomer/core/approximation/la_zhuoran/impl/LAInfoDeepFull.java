@@ -13,7 +13,7 @@ public class LAInfoDeepFull extends LAInfoDeep {
     long CCoeffExpIm;
 
     protected LAInfoDeepFull() {
-        super();
+        super(0);
     }
 
     public LAInfoDeepFull(LAInfoDeepFull other) {
@@ -41,7 +41,7 @@ public class LAInfoDeepFull extends LAInfoDeep {
     }
 
     protected LAInfoDeepFull(int refIndex, ReferenceDecompressor referenceDecompressor) {
-        super();
+        super(refIndex);
         MantExpComplex z = LAReference.f.getArrayDeepValue(referenceDecompressor, Fractal.referenceDeep, refIndex);
         //z.Normalize();
         RefRe = z.getMantissaReal();
@@ -151,6 +151,9 @@ public class LAInfoDeepFull extends LAInfoDeep {
         out.RefExp = RefExp;
         out.RefExpIm = RefExpIm;
 
+        out.StepLength = StepLength + 1;
+        out.NextStageLAIndex = NextStageLAIndex;
+
         return outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
     }
 
@@ -243,6 +246,9 @@ public class LAInfoDeepFull extends LAInfoDeep {
         out.RefRe = RefRe;
         out.RefIm = RefIm;
         out.RefExpIm = RefExpIm;
+
+        out.StepLength = LA.StepLength + StepLength;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
     }

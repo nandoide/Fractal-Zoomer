@@ -30,11 +30,11 @@ public class LAInfoRI extends LAInfoBase {
     }
 
     protected LAInfoRI() {
-        super();
+        super(0);
     }
 
     protected LAInfoRI(int RefIndex) {
-        super();
+        super(RefIndex);
         this.RefIndex = RefIndex;
         ZCoeffRe = 1.0;
         ZCoeffIm = 0.0;
@@ -113,6 +113,9 @@ public class LAInfoRI extends LAInfoBase {
 
         out.RefIndex = RefIndex;
 
+        out.StepLength = StepLength + 1;
+        out.NextStageLAIndex = NextStageLAIndex;
+
         return out.LAThreshold < LAThreshold * Stage0DipDetectionThreshold;
     }
 
@@ -170,6 +173,9 @@ public class LAInfoRI extends LAInfoBase {
                 || !Double.isFinite(out.LAThreshold) || !Double.isFinite(out.LAThresholdC)) {
             throw new InvalidCalculationException("Invalid calculations");
         }
+
+        out.StepLength = LA.StepLength + StepLength;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return temp < LAThreshold * DipDetectionThreshold;
     }

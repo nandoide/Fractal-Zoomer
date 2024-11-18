@@ -27,8 +27,8 @@ public abstract class LAInfoBaseDeep extends GenericLAInfo {
     public double LAThresholdCMant;
     public long LAThresholdCExp;
 
-    protected LAInfoBaseDeep() {
-        super();
+    protected LAInfoBaseDeep(int RefIndex) {
+        super(RefIndex);
     }
 
     protected LAInfoBaseDeep(LAInfoBaseDeep other) {

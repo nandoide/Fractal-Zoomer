@@ -5,7 +5,7 @@ import fractalzoomer.core.MantExpComplex;
 
 public class LAstep {
     public int step;
-    public int nextStageLAindex;
+    public int NextStageLAIndex;
     protected GenericLAInfo LAj;
     protected Complex Refp1;
     protected MantExpComplex Refp1Deep;

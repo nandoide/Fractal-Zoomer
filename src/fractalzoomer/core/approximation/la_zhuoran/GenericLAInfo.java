@@ -98,9 +98,9 @@ public abstract class GenericLAInfo {
         return null;
     }
 
-    protected GenericLAInfo() {
-        StepLength = 0;
-        NextStageLAIndex = 0;
+    protected GenericLAInfo(int RefIndex) {
+        StepLength = 1;
+        NextStageLAIndex = RefIndex;
     }
 
     protected GenericLAInfo(GenericLAInfo other) {
@@ -113,9 +113,12 @@ public abstract class GenericLAInfo {
         NextStageLAIndex = -1;
     }
 
-    public void setInfo(LAInfoI other) {
-        StepLength = other.StepLength;
-        NextStageLAIndex = other.NextStageLAIndex;
+    public void clearInfo() {
+        StepLength = 0;
+        NextStageLAIndex = 0;
+    }
+    public void setNextStageLAIndex(int NextStageLAIndex) {
+        this.NextStageLAIndex = NextStageLAIndex;
     }
 
     protected abstract GenericLAInfo Composite(LAInfo LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;

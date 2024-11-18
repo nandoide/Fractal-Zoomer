@@ -73,6 +73,9 @@ public class LAInfoDetection2 extends LAInfo {
 
         out.MinMag = Math.min(ChebyMagz, MinMag);
 
+        out.StepLength = StepLength + 1;
+        out.NextStageLAIndex = NextStageLAIndex;
+
         return out.MinMag < MinMag * Stage0DipDetectionThreshold2;
     }
 
@@ -139,6 +142,9 @@ public class LAInfoDetection2 extends LAInfo {
 
         double temp = Math.min (ChebyMagz, MinMag);
         out.MinMag = Math.min (temp, LA.MinMag);
+
+        out.StepLength = LA.StepLength + StepLength;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return temp < MinMag * DipDetectionThreshold2;
     }

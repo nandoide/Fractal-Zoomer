@@ -2238,13 +2238,13 @@ public abstract class Fractal {
             zc = z.toComplex();
         }
 
-        RefIteration = 0;
-
         int CurrentLAStage = laReference.isValid ? laReference.LAStageCount : 0;
 
         boolean DPEvaluation = false;
 
         boolean needsComplexZ = trap != null || statistic != null;
+
+        RefIteration = laReference.getBegin(CurrentLAStage - 1);
 
         while (CurrentLAStage > 0) {
             if (laReference.useDoublePrecisionAtStage(CurrentLAStage - 1)) {
@@ -2254,21 +2254,22 @@ public abstract class Fractal {
 
             CurrentLAStage--;
 
-            int LAIndex = laReference.getLAIndex(CurrentLAStage);
+            int begin = laReference.getBegin(CurrentLAStage);
 
-            if(laReference.isLAStageInvalid(LAIndex, DeltaSub0ChebyshevNorm)) {
+            if(laReference.isLAStageInvalid(begin, DeltaSub0ChebyshevNorm)) {
+                RefIteration = laReference.getNextStageLAIndex(begin);
                 continue;
             }
 
-            int MacroItCount = laReference.getMacroItCount(CurrentLAStage);
+            int end = laReference.getEnd(CurrentLAStage);
 
 
             while(iterations < max_iterations) {
 
-                LAstep las = laReference.getLA(this, LAIndex, DeltaSubN, RefIteration, iterations, max_iterations);
+                LAstep las = laReference.getLA(this, RefIteration, DeltaSubN, iterations, max_iterations);
 
                 if(las.unusable) {
-                    RefIteration = las.nextStageLAindex;
+                    RefIteration = las.NextStageLAIndex;
                     break;
                 }
 
@@ -2308,9 +2309,9 @@ public abstract class Fractal {
 
                 // rebase
 
-                if(z.chebyshevNorm().compareToBothPositiveReduced(DeltaSubN.chebyshevNorm()) < 0|| RefIteration >= MacroItCount) {
+                if(z.chebyshevNorm().compareToBothPositiveReduced(DeltaSubN.chebyshevNorm()) < 0|| RefIteration >= end) {
                     DeltaSubN = z;
-                    RefIteration = 0;
+                    RefIteration = begin;
                     rebases++;
                 }
 
@@ -2405,21 +2406,22 @@ public abstract class Fractal {
             while (CurrentLAStage > 0) {
                 CurrentLAStage--;
 
-                int LAIndex = laReference.getLAIndex(CurrentLAStage);
+                int begin = laReference.getBegin(CurrentLAStage);
 
-                if(laReference.isLAStageInvalid(LAIndex, CDeltaSub0ChebyshevNorm)) {
+                if(laReference.isLAStageInvalid(begin, CDeltaSub0ChebyshevNorm)) {
+                    RefIteration = laReference.getNextStageLAIndex(begin);
                     continue;
                 }
 
-                int MacroItCount = laReference.getMacroItCount(CurrentLAStage);
+                int end = laReference.getEnd(CurrentLAStage);
 
 
                 while(iterations < max_iterations) {
 
-                    LAstep las = laReference.getLA(this, LAIndex, CDeltaSubN, RefIteration, iterations, max_iterations);
+                    LAstep las = laReference.getLA(this, RefIteration, CDeltaSubN, iterations, max_iterations);
 
                     if(las.unusable) {
-                        RefIteration = las.nextStageLAindex;
+                        RefIteration = las.NextStageLAIndex;
                         break;
                     }
 
@@ -2453,9 +2455,9 @@ public abstract class Fractal {
 
                     // rebase
 
-                    if(zc.chebyshevNorm() < CDeltaSubN.chebyshevNorm() || RefIteration >= MacroItCount) {
+                    if(zc.chebyshevNorm() < CDeltaSubN.chebyshevNorm() || RefIteration >= end) {
                         CDeltaSubN = zc;
-                        RefIteration = 0;
+                        RefIteration = begin;
                         rebases++;
                     }
 
@@ -2524,30 +2526,30 @@ public abstract class Fractal {
             z = getArrayValue(reference, RefIteration).plus_mutable(DeltaSubN);
         }
 
-        RefIteration = 0;
-
         int CurrentLAStage = laReference.isValid ? laReference.LAStageCount : 0;
 
+        RefIteration = laReference.getBegin(CurrentLAStage - 1);
 
         while (CurrentLAStage > 0) {
 
             CurrentLAStage--;
 
-            int LAIndex = laReference.getLAIndex(CurrentLAStage);
+            int begin = laReference.getBegin(CurrentLAStage);
 
-            if(laReference.isLAStageInvalid(LAIndex, CDeltaSub0ChebyshevNorm)) {
+            if(laReference.isLAStageInvalid(begin, CDeltaSub0ChebyshevNorm)) {
+                RefIteration = laReference.getNextStageLAIndex(begin);
                 continue;
             }
 
-            int MacroItCount = laReference.getMacroItCount(CurrentLAStage);
+            int end = laReference.getEnd(CurrentLAStage);
 
 
             while(iterations < max_iterations) {
 
-                LAstep las = laReference.getLA(this, LAIndex, DeltaSubN, RefIteration, iterations, max_iterations);
+                LAstep las = laReference.getLA(this, RefIteration, DeltaSubN, iterations, max_iterations);
 
                 if(las.unusable) {
-                    RefIteration = las.nextStageLAindex;
+                    RefIteration = las.NextStageLAIndex;
                     break;
                 }
 
@@ -2576,9 +2578,9 @@ public abstract class Fractal {
 
                 // rebase
 
-                if(z.chebyshevNorm() < DeltaSubN.chebyshevNorm() || RefIteration >= MacroItCount) {
+                if(z.chebyshevNorm() < DeltaSubN.chebyshevNorm() || RefIteration >= end) {
                     DeltaSubN = z;
-                    RefIteration = 0;
+                    RefIteration = begin;
                     rebases++;
                 }
 

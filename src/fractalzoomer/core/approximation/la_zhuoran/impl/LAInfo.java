@@ -29,11 +29,11 @@ public class LAInfo extends LAInfoBase {
     }
 
     protected LAInfo() {
-        super();
+        super(0);
     }
 
     protected LAInfo(int RefIndex, ReferenceDecompressor referenceDecompressor) {
-        super();
+        super(RefIndex);
         Complex val = LAReference.f.getArrayValue(referenceDecompressor, Fractal.reference, RefIndex);
         RefRe = val.getRe();
         RefIm = val.getIm();
@@ -123,6 +123,9 @@ public class LAInfo extends LAInfoBase {
         out.RefRe = RefRe;
         out.RefIm = RefIm;
 
+        out.StepLength = StepLength + 1;
+        out.NextStageLAIndex = NextStageLAIndex;
+
         return out.LAThreshold < LAThreshold * Stage0DipDetectionThreshold;
     }
 
@@ -182,6 +185,9 @@ public class LAInfo extends LAInfoBase {
                 || !Double.isFinite(out.LAThreshold) || !Double.isFinite(out.LAThresholdC)) {
             throw new InvalidCalculationException("Invalid calculations");
         }
+
+        out.StepLength = LA.StepLength + StepLength;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return temp < LAThreshold * DipDetectionThreshold;
     }

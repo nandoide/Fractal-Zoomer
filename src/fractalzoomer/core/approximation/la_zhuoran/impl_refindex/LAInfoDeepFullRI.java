@@ -38,7 +38,7 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
     }
 
     protected LAInfoDeepFullRI(int RefIndex) {
-        super();
+        super(RefIndex);
         this.RefIndex = RefIndex;
 
         MantExp LAThreshold = MantExp.ONE;
@@ -136,6 +136,9 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
 
         out.RefIndex = RefIndex;
 
+        out.StepLength = StepLength + 1;
+        out.NextStageLAIndex = NextStageLAIndex;
+
         return outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
     }
 
@@ -219,6 +222,9 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
         out.CCoeffExpIm = outCCoeff.getExpImag();
 
         out.RefIndex = RefIndex;
+
+        out.StepLength = LA.StepLength + StepLength;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
     }

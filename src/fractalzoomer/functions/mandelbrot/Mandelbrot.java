@@ -2823,30 +2823,30 @@ public class Mandelbrot extends Julia {
 
         double CDeltaSub0ChebyshevNorm = Math.max(Math.abs(d0re), Math.abs(d0im));
 
-        RefIteration = 0;
-
         int CurrentLAStage = laReference.isValid ? laReference.LAStageCount : 0;
 
+        RefIteration = laReference.getBegin(CurrentLAStage - 1);
 
         while (CurrentLAStage > 0) {
 
             CurrentLAStage--;
 
-            int LAIndex = laReference.getLAIndex(CurrentLAStage);
+            int begin = laReference.getBegin(CurrentLAStage);
 
-            if(laReference.isLAStageInvalid(LAIndex, CDeltaSub0ChebyshevNorm)) {
+            if(laReference.isLAStageInvalid(begin, CDeltaSub0ChebyshevNorm)) {
+                RefIteration = laReference.getNextStageLAIndex(begin);
                 continue;
             }
 
-            int MacroItCount = laReference.getMacroItCount(CurrentLAStage);
+            int end = laReference.getEnd(CurrentLAStage);
 
 
             while(iterations < max_iterations) {
 
-                LAstep las = laReference.getLA(this, LAIndex, dre, dim, RefIteration, iterations, max_iterations);
+                LAstep las = laReference.getLA(this, RefIteration, dre, dim, iterations, max_iterations);
 
                 if(las.unusable) {
-                    RefIteration = las.nextStageLAindex;
+                    RefIteration = las.NextStageLAIndex;
                     break;
                 }
 
@@ -2883,10 +2883,10 @@ public class Mandelbrot extends Julia {
 
                 // rebase
 
-                if(Math.max(Math.abs(zre), Math.abs(zim)) < Math.max(Math.abs(dre), Math.abs(dim)) || RefIteration >= MacroItCount) {
+                if(Math.max(Math.abs(zre), Math.abs(zim)) < Math.max(Math.abs(dre), Math.abs(dim)) || RefIteration >= end) {
                     dre = zre;
                     dim = zim;
-                    RefIteration = 0;
+                    RefIteration = begin;
                     rebases++;
                 }
 
@@ -3053,13 +3053,13 @@ public class Mandelbrot extends Julia {
             zc = z.toComplex();
         }
 
-        RefIteration = 0;
-
         int CurrentLAStage = laReference.isValid ? laReference.LAStageCount : 0;
 
         boolean DPEvaluation = false;
 
         boolean needsComplexZ = trap != null || statistic != null;
+
+        RefIteration = laReference.getBegin(CurrentLAStage - 1);
 
         while (CurrentLAStage > 0) {
             if (laReference.useDoublePrecisionAtStage(CurrentLAStage - 1)) {
@@ -3069,21 +3069,22 @@ public class Mandelbrot extends Julia {
 
             CurrentLAStage--;
 
-            int LAIndex = laReference.getLAIndex(CurrentLAStage);
+            int begin = laReference.getBegin(CurrentLAStage);
 
-            if(laReference.isLAStageInvalid(LAIndex, DeltaSub0ChebyshevNorm)) {
+            if(laReference.isLAStageInvalid(begin, DeltaSub0ChebyshevNorm)) {
+                RefIteration = laReference.getNextStageLAIndex(begin);
                 continue;
             }
 
-            int MacroItCount = laReference.getMacroItCount(CurrentLAStage);
+            int end = laReference.getEnd(CurrentLAStage);
 
 
             while(iterations < max_iterations) {
 
-                LAstep las = laReference.getLA(this, LAIndex, DeltaSubN, RefIteration, iterations, max_iterations);
+                LAstep las = laReference.getLA(this, RefIteration, DeltaSubN, iterations, max_iterations);
 
                 if(las.unusable) {
-                    RefIteration = las.nextStageLAindex;
+                    RefIteration = las.NextStageLAIndex;
                     break;
                 }
 
@@ -3123,9 +3124,9 @@ public class Mandelbrot extends Julia {
 
                 // rebase
 
-                if(z.chebyshevNorm().compareToBothPositiveReduced(DeltaSubN.chebyshevNorm()) < 0|| RefIteration >= MacroItCount) {
+                if(z.chebyshevNorm().compareToBothPositiveReduced(DeltaSubN.chebyshevNorm()) < 0|| RefIteration >= end) {
                     DeltaSubN = z;
-                    RefIteration = 0;
+                    RefIteration = begin;
                     rebases++;
                 }
 
@@ -3226,21 +3227,22 @@ public class Mandelbrot extends Julia {
             while (CurrentLAStage > 0) {
                 CurrentLAStage--;
 
-                int LAIndex = laReference.getLAIndex(CurrentLAStage);
+                int begin = laReference.getBegin(CurrentLAStage);
 
-                if(laReference.isLAStageInvalid(LAIndex, CDeltaSub0ChebyshevNorm)) {
+                if(laReference.isLAStageInvalid(begin, CDeltaSub0ChebyshevNorm)) {
+                    RefIteration = laReference.getNextStageLAIndex(begin);
                     continue;
                 }
 
-                int MacroItCount = laReference.getMacroItCount(CurrentLAStage);
+                int end = laReference.getEnd(CurrentLAStage);
 
 
                 while(iterations < max_iterations) {
 
-                    LAstep las = laReference.getLA(this, LAIndex, dre, dim, RefIteration, iterations, max_iterations);
+                    LAstep las = laReference.getLA(this, RefIteration, dre, dim, iterations, max_iterations);
 
                     if(las.unusable) {
-                        RefIteration = las.nextStageLAindex;
+                        RefIteration = las.NextStageLAIndex;
                         break;
                     }
 
@@ -3284,10 +3286,10 @@ public class Mandelbrot extends Julia {
 
                     // rebase
 
-                    if(Math.max(Math.abs(zre), Math.abs(zim)) < Math.max(Math.abs(dre), Math.abs(dim)) || RefIteration >= MacroItCount) {
+                    if(Math.max(Math.abs(zre), Math.abs(zim)) < Math.max(Math.abs(dre), Math.abs(dim)) || RefIteration >= end) {
                         dre = zre;
                         dim = zim;
-                        RefIteration = 0;
+                        RefIteration = begin;
                         rebases++;
                     }
 

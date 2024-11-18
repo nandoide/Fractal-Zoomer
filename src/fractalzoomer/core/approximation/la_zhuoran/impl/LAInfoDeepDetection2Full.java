@@ -96,6 +96,9 @@ public class LAInfoDeepDetection2Full extends LAInfoDeepFull {
         out.MinMagExp = outMinMag.getExp();
         out.MinMagMant = outMinMag.getMantissa();
 
+        out.StepLength = StepLength + 1;
+        out.NextStageLAIndex = NextStageLAIndex;
+
         return outMinMag.compareToBothPositive(MinMag.multiply(Stage0DipDetectionThreshold2)) < 0;
     }
     @Override
@@ -187,6 +190,9 @@ public class LAInfoDeepDetection2Full extends LAInfoDeepFull {
 
         out.MinMagExp = outMinMag.getExp();
         out.MinMagMant = outMinMag.getMantissa();
+
+        out.StepLength = LA.StepLength + StepLength;
+        out.NextStageLAIndex = NextStageLAIndex;
 
         return temp.compareToBothPositive(MinMag.multiply(DipDetectionThreshold2)) < 0;
     }
