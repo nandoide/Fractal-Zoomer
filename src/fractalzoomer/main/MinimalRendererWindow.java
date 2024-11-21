@@ -127,6 +127,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
     private String settingsName;
     private int imageFormat;
+    private float jpegQuality = 0.75f;
 
     private BufferedImage preview_image;
     private int preview_scale_alg = 0;
@@ -974,7 +975,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
             File file = new File(name);
             writeStats(path, baseName, largePolarStats);
-            saveImage(largePolarImage, imageFormat, file);
+            saveImage(largePolarImage, imageFormat, jpegQuality, file);
         }
         catch(IOException ex) {
         }
@@ -1094,7 +1095,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
         imageWriteTime = System.currentTimeMillis();
         if(aspect_ratio == 1) {
             File file = new File(name);
-            saveImage(image, imageFormat, file);
+            saveImage(image, imageFormat, jpegQuality, file);
         }
         else if(aspect_ratio > 1) {
             int width = image.getWidth();
@@ -1104,7 +1105,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             BufferedImage subImage = image.getSubimage(0, (image.getHeight() - height) / 2, width, height);
 
             File file = new File(name);
-            saveImage(subImage, imageFormat, file);
+            saveImage(subImage, imageFormat, jpegQuality, file);
         }
         else  {
             int height = image.getHeight();
@@ -1114,7 +1115,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             BufferedImage subImage = image.getSubimage((image.getWidth() - width) / 2, 0, width, height);
 
             File file = new File(name);
-            saveImage(subImage, imageFormat, file);
+            saveImage(subImage, imageFormat, jpegQuality, file);
         }
         imageWriteTime = System.currentTimeMillis() - imageWriteTime;
 
@@ -1205,14 +1206,15 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
     }
 
-    public void setSizeOfImagePost(int width, int height, int imageFormat) {
+    public void setSizeOfImagePost(int width, int height, int imageFormat, float jpegQuality) {
         image_width = width;
         image_height = height;
         this.imageFormat = imageFormat;
+        this.jpegQuality = jpegQuality;
     }
 
     private void setSizeOfImage() {
-        new ImageSizeDialog(ptr, image_width, image_height, imageFormat);
+        new ImageSizeDialog(ptr, image_width, image_height, imageFormat, jpegQuality);
     }
 
     public void setRenderingAlgorithms() {
@@ -1316,6 +1318,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             writer.println("preview_scale_alg " + preview_scale_alg);
             writer.println("display_user_code_warning " + Settings.DISPLAY_USER_CODE_WARNING);
             writer.println("output_image_format " + imageFormat);
+            writer.println("jpeg_quality " + jpegQuality);
 
             writer.println();
 
@@ -1673,6 +1676,17 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
                             if (temp >= 0 && temp <= 4) {
                                 imageFormat = temp;
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("jpeg_quality") && tokenizer.countTokens() == 1) {
+
+                        try {
+                            float temp = Float.parseFloat(tokenizer.nextToken());
+
+                            if (temp >= 0 && temp <= 1) {
+                                jpegQuality = temp;
                             }
                         } catch (Exception ex) {
                         }

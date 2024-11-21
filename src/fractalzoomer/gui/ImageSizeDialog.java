@@ -7,6 +7,7 @@ import fractalzoomer.main.MinimalRendererWindow;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -39,7 +40,7 @@ public class ImageSizeDialog extends JDialog {
 
     private JCheckBox keep_ar;
 
-    public ImageSizeDialog(JFrame ptr, int image_width, int image_height, int imageFormat) {
+    public ImageSizeDialog(JFrame ptr, int image_width, int image_height, int imageFormat, float jpegQuality) {
         
         super(ptr);
 
@@ -260,6 +261,23 @@ public class ImageSizeDialog extends JDialog {
         JLabel extraSpace = new JLabel(" ");
         extraSpace.setVisible(ptr instanceof MinimalRendererWindow);
 
+        final JSlider jpeg_quality_opt = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+        jpeg_quality_opt.setValue((int)(100 * jpegQuality));
+
+        jpeg_quality_opt.setMajorTickSpacing(10);
+        jpeg_quality_opt.setMinorTickSpacing(1);
+        jpeg_quality_opt.setToolTipText("Sets the jpeg quality.");
+        jpeg_quality_opt.setFocusable(false);
+        jpeg_quality_opt.setPaintLabels(true);
+        jpeg_quality_opt.setVisible(ptr instanceof MinimalRendererWindow);
+
+        jpeg_quality_opt.setEnabled(imageFormatOpt.getSelectedIndex() == 1);
+        imageFormatOpt.addActionListener(e -> jpeg_quality_opt.setEnabled(imageFormatOpt.getSelectedIndex() == 1));
+        JLabel extraSpace2 = new JLabel(" ");
+        JLabel jpegLabel = new JLabel("JPEG Quality:");
+        jpegLabel.setVisible(ptr instanceof MinimalRendererWindow);
+        extraSpace2.setVisible(ptr instanceof MinimalRendererWindow);
+
         Object[] message3 = {
             " ",
             "Your image size is " + image_width + "x" + image_height + " .\nInsert the new image size.",
@@ -278,6 +296,9 @@ public class ImageSizeDialog extends JDialog {
                 extraSpace,
                 out,
                 imageFormatOpt,
+                extraSpace2,
+                jpegLabel,
+                jpeg_quality_opt,
         " "};
 
         optionPane = new JOptionPane(message3, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
@@ -348,7 +369,7 @@ public class ImageSizeDialog extends JDialog {
                             ((MainWindow)ptr).setSizeOfImagePost(temp, temp2);
                         }
                         else {
-                            ((MinimalRendererWindow)ptra).setSizeOfImagePost(temp, temp2, imageFormatOpt.getSelectedIndex());
+                            ((MinimalRendererWindow)ptra).setSizeOfImagePost(temp, temp2, imageFormatOpt.getSelectedIndex(), jpeg_quality_opt.getValue() / 100.f);
                         }
                     }
                 });

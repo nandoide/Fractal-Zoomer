@@ -64,6 +64,9 @@ package fractalzoomer.main;
  import processing.core.PApplet;
 
  import javax.imageio.ImageIO;
+ import javax.imageio.ImageWriteParam;
+ import javax.imageio.ImageWriter;
+ import javax.imageio.stream.ImageOutputStream;
  import javax.swing.*;
  import javax.swing.event.MenuEvent;
  import javax.swing.event.MenuListener;
@@ -160,6 +163,7 @@ public class MainWindow extends JFrame implements Constants {
     public static boolean DRAGGING_TRANSFORMS_IMAGE = true;
     public static boolean REUSE_DATA_ON_ITERATION_CHANGE = true;
     public static boolean FIRST_RUN = true;
+    public static float JPEG_QUALITY = 0.75f;
 
     public static String SaveSettingsPath = "";
     public static String SaveImagesPath = "";
@@ -1043,8 +1047,23 @@ public class MainWindow extends JFrame implements Constants {
                 }
 
                 if (s.fns.julia && first_seed) {
-                    fastJulia();
+                    try {
+                        Point p1 = main_panel.getMousePosition();
+                        int x1 = p1.x;
+                        int y1 = p1.y;
+                        if (isInBounds(x1, y1)) {
+                            fastJulia(x1, y1);
+                        }
+                        else {
+                            main_panel.repaint();
+                        }
+                    }
+                    catch (Exception ex) {
+                        main_panel.repaint();
+                    }
                 }
+
+
 
                 if (zoom_window) {
                     main_panel.repaint();
@@ -2662,7 +2681,27 @@ public class MainWindow extends JFrame implements Constants {
 
     }
 
-    public static boolean saveImage(BufferedImage img, int imageFormat, File file) throws IOException {
+     public static void writeJPEGWithQuality(BufferedImage image, String outputPath, float quality) throws IOException {
+         // Get the JPEG writer
+         ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+         try (ImageOutputStream ios = ImageIO.createImageOutputStream(new File(outputPath))) {
+             writer.setOutput(ios);
+
+             // Configure compression quality
+             ImageWriteParam param = writer.getDefaultWriteParam();
+             if (param.canWriteCompressed()) {
+                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                 param.setCompressionQuality(quality);
+             }
+
+             // Write the image
+             writer.write(null, new javax.imageio.IIOImage(image, null, null), param);
+         } finally {
+             writer.dispose();
+         }
+     }
+
+    public static boolean saveImage(BufferedImage img, int imageFormat, float jpegQuality, File file) throws IOException {
 
         boolean saved = true;
         if(imageFormat == 0) {
@@ -2673,8 +2712,9 @@ public class MainWindow extends JFrame implements Constants {
             Graphics2D g2d = imgRGB.createGraphics();
             g2d.drawImage(img, 0, 0, null);
             g2d.dispose();
+            writeJPEGWithQuality(imgRGB, file.getAbsolutePath(), jpegQuality);
 
-            saved = ImageIO.write(imgRGB, "jpeg", file);
+           // saved = ImageIO.write(imgRGB, "jpeg", file);
         }
         else if(imageFormat == 2) {
             BufferedImage imgRGB = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -2804,19 +2844,19 @@ public class MainWindow extends JFrame implements Constants {
 
                 boolean saved = false;
                 if (extension.equalsIgnoreCase("png")) {
-                    saved = saveImage(last_used, 0, file);
+                    saved = saveImage(last_used, 0, JPEG_QUALITY, file);
                 }
                 else if (extension.equalsIgnoreCase("jpg")) {
-                    saved = saveImage(last_used, 1, file);
+                    saved = saveImage(last_used, 1, JPEG_QUALITY, file);
                 }
                 else if (extension.equalsIgnoreCase("bmp")) {
-                    saved = saveImage(last_used, 2, file);
+                    saved = saveImage(last_used, 2, JPEG_QUALITY, file);
                 }
                 else if (extension.equalsIgnoreCase("ppm")) {
-                    saved = saveImage(last_used, 3, file);
+                    saved = saveImage(last_used, 3, JPEG_QUALITY, file);
                 }
                 else if (extension.equalsIgnoreCase("pgm")) {
-                    saved = saveImage(last_used, 4, file);
+                    saved = saveImage(last_used, 4, JPEG_QUALITY, file);
                 }
                 else {
                     JOptionPane.showMessageDialog(scroll_pane, "Unsupported image format.", "Error!", JOptionPane.ERROR_MESSAGE);
@@ -6477,7 +6517,7 @@ public class MainWindow extends JFrame implements Constants {
     public void setSizeOfImage() {
 
         resetOrbit();
-        new ImageSizeDialog(ptr, image_width, image_height, 0);
+        new ImageSizeDialog(ptr, image_width, image_height, 0, JPEG_QUALITY);
 
     }
 
@@ -6500,7 +6540,7 @@ public class MainWindow extends JFrame implements Constants {
 
     }
 
-    private void fastJulia() {
+    private void fastJulia(int x1, int y1) {
 
         resetOrbit();
 
@@ -6512,16 +6552,6 @@ public class MainWindow extends JFrame implements Constants {
         Apfloat temp_xJuliaCenter, temp_yJuliaCenter;
 
         int temp_max_iterations = s.max_iterations > 250 ? 250 : s.max_iterations;
-
-        int x1, y1;
-
-        try {
-            Point p1 = main_panel.getMousePosition();
-            x1 = p1.x;
-            y1 = p1.y;
-        } catch (Exception ex) {
-            return;
-        }
 
         if (s.polar_projection) {
             PolarLocationNormalApfloatArbitrary location = new PolarLocationNormalApfloatArbitrary(s.xCenter, s.yCenter, s.size, s.height_ratio, image_width, image_height, s.circle_period);
