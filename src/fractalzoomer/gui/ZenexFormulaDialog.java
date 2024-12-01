@@ -13,52 +13,62 @@ import java.awt.event.WindowEvent;
  *
  * @author hrkalona2
  */
-public class GenericCpAZpBCDialog extends JDialog {
+public class ZenexFormulaDialog extends JDialog {
 
     private MainWindow ptra;
     private JOptionPane optionPane;
 
-    public GenericCpAZpBCDialog(MainWindow ptr, Settings s, int oldSelected, JRadioButtonMenuItem[] fractal_functions, boolean wasMagnetType, boolean wasConvergingType, boolean wasSimpleType, boolean wasMagneticPendulumType, boolean wasEscapingOrConvergingType, boolean wasMagnetPatakiType) {
+
+    public ZenexFormulaDialog(MainWindow ptr, Settings s, int oldSelected, JRadioButtonMenuItem[] fractal_functions, boolean wasMagnetType, boolean wasConvergingType, boolean wasSimpleType, boolean wasMagneticPendulumType, boolean wasEscapingOrConvergingType, boolean wasMagnetPatakiType) {
 
         super(ptr);
         
         ptra = ptr;
 
-        setTitle("z = (c^alpha) * (z^beta) + c");
+        setTitle("Zenex Formula");
         setModal(true);
         setIconImage(MainWindow.getIcon("mandel2.png").getImage());
 
+        JPanel[] var_panels = new JPanel[s.fns.zenex_re.length];
+        JTextField[] variable_re = new JTextField[var_panels.length];
+        JTextField[] variable_im = new JTextField[var_panels.length];
+
+        for (int k = 0; k < var_panels.length; k++) {
+            var_panels[k] = new JPanel();
+            var_panels[k].setLayout(new FlowLayout());
+
+            variable_re[k] = new JTextField(20);
+            variable_re[k].setText("" + s.fns.zenex_re[k]);
+
+            variable_im[k] = new JTextField(20);
+            variable_im[k].setText("" + s.fns.zenex_im[k]);
+
+            var_panels[k].add(new JLabel("" + (char)('A' + k)));
+            var_panels[k].add(new JLabel(" Re: "));
+            var_panels[k].add(variable_re[k]);
+            var_panels[k].add(new JLabel(" Im: "));
+            var_panels[k].add(variable_im[k]);
+        }
+
         JLabel func = new JLabel();
-        func.setIcon(MainWindow.getIcon("cpazpbc.png"));
+        func.setIcon(MainWindow.getIcon("zenex.png"));
 
-        JPanel alpha_panel = new JPanel();
-        JLabel alpha_label = new JLabel();
-        alpha_label.setIcon(MainWindow.getIcon("alpha.png"));
-        MyJSpinner alpha_filed = new MyJSpinner(30, new SpinnerNumberModel(s.fns.gcps.alpha2, -Double.MAX_VALUE, Double.MAX_VALUE, 0.1));
-        alpha_panel.setLayout(new FlowLayout());
-        alpha_panel.add(alpha_label);
-        alpha_panel.add(new JLabel(""));
-        alpha_panel.add(alpha_filed);
 
-        JPanel beta_panel = new JPanel();
-        JLabel beta_label = new JLabel();
-        beta_label.setIcon(MainWindow.getIcon("beta.png"));
-        MyJSpinner beta_filed = new MyJSpinner(30, new SpinnerNumberModel(s.fns.gcps.beta2, -Double.MAX_VALUE, Double.MAX_VALUE, 0.1));
-        beta_panel.setLayout(new FlowLayout());
-        beta_panel.add(beta_label);
-        beta_panel.add(new JLabel(""));
-        beta_panel.add(beta_filed);
-        
-
-        Object[] obj = {
+        Object[] poly_poly = {
             " ",
-            "Insert the function parameters.",
-            func,
-            " ",
-            alpha_panel,
-            beta_panel,};
+                "Insert the function parameters,",
+                func,
+                " ",
+            var_panels[0],
+            var_panels[1],
+            var_panels[2],
+            var_panels[3],
+            var_panels[4],
+            var_panels[5],
+            var_panels[6],
+            " ",};
 
-        optionPane = new JOptionPane(obj, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
+        optionPane = new JOptionPane(poly_poly, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -95,11 +105,18 @@ public class GenericCpAZpBCDialog extends JDialog {
                         }
 
                         try {
-                            double temp_alpha = Double.parseDouble(alpha_filed.getText());
-                            double temp_beta = Double.parseDouble(beta_filed.getText());
+                            double[] temp_coef = new double[variable_re.length];
+                            double[] temp_coef_im = new double[variable_im.length];
 
-                            s.fns.gcps.alpha2 = temp_alpha;
-                            s.fns.gcps.beta2 = temp_beta;
+                            for (int k = 0; k < variable_re.length; k++) {
+                                temp_coef[k] = Double.parseDouble(variable_re[k].getText());
+                                temp_coef_im[k] = Double.parseDouble(variable_im[k].getText());
+                            }
+
+                            s.fns.zenex_re = temp_coef;
+                            s.fns.zenex_im = temp_coef_im;
+
+
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(ptra, "Illegal Argument: " + ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
                             return;
@@ -121,5 +138,5 @@ public class GenericCpAZpBCDialog extends JDialog {
         setVisible(true);
 
     }
-    
+
 }

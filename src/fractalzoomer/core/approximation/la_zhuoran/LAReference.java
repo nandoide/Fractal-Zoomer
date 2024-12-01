@@ -868,7 +868,6 @@ public class LAReference {
                 int PrevStage = LAStageCount - 1;
                 int CurrentStage = LAStageCount;
 
-                //Todo bug at 0, -1 9.5e-2609
                 try {
                     sucessful = CreateNewLAStage(maxRefIteration, deepZoom, PrevStage, CurrentStage);
                 }

@@ -1,6 +1,7 @@
 
 package fractalzoomer.main.app_settings;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fractalzoomer.bailout_conditions.NNormBailoutCondition;
 import fractalzoomer.bailout_conditions.SkipBailoutCondition;
 import fractalzoomer.convergent_bailout_conditions.KFNNormDistanceBailoutCondition;
@@ -2359,6 +2360,13 @@ public class Settings implements Constants {
             SettingsFractals settings = new SettingsFractals1093(this, TaskRender.PERTURBATION_THEORY, TaskRender.GREEDY_ALGORITHM, TaskRender.BRUTE_FORCE_ALG, TaskRender.GREEDY_ALGORITHM_SELECTION, TaskRender.GREEDY_ALGORITHM_CHECK_ITER_DATA, userCode, TaskRender.GUESS_BLOCKS_SELECTION, TaskRender.SUCCESSIVE_REFINEMENT_SQUARE_RECT_SPLIT_ALGORITHM, TaskRender.TWO_PASS_SUCCESSIVE_REFINEMENT, TaskRender.CHUNK_SIZE_PER_ROW, TaskRender.SPLIT_INTO_RECTANGLE_AREAS, TaskRender.RECTANGLE_AREA_SPLIT_ALGORITHM, TaskRender.AREA_DIMENSION_X, TaskRender.AREA_DIMENSION_Y);
             file_temp.writeObject(settings);
             file_temp.flush();
+
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                String text = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(settings);
+                Files.write(Paths.get(filename+ ".json"), text.getBytes());
+            }
+            catch (Exception ex) {}
         } catch (IOException ex) {
         }
 
@@ -2798,6 +2806,7 @@ public class Settings implements Constants {
             case MAGNET_PATAKI5:
             case MAGNET_PATAKIK:
             case FORMULA48:
+            case FORMULA51:
                 xCenter = new MyApfloat(0.0);
                 yCenter = new MyApfloat(0.0);
                 size = new MyApfloat(6);
@@ -3201,7 +3210,7 @@ public class Settings implements Constants {
     public static boolean hasFunctionParameterization(int function) {
         return hasFunctionUserFormula(function) || function == MAGNETIC_PENDULUM || function == MANDELBROTNTH || function == MANDELBROTWTH
                 || function == GENERIC_CaZbdZe || function == GENERIC_CpAZpBC || function == NOVA || function == KLEINIAN
-                || function == INERTIA_GRAVITY || isPolynomialFunction(function);
+                || function == INERTIA_GRAVITY || isPolynomialFunction(function) || function == FORMULA51;
     }
 
     public static boolean hasPlaneParameterization(int plane) {
@@ -3551,5 +3560,13 @@ public class Settings implements Constants {
     }
     public boolean needsExtraData() {
         return fs.filters[Constants.ANTIALIASING]  && ((TaskRender.ALWAYS_SAVE_EXTRA_PIXEL_DATA_ON_AA_WITH_PP && needsPostProcessing()) || TaskRender.ALWAYS_SAVE_EXTRA_PIXEL_DATA_ON_AA);
+    }
+
+    public static Complex[] toComplex(double[] re, double[] im) {
+        Complex[] c = new Complex[re.length];
+        for(int i = 0; i < c.length; i++) {
+            c[i] = new Complex(re[i], im[i]);
+        }
+        return c;
     }
 }

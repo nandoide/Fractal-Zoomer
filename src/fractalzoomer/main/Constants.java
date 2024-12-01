@@ -18,7 +18,7 @@ public interface Constants {
     public static final int TOTAL_BAILOUT_CONDITIONS = 13;
     public static final int TOTAL_CONVERGENT_BAILOUT_CONDITIONS = 10;
     public static final int TOTAL_PLANES = 67;
-    public static final int TOTAL_FUNCTIONS = 517;
+    public static final int TOTAL_FUNCTIONS = 518;
     public static final int TOTAL_FILTERS = 36;
     public static final int TOTAL_COLOR_TRANSFER_FILTERS = 14;
     public static final int TOTAL_COLOR_BLENDING = 30;
@@ -657,6 +657,7 @@ public interface Constants {
     public static final int MANDELBARCUBED = 515;
 
     public static final int FORMULA50 = 516;
+    public static final int FORMULA51 = 517;
     /**
      * ***************
      */

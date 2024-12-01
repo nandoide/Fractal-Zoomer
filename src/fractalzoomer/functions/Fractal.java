@@ -3781,6 +3781,10 @@ public abstract class Fractal {
 
     }
 
+    public boolean hasFiniteBailoutCheck() {
+        return false;
+    }
+
     private void BailoutConditionFactory(int bailout_test_algorithm, double bailout, String bailout_test_user_formula, String bailout_test_user_formula2, int bailout_test_comparison, double n_norm, double[] plane_transform_center) {
 
         switch (bailout_test_algorithm) {
@@ -3832,6 +3836,11 @@ public abstract class Fractal {
                 bailout_algorithm2 = bailout_algorithm = new CustomBailoutCondition(bailout, this);
                 break;
 
+        }
+
+        if(hasFiniteBailoutCheck()) {
+            bailout_algorithm = new FiniteCheckBailoutCondition(bailout_algorithm);
+            bailout_algorithm2 = new FiniteCheckBailoutCondition(bailout_algorithm2);
         }
 
         if (SkipBailoutCondition.SKIPPED_ITERATION_COUNT > 0) {

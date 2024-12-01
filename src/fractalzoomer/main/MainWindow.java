@@ -1531,6 +1531,9 @@ public class MainWindow extends JFrame implements Constants {
             case FORMULA50:
                 temp += "   z = 2*z^2 - z^3 + c";
                 break;
+            case FORMULA51:
+                temp += "   Zenex";
+                break;
             case PERPENDICULAR_MANDELBROT:
                 temp += "   Perpendicular Mandelbrot";
                 break;
@@ -5997,6 +6000,9 @@ public class MainWindow extends JFrame implements Constants {
                 return;
             case LAMBDA_FN_FN:
                 new LambdaFnFnDialog(ptr, s, oldSelected, fractal_functions, wasMagnetType, wasConvergingType, wasSimpleType, wasMagneticPendulumType, wasEscapingOrConvergingType, wasMagnetPatakiType);
+                return;
+            case FORMULA51:
+                new ZenexFormulaDialog(ptr, s, oldSelected, fractal_functions, wasMagnetType, wasConvergingType, wasSimpleType, wasMagneticPendulumType, wasEscapingOrConvergingType, wasMagnetPatakiType);
                 return;
             case MANDELBROT:
                 if (!s.ds.domain_coloring && !s.isPertubationTheoryInUse() && !s.isHighPrecisionInUse()) {

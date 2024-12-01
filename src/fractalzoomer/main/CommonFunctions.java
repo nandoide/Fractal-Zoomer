@@ -569,7 +569,13 @@ public class CommonFunctions implements Constants {
             overview += tab + "t = z^2 + (im(c)re(s) + re(c)) + (im(c)im(s))i<br>";
             overview += tab + "s = z<br>";
             overview += tab + "z = t<br>";
-        } else if (s.fns.function == SIERPINSKI_GASKET) {
+        } else if (s.fns.function == FORMULA51) {
+            overview += tab + "z = (A + Bz^2)e^(Cz^2 + Dz^4 + Ez^6 + Fz^8 + Gz^10)<br>";
+            for(int i = 0; i < s.fns.zenex_re.length; i++) {
+                overview += tab + "" + (char)('A' + i) + " = " + Complex.toString2(s.fns.zenex_re[i], s.fns.zenex_im[i]) + "<br>";
+            }
+        }
+        else if (s.fns.function == SIERPINSKI_GASKET) {
             overview += tab + "<font color='" + keyword_color + "'>if</font> <font color='" + condition_color + "'>[im(z) > 0.5]</font> <font color='" + keyword_color + "'>then</font> z = 2re(z) + (2im(z) - 1)i<br>";
             overview += tab + "<font color='" + keyword_color + "'>else if</font> <font color='" + condition_color + "'>[re(z) > 0.5]</font> <font color='" + keyword_color + "'>then</font> z = 2re(z) - 1 + 2im(z)i<br>";
             overview += tab + "<font color='" + keyword_color + "'>else then</font> z = 2z<br>";
