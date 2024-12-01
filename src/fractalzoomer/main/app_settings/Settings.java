@@ -2360,13 +2360,6 @@ public class Settings implements Constants {
             SettingsFractals settings = new SettingsFractals1093(this, TaskRender.PERTURBATION_THEORY, TaskRender.GREEDY_ALGORITHM, TaskRender.BRUTE_FORCE_ALG, TaskRender.GREEDY_ALGORITHM_SELECTION, TaskRender.GREEDY_ALGORITHM_CHECK_ITER_DATA, userCode, TaskRender.GUESS_BLOCKS_SELECTION, TaskRender.SUCCESSIVE_REFINEMENT_SQUARE_RECT_SPLIT_ALGORITHM, TaskRender.TWO_PASS_SUCCESSIVE_REFINEMENT, TaskRender.CHUNK_SIZE_PER_ROW, TaskRender.SPLIT_INTO_RECTANGLE_AREAS, TaskRender.RECTANGLE_AREA_SPLIT_ALGORITHM, TaskRender.AREA_DIMENSION_X, TaskRender.AREA_DIMENSION_Y);
             file_temp.writeObject(settings);
             file_temp.flush();
-
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                String text = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(settings);
-                Files.write(Paths.get(filename+ ".json"), text.getBytes());
-            }
-            catch (Exception ex) {}
         } catch (IOException ex) {
         }
 
