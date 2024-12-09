@@ -3,6 +3,8 @@ package fractalzoomer.main;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fractalzoomer.core.*;
+import fractalzoomer.core.approximation.la_zhuoran.MagnitudeDetection;
+import fractalzoomer.core.approximation.la_zhuoran.MagnitudeDetectionDeep;
 import fractalzoomer.core.interpolation.LinearInterpolation;
 import fractalzoomer.core.approximation.la_zhuoran.LAReference;
 import fractalzoomer.core.approximation.la_zhuoran.impl.LAInfo;
@@ -1395,14 +1397,17 @@ public class MinimalRendererWindow extends JFrame implements Constants {
             writer.println("bla2_detection_method " + LAInfo.DETECTION_METHOD);
             writer.println("bla2_stage0_dip_detection_threshold " + LAInfo.Stage0DipDetectionThreshold);
             writer.println("bla2_stage0_dip_detection_threshold2 " + LAInfo.Stage0DipDetectionThreshold2);
+            writer.println("bla2_stage0_dip_detection_threshold3 " + MagnitudeDetection.Stage0DipDetectionThreshold);
             writer.println("bla2_dip_detection_threshold " + LAInfo.DipDetectionThreshold);
             writer.println("bla2_dip_detection_threshold2 " + LAInfo.DipDetectionThreshold2);
+            writer.println("bla2_dip_detection_threshold3 " + MagnitudeDetection.DipDetectionThreshold);
             writer.println("bla2_la_threshold_scale " + LAInfo.LAThresholdScale);
             writer.println("bla2_la_threshold_c_scale " + LAInfo.LAThresholdCScale);
             writer.println("bla2_double_threshold_limit " + LAReference.doubleThresholdLimit.toDouble());
             writer.println("bla2_convert_to_double_when_possible " + LAReference.CONVERT_TO_DOUBLE_WHEN_POSSIBLE);
             writer.println("bla2_root_divisor " + LAReference.rootDivisor);
             writer.println("bla2_create_at " + LAReference.CREATE_AT);
+            writer.println("bla2_fake_period_limit " + LAReference.fakePeriodLimit);
             writer.println("use_threads_for_bla2 " + TaskRender.USE_THREADS_FOR_BLA2);
             writer.println("use_ref_index_on_bla2 " + TaskRender.USE_RI_ON_BLA2);
             writer.println("disable_ref_index_on_bla2 " + TaskRender.DISABLE_RI_ON_BLA2);
@@ -1753,6 +1758,17 @@ public class MinimalRendererWindow extends JFrame implements Constants {
 
                             if (temp > 0) {
                                 LAReference.rootDivisor = temp;
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("bla2_fake_period_limit") && tokenizer.countTokens() == 1) {
+
+                        try {
+                            int temp = Integer.parseInt(tokenizer.nextToken());
+
+                            if (temp > 0) {
+                                LAReference.fakePeriodLimit = temp;
                             }
                         } catch (Exception ex) {
                         }
@@ -2348,7 +2364,7 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                         try {
                             int temp = Integer.parseInt(tokenizer.nextToken());
 
-                            if (temp >= 0 && temp <= 1) {
+                            if (temp >= 0 && temp <= 2) {
                                 LAInfo.DETECTION_METHOD = temp;
                             }
                         } catch (Exception ex) {
@@ -2362,6 +2378,30 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                             if (temp > 0 && temp <= 10) {
                                 LAInfo.Stage0DipDetectionThreshold = temp;
                                 LAInfoDeep.Stage0DipDetectionThreshold = new MantExp(temp);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("bla2_stage0_dip_detection_threshold3") && tokenizer.countTokens() == 1) {
+
+                        try {
+                            double temp = Double.parseDouble(tokenizer.nextToken());
+
+                            if (temp > 0) {
+                                MagnitudeDetection.Stage0DipDetectionThreshold = temp;
+                                MagnitudeDetectionDeep.Stage0DipDetectionThreshold = new MantExp(temp);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("bla2_dip_detection_threshold3") && tokenizer.countTokens() == 1) {
+
+                        try {
+                            double temp = Double.parseDouble(tokenizer.nextToken());
+
+                            if (temp > 0) {
+                                MagnitudeDetection.DipDetectionThreshold = temp;
+                                MagnitudeDetectionDeep.DipDetectionThreshold = new MantExp(temp);
                             }
                         } catch (Exception ex) {
                         }
@@ -2389,7 +2429,6 @@ public class MinimalRendererWindow extends JFrame implements Constants {
                         } catch (Exception ex) {
                         }
                     }
-
                     else if (token.equals("bla2_dip_detection_threshold") && tokenizer.countTokens() == 1) {
 
                         try {

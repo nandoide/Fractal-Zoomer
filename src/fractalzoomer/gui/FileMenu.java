@@ -22,6 +22,7 @@ public class FileMenu extends MyMenu {
     private JMenuItem load_settings;
     private JMenuItem load_kfr_settings;
     private JMenuItem save_settings_image;
+    private JMenuItem export_location_settings;
     private JMenuItem code_editor;
     private JMenuItem library_code;
     private JMenuItem compile_code;
@@ -67,6 +68,8 @@ public class FileMenu extends MyMenu {
         
         save_initial_settings_opt = new MyMenuItem("Set Initial Settings", MainWindow.getIcon("init_settings.png"));
 
+        export_location_settings = new MyMenuItem("Export Basic Settings", MainWindow.getIcon("export.png"));
+
         save_image = new MyMenuItem("Save Image As...", MainWindow.getIcon("save_image.png"));
         
         save_settings_image = new MyMenuItem("Save Settings and Image As...", MainWindow.getIcon("save_image_settings.png"));
@@ -89,6 +92,7 @@ public class FileMenu extends MyMenu {
         save_settings.setToolTipText("Saves the active settings.");
         load_settings.setToolTipText("Load settings created by Fractal Zoomer.");
         load_kfr_settings.setToolTipText("Loads settings created by Kalles Fraktaler.");
+        export_location_settings.setToolTipText("Exports some basic location settings into json format.");
         save_image.setToolTipText("Saves an image.");
         save_settings_image.setToolTipText("Saves the current settings and an image.");
         code_editor.setToolTipText("<html>Opens the java code, containing the user defined functions,<br>with a text editor.</html>");
@@ -119,6 +123,7 @@ public class FileMenu extends MyMenu {
         repaint_opt.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, ActionEvent.CTRL_MASK));
         save_initial_settings_opt.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0));
         cancel_operation.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
+        export_location_settings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.SHIFT_MASK));
         
         default_opt.addActionListener(e -> ptr.resetSettings());
         
@@ -143,6 +148,8 @@ public class FileMenu extends MyMenu {
         compile_code.addActionListener(e -> ptr.compileCode(true));
 
         code_editor.addActionListener(e -> ptr.codeEditor());
+
+        export_location_settings.addActionListener(e -> ptr.exportBasicSettings());
 
 
         library_code.addActionListener(e -> ptr.libraryCode());
@@ -179,6 +186,7 @@ public class FileMenu extends MyMenu {
         add(load_kfr_settings);
         add(default_opt);
         add(save_initial_settings_opt);
+        add(export_location_settings);
         addSeparator();
         add(save_image);
         add(save_settings_image);
@@ -311,6 +319,10 @@ public class FileMenu extends MyMenu {
         
         return save_initial_settings_opt;
         
+    }
+
+    public JMenuItem getExportLocationSettings() {
+        return export_location_settings;
     }
     
 }

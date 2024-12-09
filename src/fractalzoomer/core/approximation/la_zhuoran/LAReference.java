@@ -21,7 +21,7 @@ public class LAReference {
     public static boolean CONVERT_TO_DOUBLE_WHEN_POSSIBLE = false;
     public static boolean CREATE_AT = true;
 
-    private static final int lowBound = ApproximationDefaultSettings.lowBound;
+    public static int fakePeriodLimit = ApproximationDefaultSettings.fakePeriodLimit;
     public static double rootDivisor = ApproximationDefaultSettings.RootDivisor;
 
     private static final MantExp doubleRadiusLimit = new MantExp(0x1.0p-896);
@@ -134,6 +134,94 @@ public class LAReference {
         return  (int)Math.round(Math.pow(val, 1.0 / NthRoot));
     }
 
+    private boolean CreateLAFromOrbitMagnitudeBased(DoubleReference ref, DeepReference refDeep, int maxRefIteration, boolean deepZoom, Fractal f) throws Exception {
+        LAReference.f = f;
+
+        if((deepZoom && refDeep.compressed) || (!deepZoom && ref.compressed)) {
+            if (deepZoom) {
+                referenceDecompressor = f.getReferenceDecompressors()[refDeep.id];
+            } else {
+                referenceDecompressor = f.getReferenceDecompressors()[ref.id];
+            }
+        }
+
+        init(deepZoom);
+
+        int i = 0;
+
+        GenericLAInfo step = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor);
+
+        i++;
+
+        int Period = 0;
+        MagnitudeDetectionBase minMagnitude = MagnitudeDetectionBase.create(deepZoom, i, referenceDecompressor);
+        MagnitudeDetectionBase prevMinMagnitude = minMagnitude;
+
+        for (;i < maxRefIteration; i++) {
+            MagnitudeDetectionBase magnitudeZ = MagnitudeDetectionBase.create(deepZoom, i, referenceDecompressor);
+
+            if (magnitudeZ.lessThan(minMagnitude)) {
+                prevMinMagnitude = minMagnitude;
+                minMagnitude = magnitudeZ;
+
+                if (minMagnitude.lessThanWithThresholdStage0(prevMinMagnitude)) {
+                    Period = i;
+                    break;
+                }
+            }
+
+            step = step.Step(i, referenceDecompressor);
+        }
+
+        addToLAS(step);
+
+        LAStageCount = 1;
+
+        if (Period == 0) {
+            if (maxRefIteration > fakePeriodLimit) {
+                popLA();
+                Period = getNthRoot(maxRefIteration);
+                i = 0;
+            } else {
+                LAStages[0].End = LAStages[0].Begin + 1;
+
+                GenericLAInfo laEnd = GenericLAInfo.create(maxRefIteration, deepZoom, maxRefIteration, referenceDecompressor);
+                laEnd.setNextStageLAIndex(0);
+                addToLAS(laEnd);
+
+                return false;
+            }
+        } else if (Period > fakePeriodLimit) {
+            popLA();
+            Period = getNthRoot(Period);
+            i = 0;
+        }
+
+        MagnitudeDetectionBase threshold = MagnitudeDetectionBase.getThreshold(prevMinMagnitude, minMagnitude);
+
+        step = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor);
+        i++;
+
+        for (; i < maxRefIteration; i++) {
+            if (MagnitudeDetectionBase.create(deepZoom, i, referenceDecompressor).lessThan(threshold) || step.StepLength >= Period) {
+                addToLAS(step);
+                step = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor);
+            } else {
+                step = step.Step(i, referenceDecompressor);
+            }
+        }
+
+        addToLAS(step);
+
+        LAStages[0].End = LAsize();
+
+        GenericLAInfo endLa = GenericLAInfo.create(maxRefIteration, deepZoom, maxRefIteration, referenceDecompressor);
+        endLa.setNextStageLAIndex(0);
+        addToLAS(endLa);
+
+        return true;
+    }
+
     private boolean CreateLAFromOrbit(DoubleReference ref, DeepReference refDeep, int maxRefIteration, boolean deepZoom, Fractal f) throws Exception {
 
         LAReference.f = f;
@@ -186,7 +274,7 @@ public class LAReference {
         LAStageCount = 1;
 
         if (Period == 0) {
-            if (maxRefIteration > lowBound) {
+            if (maxRefIteration > fakePeriodLimit) {
                 LA = GenericLAInfo.create(maxRefIteration, deepZoom, 0, referenceDecompressor).Step(1, referenceDecompressor);
                 i = 2;
 
@@ -202,7 +290,7 @@ public class LAReference {
 
                 return false;
             }
-        } else if (Period > lowBound) {
+        } else if (Period > fakePeriodLimit) {
             popLA();
 
             LA = GenericLAInfo.create(maxRefIteration, deepZoom, 0, referenceDecompressor).Step(1, referenceDecompressor);
@@ -327,7 +415,7 @@ public class LAReference {
         LAStageCount = 1;
 
         if (Period == 0) {
-            if (maxRefIteration > lowBound) {
+            if (maxRefIteration > fakePeriodLimit) {
                 LA = GenericLAInfo.create(maxRefIteration, deepZoom, 0, referenceDecompressor).Step(1, referenceDecompressor);
                 i = 2;
 
@@ -343,7 +431,7 @@ public class LAReference {
 
                 return false;
             }
-        } else if (Period > lowBound) {
+        } else if (Period > fakePeriodLimit) {
             popLA();
 
             LA = GenericLAInfo.create(maxRefIteration, deepZoom, 0, referenceDecompressor).Step(1, referenceDecompressor);
@@ -675,6 +763,90 @@ public class LAReference {
         return true;
     }
 
+    private boolean CreateNewLAStageMagnitudeBased(int maxRefIteration, boolean deepZoom, int PrevStage, int CurrentStage) throws Exception {
+
+        LAStages[CurrentStage] = new LAStageInfo();
+        LAStages[CurrentStage].UseDoublePrecision = !deepZoom;
+        LAStages[CurrentStage].Begin = LAsize();
+
+        int Period = 0;
+        int PrevStageBegin = LAStages[PrevStage].Begin;
+        int PrevStageEnd = LAStages[PrevStage].End;
+        int i = PrevStageBegin;
+        int PrevStageStepLength = LAs[PrevStageBegin].StepLength;
+
+        GenericLAInfo step = GenericLAInfo.copy(LAs[i]);
+        step.setNextStageLAIndex(i);
+        i++;
+
+        MagnitudeDetectionBase minMagnitude = MagnitudeDetectionBase.create(LAs[i].getRef(f));
+        MagnitudeDetectionBase prevMinMagnitude = minMagnitude;
+
+        for (; i < PrevStageEnd; i++) {
+            MagnitudeDetectionBase magnitudeZ = MagnitudeDetectionBase.create(LAs[i].getRef(f));
+
+            if (magnitudeZ.lessThan(minMagnitude)) {
+                prevMinMagnitude = minMagnitude;
+                minMagnitude = magnitudeZ;
+
+                if (minMagnitude.lessThanWithThreshold(prevMinMagnitude)) {
+                    Period = step.StepLength;
+                    break;
+                }
+            }
+
+            step = step.Composite(LAs[i], referenceDecompressor);
+        }
+
+        addToLAS(step);
+
+        LAStageCount++;
+        if (LAStageCount > MaxLAStages) throw new Exception("Too many stages");
+
+        if (Period == 0) {
+            if (maxRefIteration > PrevStageStepLength * fakePeriodLimit) {
+                popLA();
+                i = PrevStageBegin;
+                double Ratio = ((double)(maxRefIteration)) / PrevStageStepLength;
+                Period = PrevStageStepLength * getNthRoot(Ratio);
+            } else {
+                LAStages[CurrentStage].End = LAStages[CurrentStage].Begin + 1;
+                addToLAS(LAs[PrevStageEnd]);
+                return false;
+            }
+        }
+        else if (Period > LAs[PrevStageBegin].StepLength * fakePeriodLimit) {
+            popLA();
+            i = PrevStageBegin;
+            double Ratio = ((double)(Period)) / PrevStageStepLength;
+            Period = PrevStageStepLength * getNthRoot(Ratio);
+        }
+
+        MagnitudeDetectionBase threshold = MagnitudeDetectionBase.getThreshold(prevMinMagnitude, minMagnitude);
+
+        step = GenericLAInfo.copy(LAs[i]);
+        step.setNextStageLAIndex(i);
+        i++;
+
+        for (; i < PrevStageEnd; i++) {
+            MagnitudeDetectionBase magnitudeZ = MagnitudeDetectionBase.create(LAs[i].getRef(f));
+            if (magnitudeZ.lessThan(threshold) || step.StepLength >= Period) {
+                addToLAS(step);
+
+                step = GenericLAInfo.copy(LAs[i]);
+                step.setNextStageLAIndex(i);
+            } else {
+                step = step.Composite(LAs[i], referenceDecompressor);
+            }
+        }
+
+        addToLAS(step);
+        LAStages[CurrentStage].End = LAsize();
+        addToLAS(LAs[PrevStageEnd]);
+
+        return true;
+    }
+
 
     private boolean CreateNewLAStage(int maxRefIteration, boolean deepZoom, int PrevStage, int CurrentStage) throws Exception {
         GenericLAInfo LA;
@@ -688,8 +860,6 @@ public class LAReference {
         GenericLAInfo PrevStageLAp1 = LAs[j + 1];
 
         int Period = 0;
-
-        if (CurrentStage >= MaxLAStages) throw new Exception("Too many stages");
 
         LAStages[CurrentStage] = new LAStageInfo();
         LAStages[CurrentStage].UseDoublePrecision = !deepZoom;
@@ -730,7 +900,7 @@ public class LAReference {
         if (LAStageCount > MaxLAStages) throw new Exception("Too many stages");
 
         if (Period == 0) {
-            if (maxRefIteration > PrevStageLA.StepLength * lowBound) {
+            if (maxRefIteration > PrevStageLA.StepLength * fakePeriodLimit) {
                 j = PrevStageBegin;
                 LA = PrevStageLA.Composite(PrevStageLAp1, referenceDecompressor);
                 LA.setNextStageLAIndex(j);
@@ -751,7 +921,7 @@ public class LAReference {
                 return false;
             }
         }
-        else if (Period > PrevStageLA.StepLength * lowBound) {
+        else if (Period > PrevStageLA.StepLength * fakePeriodLimit) {
             popLA();
 
             j = PrevStageBegin;
@@ -843,11 +1013,15 @@ public class LAReference {
 
             boolean sucessful;
             try {
-                if(TaskRender.USE_THREADS_FOR_BLA2) {
-                    sucessful = CreateLAFromOrbit_MT(refData.Reference, refDeepData.Reference, maxRefIteration, deepZoom, f);
-                }
-                else {
-                    sucessful = CreateLAFromOrbit(refData.Reference, refDeepData.Reference, maxRefIteration, deepZoom, f);
+                if(LAInfo.DETECTION_METHOD == 2) {
+                    sucessful = CreateLAFromOrbitMagnitudeBased(refData.Reference, refDeepData.Reference, maxRefIteration, deepZoom, f);
+                } else {
+                    if(TaskRender.USE_THREADS_FOR_BLA2) {
+                        sucessful = CreateLAFromOrbit_MT(refData.Reference, refDeepData.Reference, maxRefIteration, deepZoom, f);
+                    }
+                    else {
+                        sucessful = CreateLAFromOrbit(refData.Reference, refDeepData.Reference, maxRefIteration, deepZoom, f);
+                    }
                 }
             }
             catch (InvalidCalculationException ex) {
@@ -869,7 +1043,11 @@ public class LAReference {
                 int CurrentStage = LAStageCount;
 
                 try {
-                    sucessful = CreateNewLAStage(maxRefIteration, deepZoom, PrevStage, CurrentStage);
+                    if (LAInfo.DETECTION_METHOD == 2) {
+                        sucessful = CreateNewLAStageMagnitudeBased(maxRefIteration, deepZoom, PrevStage, CurrentStage);
+                    } else {
+                        sucessful = CreateNewLAStage(maxRefIteration, deepZoom, PrevStage, CurrentStage);
+                    }
                 }
                 catch (InvalidCalculationException ex) {
                     DismissStage(CurrentStage);

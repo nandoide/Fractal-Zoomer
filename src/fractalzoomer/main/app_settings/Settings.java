@@ -2338,7 +2338,7 @@ public class Settings implements Constants {
         }
     }
 
-    public void save(String filename) {
+    public void save(String filename, Component parent) {
         ObjectOutputStream file_temp = null;
 
         try {
@@ -2361,6 +2361,7 @@ public class Settings implements Constants {
             file_temp.writeObject(settings);
             file_temp.flush();
         } catch (IOException ex) {
+            JOptionPane.showMessageDialog(parent, "Error while saving the file " + filename + " .", "Error!", JOptionPane.ERROR_MESSAGE);
         }
 
         try {

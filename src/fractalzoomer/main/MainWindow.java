@@ -29,6 +29,8 @@ package fractalzoomer.main;
 
 //import com.alee.laf.WebLookAndFeel;
 
+ import com.fasterxml.jackson.annotation.JsonInclude;
+ import com.fasterxml.jackson.databind.ObjectMapper;
  import com.formdev.flatlaf.FlatLaf;
  import com.formdev.flatlaf.FlatLightLaf;
  import com.formdev.flatlaf.util.SystemInfo;
@@ -39,6 +41,8 @@ package fractalzoomer.main;
  import fractalzoomer.convergent_bailout_conditions.NNormDistanceBailoutCondition;
  import fractalzoomer.convergent_bailout_conditions.SkipConvergentBailoutCondition;
  import fractalzoomer.core.*;
+ import fractalzoomer.core.approximation.la_zhuoran.MagnitudeDetection;
+ import fractalzoomer.core.approximation.la_zhuoran.MagnitudeDetectionDeep;
  import fractalzoomer.core.interpolation.CosineInterpolation;
  import fractalzoomer.core.approximation.la_zhuoran.LAReference;
  import fractalzoomer.core.approximation.la_zhuoran.impl.LAInfo;
@@ -1996,7 +2000,7 @@ public class MainWindow extends JFrame implements Constants {
                 fileName = fileName + ".fzs";
             }
 
-            s.save(fileName);
+            s.save(fileName, ptr);
         }
 
         main_panel.repaint();
@@ -2875,7 +2879,7 @@ public class MainWindow extends JFrame implements Constants {
                     String temp = file.getAbsolutePath();
                     temp = temp.substring(0, temp.lastIndexOf("." + extension));
                     File file2 = new File(temp + ".fzs");
-                    s.save(file2.toString());
+                    s.save(file2.toString(), ptr);
                 }
 
                 SaveImagesPath = file.getParent();
@@ -5599,6 +5603,7 @@ public class MainWindow extends JFrame implements Constants {
         file_menu.getSaveImage().setEnabled(option);
         file_menu.getSaveImageAndSettings().setEnabled(option);
         file_menu.getSetInitialSettings().setEnabled(option);
+        file_menu.getExportLocationSettings().setEnabled(option);
 
         file_menu.getCodeEditor().setEnabled(option);
         file_menu.getCompileCode().setEnabled(option);
@@ -9632,14 +9637,17 @@ public class MainWindow extends JFrame implements Constants {
             writer.println("bla2_detection_method " + LAInfo.DETECTION_METHOD);
             writer.println("bla2_stage0_dip_detection_threshold " + LAInfo.Stage0DipDetectionThreshold);
             writer.println("bla2_stage0_dip_detection_threshold2 " + LAInfo.Stage0DipDetectionThreshold2);
+            writer.println("bla2_stage0_dip_detection_threshold3 " + MagnitudeDetection.Stage0DipDetectionThreshold);
             writer.println("bla2_dip_detection_threshold " + LAInfo.DipDetectionThreshold);
             writer.println("bla2_dip_detection_threshold2 " + LAInfo.DipDetectionThreshold2);
+            writer.println("bla2_dip_detection_threshold3 " + MagnitudeDetection.DipDetectionThreshold);
             writer.println("bla2_la_threshold_scale " + LAInfo.LAThresholdScale);
             writer.println("bla2_la_threshold_c_scale " + LAInfo.LAThresholdCScale);
             writer.println("bla2_double_threshold_limit " + LAReference.doubleThresholdLimit.toDouble());
             writer.println("bla2_convert_to_double_when_possible " + LAReference.CONVERT_TO_DOUBLE_WHEN_POSSIBLE);
             writer.println("bla2_root_divisor " + LAReference.rootDivisor);
             writer.println("bla2_create_at " + LAReference.CREATE_AT);
+            writer.println("bla2_fake_period_limit " + LAReference.fakePeriodLimit);
             writer.println("use_threads_for_bla2 " + TaskRender.USE_THREADS_FOR_BLA2);
             writer.println("use_ref_index_on_bla2 " + TaskRender.USE_RI_ON_BLA2);
             writer.println("disable_ref_index_on_bla2 " + TaskRender.DISABLE_RI_ON_BLA2);
@@ -9869,6 +9877,17 @@ public class MainWindow extends JFrame implements Constants {
 
                             if (temp > 0) {
                                 LAReference.rootDivisor = temp;
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("bla2_fake_period_limit") && tokenizer.countTokens() == 1) {
+
+                        try {
+                            int temp = Integer.parseInt(tokenizer.nextToken());
+
+                            if (temp > 0) {
+                                LAReference.fakePeriodLimit = temp;
                             }
                         } catch (Exception ex) {
                         }
@@ -10583,7 +10602,7 @@ public class MainWindow extends JFrame implements Constants {
                         try {
                             int temp = Integer.parseInt(tokenizer.nextToken());
 
-                            if (temp >= 0 && temp <= 1) {
+                            if (temp >= 0 && temp <= 2) {
                                 LAInfo.DETECTION_METHOD = temp;
                             }
                         } catch (Exception ex) {
@@ -10609,6 +10628,30 @@ public class MainWindow extends JFrame implements Constants {
                             if (temp > 0 && temp <= 10) {
                                 LAInfo.Stage0DipDetectionThreshold2 = temp;
                                 LAInfoDeep.Stage0DipDetectionThreshold2 = new MantExp(temp);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("bla2_stage0_dip_detection_threshold3") && tokenizer.countTokens() == 1) {
+
+                        try {
+                            double temp = Double.parseDouble(tokenizer.nextToken());
+
+                            if (temp > 0) {
+                                MagnitudeDetection.Stage0DipDetectionThreshold = temp;
+                                MagnitudeDetectionDeep.Stage0DipDetectionThreshold = new MantExp(temp);
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                    else if (token.equals("bla2_dip_detection_threshold3") && tokenizer.countTokens() == 1) {
+
+                        try {
+                            double temp = Double.parseDouble(tokenizer.nextToken());
+
+                            if (temp > 0) {
+                                MagnitudeDetection.DipDetectionThreshold = temp;
+                                MagnitudeDetectionDeep.DipDetectionThreshold = new MantExp(temp);
                             }
                         } catch (Exception ex) {
                         }
@@ -13057,7 +13100,7 @@ public class MainWindow extends JFrame implements Constants {
 
     public void setInitialSettings() {
         String filename = "autoload.fzs";
-        s.save(filename);
+        s.save(filename, ptr);
         JOptionPane.showMessageDialog(scroll_pane, filename + " was updated with the current settings.\nThe new settings will be loaded at the start-up of the application.", "Initial Settings", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -14366,7 +14409,6 @@ public class MainWindow extends JFrame implements Constants {
 
             }
 
-
             s.applyStaticSettings();
 
         } catch (FileNotFoundException ex) {
@@ -14374,6 +14416,63 @@ public class MainWindow extends JFrame implements Constants {
         } catch (IOException ex) {
 
         }
+    }
+
+    public void exportBasicSettings() {
+        BasicLocationSettings bs = new BasicLocationSettings();
+        bs.setCenterReal(s.xCenter.toString(true));
+        bs.setCenterImaginary(s.yCenter.toString(true));
+        bs.setSize(s.size.toString());
+        bs.setMagnification(MyApfloat.fp.divide(Constants.DEFAULT_MAGNIFICATION, s.size).toString());
+        bs.setMaxIterations(s.max_iterations);
+
+//        String name = "fractal zoomer " + DateTimeFormatter.ofPattern("yyyy-MM-dd HH;mm;ss").format(LocalDateTime.now()) + ".json";
+//        Path path = Paths.get(SaveSettingsPath);
+//        Path fileName = path.resolve(name);
+
+        resetOrbit();
+
+        file_chooser = new JFileChooser(SaveSettingsPath.isEmpty() ? "." : SaveSettingsPath);
+
+        file_chooser.setAcceptAllFileFilterUsed(false);
+        file_chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+
+        file_chooser.addChoosableFileFilter(new FileNameExtensionFilter("Basic Settings (*.json)", "json"));
+
+        String name = "fractal zoomer " + DateTimeFormatter.ofPattern("yyyy-MM-dd HH;mm;ss").format(LocalDateTime.now()) + ".json";
+
+        file_chooser.setSelectedFile(new File(name));
+
+        file_chooser.addPropertyChangeListener(JFileChooser.FILE_FILTER_CHANGED_PROPERTY, evt -> {
+            String file_name = ((BasicFileChooserUI) file_chooser.getUI()).getFileName();
+            file_chooser.setSelectedFile(new File(file_name));
+        });
+
+        int returnVal = file_chooser.showDialog(ptr, "Export Basic Settings");
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = file_chooser.getSelectedFile();
+
+            SaveSettingsPath = file.getParent();
+
+            String fileName = file.toString();
+
+            if(!fileName.toLowerCase().endsWith(".json")) {
+                fileName = fileName + ".json";
+            }
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                String text = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(bs);
+                Files.write(Paths.get(fileName), text.getBytes());
+            }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(ptr, "Error while saving the file " + fileName + " .", "Error!", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        main_panel.repaint();
+
     }
 
     public static void main(String[] args) throws Exception {

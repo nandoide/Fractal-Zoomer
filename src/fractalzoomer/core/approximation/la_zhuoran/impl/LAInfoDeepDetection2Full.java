@@ -138,7 +138,7 @@ public class LAInfoDeepDetection2Full extends LAInfoDeepFull {
         MantExpComplex z2 = z.times2();
         MantExpComplex outZCoeff = z2.times(ZCoeff);
         outZCoeff.Normalize();
-        //double RescaleFactor = out.LAThreshold / LAThreshold;
+
         MantExpComplex outCCoeff = z2.times(CCoeff);
         outCCoeff.Normalize();
 
@@ -159,7 +159,7 @@ public class LAInfoDeepDetection2Full extends LAInfoDeepFull {
         outLAThresholdC = MantExp.minBothPositiveReduced(outLAThresholdC, temp2);
         outZCoeff = outZCoeff.times(LAZCoeff);
         outZCoeff.Normalize();
-        //RescaleFactor = out.LAThreshold / temp;
+
         outCCoeff = outCCoeff.times(LAZCoeff).plus_mutable(LACCoeff);
         outCCoeff.Normalize();
 

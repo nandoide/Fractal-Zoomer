@@ -630,7 +630,7 @@ public class ReferenceDecompressor {
         MantExpComplex z;
 
         if(iteration == prevIteration) {
-            z = MantExpComplex.copy(prevZm);
+            return MantExpComplex.copy(prevZm);
         }
         else if(iteration == nextWaypointIteration) {
             currentCompressIndex = nextCompressedIndex;
@@ -696,7 +696,7 @@ public class ReferenceDecompressor {
         CompressedDoubleReference cref = (CompressedDoubleReference) array;
 
         if(iteration == prevIteration) {
-            z = new Complex(prevZ);
+            return new Complex(prevZ);
         }
         else if(iteration == nextWaypointIteration) {
             currentCompressIndex = nextCompressedIndex;
@@ -761,7 +761,7 @@ public class ReferenceDecompressor {
         CompressedDoubleReference cref = (CompressedDoubleReference) array;
 
         if(iteration == prevIteration) {
-            z = new Complex(prevZ);
+            return new Complex(prevZ);
         }
         else if(iteration == nextWaypointIteration) {
             currentCompressIndex = nextCompressedIndex;
@@ -815,7 +815,7 @@ public class ReferenceDecompressor {
         CompressedDeepReference cref = (CompressedDeepReference) array;
 
         if(iteration == prevIteration) {
-            z = MantExpComplex.copy(prevZm);
+            return MantExpComplex.copy(prevZm);
         }
         else if(iteration == nextWaypointIteration) {
             currentCompressIndex = nextCompressedIndex;

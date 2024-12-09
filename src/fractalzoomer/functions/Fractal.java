@@ -4,6 +4,7 @@ package fractalzoomer.functions;
 import fractalzoomer.bailout_conditions.*;
 import fractalzoomer.convergent_bailout_conditions.*;
 import fractalzoomer.core.*;
+import fractalzoomer.core.approximation.la_zhuoran.MagnitudeDetection;
 import fractalzoomer.core.approximation.mip_la_claude.BLA;
 import fractalzoomer.core.approximation.mip_la_claude.BLADeep;
 import fractalzoomer.core.approximation.mip_la_claude.BLAS;
@@ -1248,7 +1249,7 @@ public abstract class Fractal {
             return true;
         }
         
-        double[] newParms = new double[9];
+        double[] newParms = new double[11];
         newParms[0] = LAInfo.DETECTION_METHOD;
         newParms[1] = LAInfo.Stage0DipDetectionThreshold;
         newParms[2] = LAInfo.DipDetectionThreshold;
@@ -1258,6 +1259,8 @@ public abstract class Fractal {
         newParms[6] = LAInfo.LAThresholdCScale;
         newParms[7] = LAReference.doubleThresholdLimit.toDouble();
         newParms[8] = LAReference.rootDivisor;
+        newParms[9] = MagnitudeDetection.Stage0DipDetectionThreshold;
+        newParms[10] = MagnitudeDetection.DipDetectionThreshold;
 
         for(int i = 0; i < newParms.length; i++) {
             if(newParms[i] != BLA2UsedParams[i]) {
@@ -1278,7 +1281,7 @@ public abstract class Fractal {
 
         BLA2UsedFullFloatExp = useFullFloatExp();
 
-        BLA2UsedParams = new double[9];
+        BLA2UsedParams = new double[11];
         BLA2UsedParams[0] = LAInfo.DETECTION_METHOD;
         BLA2UsedParams[1] = LAInfo.Stage0DipDetectionThreshold;
         BLA2UsedParams[2] = LAInfo.DipDetectionThreshold;
@@ -1288,6 +1291,8 @@ public abstract class Fractal {
         BLA2UsedParams[6] = LAInfo.LAThresholdCScale;
         BLA2UsedParams[7] = LAReference.doubleThresholdLimit.toDouble();
         BLA2UsedParams[8] = LAReference.rootDivisor;
+        BLA2UsedParams[9] = MagnitudeDetection.Stage0DipDetectionThreshold;
+        BLA2UsedParams[10] = MagnitudeDetection.DipDetectionThreshold;
 
         laReference.GenerateApproximationData(BLA2Size, referenceData, referenceDeepData, getBLA2Length(), deepZoom, this);
 

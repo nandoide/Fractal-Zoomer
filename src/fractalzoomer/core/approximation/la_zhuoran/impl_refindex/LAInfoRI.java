@@ -144,7 +144,6 @@ public class LAInfoRI extends LAInfoBase {
         Complex z2 = z.times2();
         Complex outZCoeff = z2.times(ZCoeff);
 
-        //double RescaleFactor = out.LAThreshold / LAThreshold;
         Complex outCCoeff = z2.times(CCoeff);
 
         ChebyMagZCoeff = outZCoeff.chebyshevNorm();
@@ -157,7 +156,7 @@ public class LAInfoRI extends LAInfoBase {
         Complex LACCoeff = new Complex(LA.CCoeffRe, LA.CCoeffIm);
 
         outZCoeff = outZCoeff.times(LAZCoeff);
-        //RescaleFactor = out.LAThreshold / temp;
+
         outCCoeff = outCCoeff.times(LAZCoeff).plus_mutable(LACCoeff);
 
         out.RefIndex = RefIndex;
