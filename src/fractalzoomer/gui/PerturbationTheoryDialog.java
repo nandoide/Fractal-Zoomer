@@ -400,8 +400,8 @@ public class PerturbationTheoryDialog extends JDialog {
         JPanel bla2Thresholds = new JPanel();
 
         bla2Thresholds.setLayout(new GridLayout(4, 2));
-        bla2Thresholds.add(new JLabel("Stage 0 Dip limit:", SwingConstants.HORIZONTAL));
-        bla2Thresholds.add(new JLabel("Dip limit:", SwingConstants.HORIZONTAL));
+        bla2Thresholds.add(new JLabel("Stage 0 Dip Detection Threshold:", SwingConstants.HORIZONTAL));
+        bla2Thresholds.add(new JLabel("Dip Detection Threshold:", SwingConstants.HORIZONTAL));
         JTextField stage0 = new JTextField();
         stage0.setText("" + LAInfo.Stage0DipDetectionThreshold);
         JTextField plimit = new JTextField();
@@ -434,8 +434,8 @@ public class PerturbationTheoryDialog extends JDialog {
         JPanel bla2ThresholdsScales = new JPanel();
 
         bla2ThresholdsScales.setLayout(new GridLayout(2, 2));
-        bla2ThresholdsScales.add(new JLabel("LA scale limit:", SwingConstants.HORIZONTAL));
-        bla2ThresholdsScales.add(new JLabel("LA C scale limit:", SwingConstants.HORIZONTAL));
+        bla2ThresholdsScales.add(new JLabel("LA Scale Threshold:", SwingConstants.HORIZONTAL));
+        bla2ThresholdsScales.add(new JLabel("LA C Scale Threshold:", SwingConstants.HORIZONTAL));
 
         JTextField lascale = new JTextField();
         lascale.setText("" + LAInfo.LAThresholdScale);

@@ -310,6 +310,8 @@ public class LAReference {
 
                 boolean detected;
 
+                GenericLAInfo LAi = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor);
+
                 if(deepZoom) {
                     detected = NewLA.DetectDip(f.getArrayDeepValue(referenceDecompressor, refDeep, ip1));
                 }
@@ -318,9 +320,9 @@ public class LAReference {
                 }
 
                 if (detected || ip1 >= maxRefIteration) {
-                    LA = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor);
+                    LA = LAi;
                 } else {
-                    LA = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor).Step(ip1, referenceDecompressor);
+                    LA = LAi.Step(ip1, referenceDecompressor);
                     i++;
                 }
             } else {
@@ -482,6 +484,8 @@ public class LAReference {
 
                             boolean detected;
 
+                            GenericLAInfo LAi = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor);
+
                             if (deepZoom) {
                                 detected = NewLA.DetectDip(f.getArrayDeepValue(referenceDecompressor, refDeep, ip1));
                             } else {
@@ -489,9 +493,9 @@ public class LAReference {
                             }
 
                             if (detected || ip1 >= maxRefIteration) {
-                                LA = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor);
+                                LA = LAi;
                             } else {
-                                LA = GenericLAInfo.create(maxRefIteration, deepZoom, i, referenceDecompressor).Step(ip1, referenceDecompressor);
+                                LA = LAi.Step(ip1, referenceDecompressor);
                                 i++;
                             }
 
@@ -644,6 +648,8 @@ public class LAReference {
 
                                 boolean detected;
 
+                                GenericLAInfo LAj = GenericLAInfo.create(maxRefIteration, deepZoom, j, referenceDecompressor);
+
                                 if(deepZoom) {
                                     detected = NewLA.DetectDip(f.getArrayDeepValue(referenceDecompressor, refDeep, jp1));
                                 }
@@ -652,9 +658,9 @@ public class LAReference {
                                 }
 
                                 if (detected || jp1 >= maxRefIteration) {
-                                    LA_ = GenericLAInfo.create(maxRefIteration, deepZoom, j, referenceDecompressor);
+                                    LA_ = LAj;
                                 } else {
-                                    LA_ = GenericLAInfo.create(maxRefIteration, deepZoom, j, referenceDecompressor).Step(jp1, referenceDecompressor);
+                                    LA_ = LAj.Step(jp1, referenceDecompressor);
                                     j++;
                                 }
 

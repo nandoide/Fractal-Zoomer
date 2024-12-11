@@ -123,34 +123,30 @@ public abstract class GenericLAInfo {
 
     protected abstract GenericLAInfo Composite(LAInfo LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;
     protected abstract GenericLAInfo Composite(LAInfoRI LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;
-
     protected abstract GenericLAInfo Composite(LAInfoDeep LA, ReferenceDecompressor referenceDecompressor);
     protected abstract GenericLAInfo Composite(LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor);
-
-
     protected abstract GenericLAInfo Step(int RefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;
-    protected abstract boolean Composite(LAInfo out, LAInfo LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;
-    protected abstract boolean Composite(LAInfoRI out, LAInfoRI LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;
-    protected abstract boolean Composite(LAInfoDeep out, LAInfoDeep LA, ReferenceDecompressor referenceDecompressor);
-
-    protected abstract boolean Composite(LAInfoDeepRI out, LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor);
-    protected abstract boolean Step(LAInfoDeep out, int zRefIndex, ReferenceDecompressor referenceDecompressor);
-    protected abstract boolean Step(LAInfoDeepRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor);
-    protected abstract boolean Step(LAInfo out, int zRefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;
-    protected abstract boolean Step(LAInfoRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException;
+    protected abstract boolean Composite(LAInfo out, LAInfo LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException;
+    protected abstract boolean Composite(LAInfoRI out, LAInfoRI LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException;
+    protected abstract boolean Composite(LAInfoDeep out, LAInfoDeep LA, ReferenceDecompressor referenceDecompressor, boolean checkDip);
+    protected abstract boolean Composite(LAInfoDeepRI out, LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor, boolean checkDip);
+    protected abstract boolean Step(LAInfoDeep out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip);
+    protected abstract boolean Step(LAInfoDeepRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip);
+    protected abstract boolean Step(LAInfo out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException;
+    protected abstract boolean Step(LAInfoRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException;
 
     protected boolean Step(GenericLAInfo out, int zRefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
         if(out instanceof LAInfo) {
-            return Step((LAInfo) out, zRefIndex, referenceDecompressor);
+            return Step((LAInfo) out, zRefIndex, referenceDecompressor, true);
         }
         else if(out instanceof LAInfoRI) {
-            return Step((LAInfoRI) out, zRefIndex, referenceDecompressor);
+            return Step((LAInfoRI) out, zRefIndex, referenceDecompressor, true);
         }
         else if(out instanceof LAInfoDeep) {
-            return Step((LAInfoDeep) out, zRefIndex, referenceDecompressor);
+            return Step((LAInfoDeep) out, zRefIndex, referenceDecompressor, true);
         }
         else {
-            return Step((LAInfoDeepRI) out, zRefIndex, referenceDecompressor);
+            return Step((LAInfoDeepRI) out, zRefIndex, referenceDecompressor, true);
         }
     }
 
@@ -171,22 +167,21 @@ public abstract class GenericLAInfo {
 
     protected boolean Composite(GenericLAInfo out, GenericLAInfo LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
         if(LA instanceof  LAInfo) {
-            return Composite((LAInfo) out, (LAInfo) LA, referenceDecompressor);
+            return Composite((LAInfo) out, (LAInfo) LA, referenceDecompressor, true);
         }
         else if(LA instanceof  LAInfoRI) {
-            return Composite((LAInfoRI) out, (LAInfoRI) LA, referenceDecompressor);
+            return Composite((LAInfoRI) out, (LAInfoRI) LA, referenceDecompressor, true);
         }
         else if(LA instanceof  LAInfoDeep) {
-            return Composite((LAInfoDeep) out, (LAInfoDeep) LA, referenceDecompressor);
+            return Composite((LAInfoDeep) out, (LAInfoDeep) LA, referenceDecompressor, true);
         }
         else  {
-            return Composite((LAInfoDeepRI) out, (LAInfoDeepRI) LA, referenceDecompressor);
+            return Composite((LAInfoDeepRI) out, (LAInfoDeepRI) LA, referenceDecompressor, true);
         }
     }
 
     protected abstract boolean isLAThresholdZero();
     protected abstract boolean isZCoeffZero();
-
     protected abstract boolean DetectDip(Complex z);
     protected abstract boolean Stage0DetectDip(Complex z);
     protected abstract boolean DetectDip(MantExpComplex z);

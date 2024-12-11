@@ -94,7 +94,7 @@ public class LAInfoDeepRI extends LAInfoBaseDeep {
     }
 
     @Override
-    protected boolean Step(LAInfoDeepRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Step(LAInfoDeepRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         MantExpComplex z = LAReference.f.getArrayDeepValue(referenceDecompressor, Fractal.referenceDeep, zRefIndex);
         MantExp ChebyMagz = z.chebyshevNorm();
 
@@ -139,11 +139,11 @@ public class LAInfoDeepRI extends LAInfoBaseDeep {
         out.StepLength = StepLength + 1;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
+        return checkDip && outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
     }
 
     @Override
-    protected boolean Composite(LAInfoDeepRI out, LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfoDeepRI out, LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         int zRefIndex = LA.RefIndex;
         MantExpComplex z = LAReference.f.getArrayDeepValue(referenceDecompressor, Fractal.referenceDeep, zRefIndex);
         MantExp ChebyMagz = z.chebyshevNorm();
@@ -213,14 +213,14 @@ public class LAInfoDeepRI extends LAInfoBaseDeep {
         out.StepLength = LA.StepLength + StepLength;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
+        return checkDip && temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
     }
 
     @Override
     protected LAInfoDeepRI Composite(LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor)  {
         LAInfoDeepRI Result = new LAInfoDeepRI();
 
-        Composite(Result, LA, referenceDecompressor);
+        Composite(Result, LA, referenceDecompressor, false);
         return Result;
     }
 
@@ -228,7 +228,7 @@ public class LAInfoDeepRI extends LAInfoBaseDeep {
     protected GenericLAInfo Step(int RefIndex, ReferenceDecompressor referenceDecompressor) {
         LAInfoDeepRI Result = new LAInfoDeepRI();
 
-        Step(Result, RefIndex, referenceDecompressor);
+        Step(Result, RefIndex, referenceDecompressor, false);
         return Result;
     }
 

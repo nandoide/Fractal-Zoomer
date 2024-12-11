@@ -40,7 +40,7 @@ public class LAInfoDeepDetection2FullRI extends LAInfoDeepFullRI {
     }
 
     @Override
-    protected boolean Step(LAInfoDeepRI out1, int zRefIndex, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Step(LAInfoDeepRI out1, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
 
         LAInfoDeepDetection2FullRI out = (LAInfoDeepDetection2FullRI)out1;
 
@@ -96,10 +96,10 @@ public class LAInfoDeepDetection2FullRI extends LAInfoDeepFullRI {
         out.StepLength = StepLength + 1;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return outMinMag.compareToBothPositive(MinMag.multiply(Stage0DipDetectionThreshold2)) < 0;
+        return checkDip && outMinMag.compareToBothPositive(MinMag.multiply(Stage0DipDetectionThreshold2)) < 0;
     }
     @Override
-    protected boolean Composite(LAInfoDeepRI out1, LAInfoDeepRI LA1, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfoDeepRI out1, LAInfoDeepRI LA1, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
 
         LAInfoDeepDetection2FullRI out = (LAInfoDeepDetection2FullRI)out1;
         LAInfoDeepDetection2FullRI LA = (LAInfoDeepDetection2FullRI)LA1;
@@ -181,14 +181,14 @@ public class LAInfoDeepDetection2FullRI extends LAInfoDeepFullRI {
         out.StepLength = LA.StepLength + StepLength;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return temp.compareToBothPositive(MinMag.multiply(DipDetectionThreshold2)) < 0;
+        return checkDip && temp.compareToBothPositive(MinMag.multiply(DipDetectionThreshold2)) < 0;
     }
 
     @Override
     protected LAInfoDeepDetection2FullRI Composite(LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor)  {
         LAInfoDeepDetection2FullRI Result = new LAInfoDeepDetection2FullRI();
 
-        Composite(Result, LA, referenceDecompressor);
+        Composite(Result, LA, referenceDecompressor, false);
         return Result;
     }
 
@@ -201,7 +201,7 @@ public class LAInfoDeepDetection2FullRI extends LAInfoDeepFullRI {
     protected GenericLAInfo Step(int RefIndex, ReferenceDecompressor referenceDecompressor) {
         LAInfoDeepDetection2FullRI Result = new LAInfoDeepDetection2FullRI();
 
-        Step(Result, RefIndex, referenceDecompressor);
+        Step(Result, RefIndex, referenceDecompressor, false);
         return Result;
     }
 

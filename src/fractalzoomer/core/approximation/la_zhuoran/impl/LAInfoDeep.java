@@ -109,7 +109,7 @@ public class LAInfoDeep extends LAInfoBaseDeep {
     public Complex getRefDouble() {return new MantExpComplex(RefExp, RefRe, RefIm).toComplex();}
 
     @Override
-    protected boolean Step(LAInfoDeep out, int zRefIndex, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Step(LAInfoDeep out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
 
         MantExpComplex z = LAReference.f.getArrayDeepValue(referenceDecompressor, Fractal.referenceDeep, zRefIndex);
 
@@ -158,19 +158,19 @@ public class LAInfoDeep extends LAInfoBaseDeep {
         out.StepLength = StepLength + 1;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
+        return checkDip && outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
     }
 
     @Override
     protected GenericLAInfo Step(int zRefIndex, ReferenceDecompressor referenceDecompressor)  {
         LAInfoDeep Result = new LAInfoDeep();
 
-        Step(Result, zRefIndex, referenceDecompressor);
+        Step(Result, zRefIndex, referenceDecompressor, false);
         return Result;
     }
 
     @Override
-    protected boolean Composite(LAInfoDeep out, LAInfoDeep LA, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfoDeep out, LAInfoDeep LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         MantExpComplex z = new MantExpComplex(LA.RefExp, LA.RefRe, LA.RefIm);
         MantExp ChebyMagz = z.chebyshevNorm();
 
@@ -241,14 +241,14 @@ public class LAInfoDeep extends LAInfoBaseDeep {
         out.StepLength = LA.StepLength + StepLength;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
+        return checkDip && temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
     }
 
     @Override
     protected LAInfoDeep Composite(LAInfoDeep LA, ReferenceDecompressor referenceDecompressor)  {
         LAInfoDeep Result = new LAInfoDeep();
 
-        Composite(Result, LA, referenceDecompressor);
+        Composite(Result, LA, referenceDecompressor, false);
         return Result;
     }
 

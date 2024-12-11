@@ -40,7 +40,7 @@ public class LAInfoDeepDetection2Full extends LAInfoDeepFull {
     }
 
     @Override
-    protected boolean Step(LAInfoDeep out1, int zRefIndex, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Step(LAInfoDeep out1, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
 
         LAInfoDeepDetection2Full out = (LAInfoDeepDetection2Full)out1;
 
@@ -99,18 +99,18 @@ public class LAInfoDeepDetection2Full extends LAInfoDeepFull {
         out.StepLength = StepLength + 1;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return outMinMag.compareToBothPositive(MinMag.multiply(Stage0DipDetectionThreshold2)) < 0;
+        return checkDip && outMinMag.compareToBothPositive(MinMag.multiply(Stage0DipDetectionThreshold2)) < 0;
     }
     @Override
     protected GenericLAInfo Step(int zRefIndex, ReferenceDecompressor referenceDecompressor)  {
         LAInfoDeepDetection2Full Result = new LAInfoDeepDetection2Full();
 
-        Step(Result, zRefIndex, referenceDecompressor);
+        Step(Result, zRefIndex, referenceDecompressor, false);
         return Result;
     }
 
     @Override
-    protected boolean Composite(LAInfoDeep out1, LAInfoDeep LA1, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfoDeep out1, LAInfoDeep LA1, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
 
         LAInfoDeepDetection2Full out = (LAInfoDeepDetection2Full)out1;
         LAInfoDeepDetection2Full LA = (LAInfoDeepDetection2Full)LA1;
@@ -194,14 +194,14 @@ public class LAInfoDeepDetection2Full extends LAInfoDeepFull {
         out.StepLength = LA.StepLength + StepLength;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return temp.compareToBothPositive(MinMag.multiply(DipDetectionThreshold2)) < 0;
+        return checkDip && temp.compareToBothPositive(MinMag.multiply(DipDetectionThreshold2)) < 0;
     }
 
     @Override
     protected LAInfoDeepDetection2Full Composite(LAInfoDeep LA, ReferenceDecompressor referenceDecompressor)  {
         LAInfoDeepDetection2Full Result = new LAInfoDeepDetection2Full();
 
-        Composite(Result, LA, referenceDecompressor);
+        Composite(Result, LA, referenceDecompressor, false);
         return Result;
     }
 

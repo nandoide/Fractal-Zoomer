@@ -35,7 +35,7 @@ public class LAInfoDetection2 extends LAInfo {
     }
 
     @Override
-    protected boolean Step(LAInfo out1, int zRefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
+    protected boolean Step(LAInfo out1, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException {
 
         LAInfoDetection2 out = (LAInfoDetection2)out1;
 
@@ -76,7 +76,7 @@ public class LAInfoDetection2 extends LAInfo {
         out.StepLength = StepLength + 1;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return out.MinMag < MinMag * Stage0DipDetectionThreshold2;
+        return checkDip && out.MinMag < MinMag * Stage0DipDetectionThreshold2;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class LAInfoDetection2 extends LAInfo {
     }
 
     @Override
-    protected boolean Composite(LAInfo out1, LAInfo LA1, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
+    protected boolean Composite(LAInfo out1, LAInfo LA1, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException {
 
         LAInfoDetection2 out = (LAInfoDetection2)out1;
         LAInfoDetection2 LA = (LAInfoDetection2)LA1;
@@ -143,7 +143,7 @@ public class LAInfoDetection2 extends LAInfo {
         out.StepLength = LA.StepLength + StepLength;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return temp < MinMag * DipDetectionThreshold2;
+        return checkDip && temp < MinMag * DipDetectionThreshold2;
     }
 
     @Override

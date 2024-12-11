@@ -13,7 +13,7 @@ public class ApproximationDefaultSettings {
     public static double BLA3ValidRadiusSCale = 0x1.0p-24;
     public static double RootDivisor = 4;
     public static int NthRootOption = 1;
-    public static int fakePeriodLimit = 64;
+    public static int fakePeriodLimit = 16;
 
     public static int SERIES_APPROXIMATION_TERMS = 5;
     public static long SERIES_APPROXIMATION_OOM_DIFFERENCE = 2;

@@ -61,27 +61,27 @@ public abstract class LAInfoBaseDeep extends GenericLAInfo {
     }
 
     @Override
-    protected boolean Composite(LAInfo out, LAInfo LA, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfo out, LAInfo LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         return false;
     }
 
     @Override
-    protected boolean Composite(LAInfoRI out, LAInfoRI LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
+    protected boolean Composite(LAInfoRI out, LAInfoRI LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException {
         return false;
     }
 
     @Override
-    protected boolean Step(LAInfoDeepRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Step(LAInfoDeepRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         return false;
     }
 
     @Override
-    protected boolean Step(LAInfo out, int zRefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
+    protected boolean Step(LAInfo out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException {
         return false;
     }
 
     @Override
-    protected boolean Step(LAInfoRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
+    protected boolean Step(LAInfoRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException {
         return false;
     }
 
@@ -101,7 +101,7 @@ public abstract class LAInfoBaseDeep extends GenericLAInfo {
     }
 
     @Override
-    protected boolean Composite(LAInfoDeepRI out, LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfoDeepRI out, LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         return false;
     }
 
@@ -116,7 +116,7 @@ public abstract class LAInfoBaseDeep extends GenericLAInfo {
     }
 
     @Override
-    protected boolean Step(LAInfoDeep out, int zRefIndex, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Step(LAInfoDeep out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         return false;
     }
 
@@ -126,7 +126,7 @@ public abstract class LAInfoBaseDeep extends GenericLAInfo {
     }
 
     @Override
-    protected boolean Composite(LAInfoDeep out, LAInfoDeep LA, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfoDeep out, LAInfoDeep LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
         return false;
     }
 

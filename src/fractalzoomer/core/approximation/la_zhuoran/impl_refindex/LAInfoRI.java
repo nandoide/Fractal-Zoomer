@@ -82,7 +82,7 @@ public class LAInfoRI extends LAInfoBase {
     }
 
     @Override
-    protected boolean Step(LAInfoRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
+    protected boolean Step(LAInfoRI out, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException {
         Complex z = LAReference.f.getArrayValue(referenceDecompressor, Fractal.reference, zRefIndex);
         double ChebyMagz = z.chebyshevNorm();
 
@@ -116,7 +116,7 @@ public class LAInfoRI extends LAInfoBase {
         out.StepLength = StepLength + 1;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return out.LAThreshold < LAThreshold * Stage0DipDetectionThreshold;
+        return checkDip && out.LAThreshold < LAThreshold * Stage0DipDetectionThreshold;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class LAInfoRI extends LAInfoBase {
     }
 
     @Override
-    protected boolean Composite(LAInfoRI out, LAInfoRI LA, ReferenceDecompressor referenceDecompressor) throws InvalidCalculationException {
+    protected boolean Composite(LAInfoRI out, LAInfoRI LA, ReferenceDecompressor referenceDecompressor, boolean checkDip) throws InvalidCalculationException {
         int zRefIndex = LA.RefIndex;
         Complex z = LAReference.f.getArrayValue(referenceDecompressor, Fractal.reference, zRefIndex);
         Complex ZCoeff = new Complex(ZCoeffRe, ZCoeffIm);
@@ -176,7 +176,7 @@ public class LAInfoRI extends LAInfoBase {
         out.StepLength = LA.StepLength + StepLength;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return temp < LAThreshold * DipDetectionThreshold;
+        return checkDip && temp < LAThreshold * DipDetectionThreshold;
     }
 
     @Override

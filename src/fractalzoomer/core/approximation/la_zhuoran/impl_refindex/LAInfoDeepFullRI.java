@@ -88,7 +88,7 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
     }
 
     @Override
-    protected boolean Step(LAInfoDeepRI out1, int zRefIndex, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Step(LAInfoDeepRI out1, int zRefIndex, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
 
         LAInfoDeepFullRI out = (LAInfoDeepFullRI)out1;
 
@@ -139,7 +139,7 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
         out.StepLength = StepLength + 1;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
+        return checkDip && outLAThreshold.compareToBothPositive(LAThreshold.multiply(Stage0DipDetectionThreshold)) < 0;
     }
 
     @Override
@@ -149,7 +149,7 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
     }
 
     @Override
-    protected boolean Composite(LAInfoDeepRI out1, LAInfoDeepRI LA1, ReferenceDecompressor referenceDecompressor) {
+    protected boolean Composite(LAInfoDeepRI out1, LAInfoDeepRI LA1, ReferenceDecompressor referenceDecompressor, boolean checkDip) {
 
         LAInfoDeepFullRI out = (LAInfoDeepFullRI)out1;
         LAInfoDeepFullRI LA = (LAInfoDeepFullRI)LA1;
@@ -226,14 +226,14 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
         out.StepLength = LA.StepLength + StepLength;
         out.NextStageLAIndex = NextStageLAIndex;
 
-        return temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
+        return checkDip && temp.compareToBothPositive(LAThreshold.multiply(DipDetectionThreshold)) < 0;
     }
 
     @Override
     protected LAInfoDeepFullRI Composite(LAInfoDeepRI LA, ReferenceDecompressor referenceDecompressor)  {
         LAInfoDeepFullRI Result = new LAInfoDeepFullRI();
 
-        Composite(Result, LA, referenceDecompressor);
+        Composite(Result, LA, referenceDecompressor, false);
         return Result;
     }
 
@@ -273,7 +273,7 @@ public class LAInfoDeepFullRI extends LAInfoDeepRI {
     protected GenericLAInfo Step(int RefIndex, ReferenceDecompressor referenceDecompressor) {
         LAInfoDeepFullRI Result = new LAInfoDeepFullRI();
 
-        Step(Result, RefIndex, referenceDecompressor);
+        Step(Result, RefIndex, referenceDecompressor, false);
         return Result;
     }
 
