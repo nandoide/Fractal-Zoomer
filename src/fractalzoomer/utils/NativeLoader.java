@@ -28,8 +28,11 @@ public class NativeLoader {
     public static final String[] mpfrGeneralVcpkgMsvcExtraWinLibs = {"gmp-10.dll"};
     private static String[] winLibs;
     private static String[] linuxLibs;
+    private static String[] macosLibs;
     public static final String mpfrWinLib = "mpfr.dll";
     public static final String mpirWinLib = "mpir.dll";
+    public static final String mpfrMacosArmLib = "libmpfr.6.dylib";
+    public static final String gmpMacosArmLib = "libgmp.10.dylib";
 
     public static void init() {
 
@@ -65,6 +68,13 @@ public class NativeLoader {
             }
             winLibs = new String[resultList.size()];
             winLibs = resultList.toArray(winLibs);
+        }
+        else if(Platform.isMac()) {
+            System.out.println("Macos Platform");
+            System.out.println(Platform.RESOURCE_PREFIX);
+            System.out.println(Platform.RESOURCE_PREFIX);
+            macosLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrMacosArmLib, 
+                                        TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + gmpMacosArmLib};
         }
         else {
             linuxLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrLinuxLib};
@@ -191,7 +201,11 @@ public class NativeLoader {
         tmpdir = Files.createTempDirectory(globalTempDir, libDir);
         tmpdir.toFile().deleteOnExit();
 
-        String[] libs = Platform.isWindows() ? winLibs : linuxLibs;
+        String[] libs = 
+                Platform.isWindows() ? winLibs : 
+                Platform.isLinux() ? linuxLibs : 
+                Platform.isMac() ? macosLibs : 
+                new String[0];
 
         for(String lib : libs) {
             InputStream in = NativeLoader.class.getResourceAsStream(resourcesDir + "/" + lib);

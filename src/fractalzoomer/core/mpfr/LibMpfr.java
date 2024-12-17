@@ -49,8 +49,8 @@ public class LibMpfr {
         if(!TaskRender.LOAD_MPFR) {
             MPFR_LOAD_ERROR = new Exception("Disabled loading of mpfr");
         }
-        else if(!Platform.isWindows() && !Platform.isLinux()) {
-            MPFR_LOAD_ERROR = new Exception("Cannot load mpfr if the platform is not windows or linux");
+        else if(!Platform.isWindows() && !Platform.isLinux() && !Platform.isMac()) {
+            MPFR_LOAD_ERROR = new Exception("Cannot load mpfr if the platform is not windows, mac or linux");
         }
         else {
             try {
@@ -114,6 +114,7 @@ public class LibMpfr {
     private static void loadLibMpfr() throws Exception {
 
         String libName;
+        String gmpLibName = null;
 
         if(Platform.isWindows()) {
             if(TaskRender.MPFR_WINDOWS_ARCHITECTURE.isEmpty()) {
@@ -122,13 +123,28 @@ public class LibMpfr {
             }
             libName = TaskRender.MPFR_WINDOWS_ARCHITECTURE + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrWinLib;
         }
+        else if(Platform.isMac()) {
+            System.out.println("Loading mpfr for mac");
+            System.out.println("Architecture: " + TaskRender.generalArchitecture);
+            System.out.println("Resource prefix: " + Platform.RESOURCE_PREFIX);
+            libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrMacosArmLib;
+            gmpLibName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.gmpMacosArmLib;
+        }
         else {
             libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrLinuxLib;
         }
 
-        System.out.println("Loading " + libName);
-
         try {
+            if (Platform.isMac()) {
+                System.out.println("Loading " + gmpLibName);
+                String nativeLibDir = NativeLoader.tmpdir.resolve(TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX).toAbsolutePath().toString();
+                System.out.println("@@@@@Native lib dir: " + nativeLibDir);
+                System.setProperty("jna.library.path", nativeLibDir);
+                NativeLibrary.getInstance(NativeLoader.tmpdir.resolve(gmpLibName).toAbsolutePath().toString());
+                // System.out.println("Loading " + gmpLibName);
+                // load(NativeLoader.tmpdir.resolve(gmpLibName).toAbsolutePath().toString());
+            }
+            System.out.println("Loading " + libName);
             load(NativeLoader.tmpdir.resolve(libName).toAbsolutePath().toString());
             return;
         }
@@ -187,7 +203,7 @@ public class LibMpfr {
 
         if(!mpfrHasError()) {
 
-            if(Platform.isWindows()) {
+            if(Platform.isWindows() || Platform.isMac()) {
                 __gmp_version = NativeLibrary.getProcess() // library is already loaded and linked.
                         .getGlobalVariableAddress("__gmp_version") // &(const char* __gmp_version)
                         .getPointer(0) // const char* __gmp_version
@@ -198,7 +214,7 @@ public class LibMpfr {
 
             mpfr_version = mpfr_get_version();
 
-            if(Platform.isWindows()) {
+            if(Platform.isWindows() || Platform.isMac()) {
                 System.out.println(" GMP Version: " + __gmp_version);
             }
             System.out.println("MPFR Version: " + mpfr_version);
