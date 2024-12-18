@@ -13354,14 +13354,20 @@ public class MainWindow extends JFrame implements Constants {
         UIManager.put( "Component.hideMnemonics", false );
 
         try {
-            Font f = Font.createFont(Font.TRUETYPE_FONT, MainWindow.class.getResourceAsStream("/fractalzoomer/fonts/segoeui.ttf"));
-            f = f.deriveFont(Font.PLAIN, 12);
-            UIManager.put("defaultFont", f);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(f);
+            if(SystemInfo.isMacOS) { 
+                CommonFunctions.setUIFontSize(12); 
+            } else { 
+                Font f = Font.createFont(Font.TRUETYPE_FONT, MainWindow.class.getResourceAsStream("/fractalzoomer/fonts/segoeui.ttf")); 
+                f = f.deriveFont(Font.PLAIN, 12); 
+                UIManager.put("defaultFont", f); 
+                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(f);
+            }
         } catch (Exception ex) {
             CommonFunctions.setUIFontSize(12);
         }
     }
+    
+    
 
     public boolean hasTransformedImage() {
         return lastAction >= 0;
