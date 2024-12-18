@@ -38,6 +38,10 @@ public class NativeLoader {
 
     }
 
+    public static boolean isMacArm() {
+        return "darwin-aarch64".equals(Platform.RESOURCE_PREFIX);
+    }
+
     static {
 
         List<String> resultList = new ArrayList<>();
@@ -69,12 +73,9 @@ public class NativeLoader {
             winLibs = new String[resultList.size()];
             winLibs = resultList.toArray(winLibs);
         }
-        else if(Platform.isMac()) {
-            System.out.println("Macos Platform");
-            System.out.println(Platform.RESOURCE_PREFIX);
-            System.out.println(Platform.RESOURCE_PREFIX);
+        else if(isMacArm()) {
             macosLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrMacosArmLib, 
-                                        TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + gmpMacosArmLib};
+                                      TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + gmpMacosArmLib};
         }
         else {
             linuxLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrLinuxLib};
@@ -204,7 +205,7 @@ public class NativeLoader {
         String[] libs = 
                 Platform.isWindows() ? winLibs : 
                 Platform.isLinux() ? linuxLibs : 
-                Platform.isMac() ? macosLibs : 
+                isMacArm() ? macosLibs : 
                 new String[0];
 
         for(String lib : libs) {
