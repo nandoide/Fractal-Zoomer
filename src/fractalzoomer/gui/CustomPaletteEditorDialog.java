@@ -1,6 +1,7 @@
 
 package fractalzoomer.gui;
 
+import com.formdev.flatlaf.util.SystemInfo;
 import de.articdive.jnoise.core.api.functions.Interpolation;
 import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
 import de.articdive.jnoise.generators.noisegen.opensimplex.FastSimplexNoiseGenerator;
@@ -424,7 +425,11 @@ public class CustomPaletteEditorDialog extends JDialog {
             }
             else {
                 textfields[k].setPreferredSize(new Dimension(26, 26));
-                textfields[k].setFont(new Font(textfields[k].getFont().getFontName(), Font.PLAIN, 11));
+                if(SystemInfo.isMacOS) {
+                    textfields[k].setFont(new Font(textfields[k].getFont().getFontName(), Font.PLAIN, 10));
+                } else {
+                    textfields[k].setFont(new Font(textfields[k].getFont().getFontName(), Font.PLAIN, 11));
+                }
             }
             textfields[k].setCaretPosition(0);
             oldColor = textfields[k].getBackground();

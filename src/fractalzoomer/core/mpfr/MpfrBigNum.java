@@ -80,6 +80,7 @@ public class MpfrBigNum {
 
         algorithm = LibMpfr.getAlgorithm();
         use_threads = LibMpfr.hasThreadSupport() && TaskRender.USE_THREADS_IN_BIGNUM_LIBS && precision >= LibMpfr.getThreadThreshold() && Runtime.getRuntime().availableProcessors() >= 2 ? 1 : 0;
+        System.out.println("MpfrBigNum reinitialized with precision: " + precision + " algorithm: " + algorithm + " use_threads: " + use_threads);
     }
 
     private MpfrMemory mpfrMemory;

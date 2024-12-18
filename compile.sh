@@ -29,20 +29,21 @@ export MPDIR=~/CODE/out
 # Obtener la ruta de instalación de libomp
 LIBOMP_PREFIX=$(brew --prefix libomp)
 
-export CFLAGS="-O2 -pedantic -fomit-frame-pointer -m64 -fPIC -fopenmp"
+export CFLAGS="-O2 -pedantic -fomit-frame-pointer -m64 -fPIC -fopenmp -fthread-jumps" 
 export PATH="${LIBOMP_PREFIX}/bin:$PATH"
 export LDFLAGS="-L${LIBOMP_PREFIX}/lib"
 export CPPFLAGS="-I${LIBOMP_PREFIX}/include"
+export CC="gcc -std=gnu11"
 
 cd ~/CODE/gmp-6.3.0
 
-# ./configure --enable-static=yes --enable-shared=yes --with-pic=yes
-# make clean
-# make -j$NPROC
+./configure --enable-static=yes --enable-shared=yes --with-pic=yes
+make clean
+make -j$NPROC
 
 
 # cd ~/CODE/mpfr-4.2.1
 # make clean
 # ./configure  --enable-static=yes --enable-shared=yes --with-pic=yes --with-gmp=~/CODE/gmp-6.3.0
 # make -j$NPROC
-make check
+# make check
