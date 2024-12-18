@@ -1,11 +1,9 @@
 bin/
-FractalZoomer.jar
-compile_java.sh
-compile.sh
-FZpreferences.ini
+*.jar
 sources.txt
 ColorMaps/
-UserDefinedFunctions.java
+*.java
 .DS_Store
-.log
-.class
+*.log
+*.class
+*.ini
