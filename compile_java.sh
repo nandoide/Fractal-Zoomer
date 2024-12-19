@@ -19,8 +19,12 @@ else
     NPROC=$(sysctl -n hw.ncpu)
 fi
 
-# BIN="../Fractal-Zoomer-Work/bin"
-BIN="bin"
+# Create the output directory if it doesn't exist
+if [ ! -d "../Fractal-Zoomer-Work" ]; then
+    mkdir ../Fractal-Zoomer-Work
+fi
+BIN="../Fractal-Zoomer-Work/bin"
+
 # Clean up previous builds
 rm -rf $BIN
 mkdir -p $BIN
@@ -29,28 +33,25 @@ mkdir -p $BIN
 find src -name "*.java" > sources.txt
 javac --release 8 -Xlint:-options -d $BIN -cp "lib/*" @sources.txt
 
-# exit 0
 # Create the MANIFEST.MF file
 echo "Manifest-Version: 1.0" > $BIN/MANIFEST.MF
 echo "Main-Class: $MAIN_CLASS" >> $BIN/MANIFEST.MF
-echo -n "Class-Path: " >> $BIN/MANIFEST.MF
-for jar in lib/*.jar; do
-    echo -n "$jar " >> $BIN/MANIFEST.MF
-done
-echo "" >> $BIN/MANIFEST.MF
 
+# Extract and deploy the JAR libraries
+cwd=$(pwd)
+echo "Extracting JAR libraries..."
+cd $BIN
+for jar in $cwd/lib/*.jar; do
+    jar -xf $jar
+done
+echo "Coying resources..."
+cd $cwd
 cp /Users/nandoide/CODE/mpfr-4.2.1/src/.libs/libmpfr.6.dylib  /Users/nandoide/CODE/Fractal-Zoomer/src/fractalzoomer/native/general/darwin-aarch64
 cp /Users/nandoide/CODE/gmp-6.3.0/.libs/libgmp.10.dylib  /Users/nandoide/CODE/Fractal-Zoomer/src/fractalzoomer/native/general/darwin-aarch64
-# alternative doesn't work
-# cp /opt/homebrew/opt/gmp/lib/libgmp.10.dylib /Users/nandoide/CODE/Fractal-Zoomer/src/fractalzoomer/native/general/darwin-aarch64
 
 # Copy the fractalzoomer/color_maps directory to the $BIN directory
 cp -r src/fractalzoomer/color_maps $BIN/fractalzoomer/
 cp -r src/fractalzoomer/native $BIN/fractalzoomer/
-
-# Copy the JAR libraries to the $BIN directory
-mkdir -p $BIN/lib
-cp lib/*.jar $BIN/lib/
 
 #  Copy other resources (e.g., images) to the $BIN directory
 cp -r src/fractalzoomer/icons $BIN/fractalzoomer/

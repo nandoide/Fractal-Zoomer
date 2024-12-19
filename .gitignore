@@ -1,9 +1,1 @@
-bin/
-*.jar
-sources.txt
-ColorMaps/
-*.java
 .DS_Store
-*.log
-*.class
-*.ini
