@@ -73,6 +73,8 @@ if [ "$FAST_MODE" = false ] && [ "$ULTRAFAST_MODE" = false ]; then
     cd $cwd
     cp /Users/nandoide/CODE/mpfr-4.2.1/src/.libs/libmpfr.6.dylib  /Users/nandoide/CODE/Fractal-Zoomer/src/fractalzoomer/native/general/darwin-aarch64
     cp /Users/nandoide/CODE/gmp-6.3.0/.libs/libgmp.10.dylib  /Users/nandoide/CODE/Fractal-Zoomer/src/fractalzoomer/native/general/darwin-aarch64
+    # cp /Users/nandoide/CODE/mpir-mpir-3.0.0/.libs/libmpir.23.dylib  /Users/nandoide/CODE/Fractal-Zoomer/src/fractalzoomer/native/general/darwin-x86_64
+    cp /Users/nandoide/CODE/mpir-mpir-3.0.0/.libs/libmpir.23.dylib  /Users/nandoide/CODE/Fractal-Zoomer/src/fractalzoomer/native/general/darwin-aarch64
 
     # Copy the fractalzoomer/color_maps directory to the $BIN directory
     cp -r src/fractalzoomer/color_maps $BIN/fractalzoomer/

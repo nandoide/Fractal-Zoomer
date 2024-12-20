@@ -13354,23 +13354,9 @@ public class MainWindow extends JFrame implements Constants {
         UIManager.put( "Component.hideMnemonics", false );
 
         try {
-            // if(SystemInfo.isMacOS) { 
-            //     CommonFunctions.setUIFontSize(14); 
-            // } else { 
-            //     Font f = Font.createFont(Font.TRUETYPE_FONT, MainWindow.class.getResourceAsStream("/fractalzoomer/fonts/segoeui.ttf")); 
-            //     f = f.deriveFont(Font.PLAIN, 12); 
-            //     UIManager.put("defaultFont", f); 
-            //     GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(f);
-            // }
             if(SystemInfo.isMacOS) {
                 String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-
-                // System.out.println("Available fonts on this system:");
-                // for (String fontName : fontNames) {
-                //     System.out.println(fontName);
-                // }
-                // Check if SansSerif exists
-                String fontToCheck = "Optima";
+                String fontToCheck = "Microsoft Sans Serif";
                 boolean fontExists = false;
 
                 for (String fontName : fontNames) {
@@ -13381,10 +13367,12 @@ public class MainWindow extends JFrame implements Constants {
                 }
                 if(fontExists) {
                     System.out.println("Font exists");
-                    UIManager.put("defaultFont", new Font(fontToCheck, Font.PLAIN, 14));
+                    UIManager.put("defaultFont", new Font(fontToCheck, Font.PLAIN, 12));
                 } else {
+                    System.out.println("Font does not exist, using default system font");
                     CommonFunctions.setUIFontSize(12);
                 }
+                CommonFunctions.setUIFontSize(12);
             } else {
                 Font f = Font.createFont(Font.TRUETYPE_FONT, MainWindow.class.getResourceAsStream("/fractalzoomer/fonts/segoeui.ttf"));
                 f = f.deriveFont(Font.PLAIN, 12);
