@@ -34,6 +34,7 @@ public class NativeLoader {
     public static final String mpirWinLib = "mpir.dll";
     public static final String mpfrMacosArmLib = "libmpfr.6.dylib";
     public static final String gmpMacosArmLib = "libgmp.10.dylib";
+    public static final String ompMacosArmLib = "libomp.dylib";
     public static final String mpirMacosX86Lib = "libmpir.23.dylib";
 
     public static void init() {
@@ -82,7 +83,8 @@ public class NativeLoader {
         }
         else if(isMacArm()) {
             macosLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrMacosArmLib, 
-                                      TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + gmpMacosArmLib};
+                                      TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + gmpMacosArmLib,
+                                      TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + ompMacosArmLib};
         }
         else if(isMacX86()) {
             macosX86Libs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpirMacosX86Lib};

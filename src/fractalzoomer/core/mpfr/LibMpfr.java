@@ -117,6 +117,7 @@ public class LibMpfr {
 
         String libName;
         String gmpLibName = null;
+        String ompLibName = null;
 
         if(Platform.isWindows()) {
             if(TaskRender.MPFR_WINDOWS_ARCHITECTURE.isEmpty()) {
@@ -128,13 +129,16 @@ public class LibMpfr {
         else if(isMacArm()) {
             libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrMacosArmLib;
             gmpLibName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.gmpMacosArmLib;
+            ompLibName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.ompMacosArmLib;
         }
         else {
             libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrLinuxLib;
         }
 
         try {
-            if (isMacArm()) {         
+            if (isMacArm()) {  
+                String ompLibPath = NativeLoader.tmpdir.resolve(ompLibName).toAbsolutePath().toString();
+                NativeLibrary.getInstance(ompLibPath);       
                 String gmpLibPath = NativeLoader.tmpdir.resolve(gmpLibName).toAbsolutePath().toString();
                 NativeLibrary.getInstance(gmpLibPath);
             }
