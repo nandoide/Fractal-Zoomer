@@ -16,7 +16,7 @@ NPROC=$(sysctl -n hw.ncpu)
 
 compile_gmp() {
     cd ~/CODE/gmp-6.3.0
-    ./configure --enable-static=yes --enable-shared=yes --with-pic=yes
+    ./configure --enable-static=yes --enable-shared=yes --with-pic=yes --enable-fat=yes --host=arm64-apple-darwin
     make clean
     make -j$NPROC
 }
