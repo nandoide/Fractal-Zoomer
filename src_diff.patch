@@ -1,0 +1,303 @@
+diff --git a/src/fractalzoomer/core/mpfr/LibMpfr.java b/src/fractalzoomer/core/mpfr/LibMpfr.java
+index e2090aff..73e54c16 100644
+--- a/src/fractalzoomer/core/mpfr/LibMpfr.java
++++ b/src/fractalzoomer/core/mpfr/LibMpfr.java
+@@ -31,6 +31,10 @@ public class LibMpfr {
+         return MPFR_LOAD_ERROR != null;
+     }
+ 
++    public static boolean isMacArm() {
++        return "darwin-aarch64".equals(Platform.RESOURCE_PREFIX);
++    }
++
+     static {
+         if (Native.SIZE_T_SIZE == 4) {
+             SIZE_T_CLASS = LibMpfr.SizeT4.class;
+@@ -49,8 +53,8 @@ public class LibMpfr {
+         if(!TaskRender.LOAD_MPFR) {
+             MPFR_LOAD_ERROR = new Exception("Disabled loading of mpfr");
+         }
+-        else if(!Platform.isWindows() && !Platform.isLinux()) {
+-            MPFR_LOAD_ERROR = new Exception("Cannot load mpfr if the platform is not windows or linux");
++        else if(!Platform.isWindows() && !Platform.isLinux() && !isMacArm()) {
++            MPFR_LOAD_ERROR = new Exception("Cannot load mpfr if the platform is not windows, mac(arm) or linux");
+         }
+         else {
+             try {
+@@ -109,11 +113,11 @@ public class LibMpfr {
+         return !TaskRender.MPFR_WINDOWS_ARCHITECTURE.contains(TaskRender.generalArchitecture) ? MpfrBigNum.THREADS_THRESHOLD_WITH_MPIR : MpfrBigNum.THREADS_THRESHOLD;
+     }
+ 
+-
+-
+     private static void loadLibMpfr() throws Exception {
+ 
+         String libName;
++        String gmpLibName = null;
++        String ompLibName = null;
+ 
+         if(Platform.isWindows()) {
+             if(TaskRender.MPFR_WINDOWS_ARCHITECTURE.isEmpty()) {
+@@ -122,13 +126,22 @@ public class LibMpfr {
+             }
+             libName = TaskRender.MPFR_WINDOWS_ARCHITECTURE + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrWinLib;
+         }
++        else if(isMacArm()) {
++            libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrMacosArmLib;
++            gmpLibName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.gmpMacosArmLib;
++            ompLibName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.ompMacosArmLib;
++        }
+         else {
+             libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpfrLinuxLib;
+         }
+ 
+-        System.out.println("Loading " + libName);
+-
+         try {
++            if (isMacArm()) {  
++                String ompLibPath = NativeLoader.tmpdir.resolve(ompLibName).toAbsolutePath().toString();
++                NativeLibrary.getInstance(ompLibPath);       
++                String gmpLibPath = NativeLoader.tmpdir.resolve(gmpLibName).toAbsolutePath().toString();
++                NativeLibrary.getInstance(gmpLibPath);
++            }
+             load(NativeLoader.tmpdir.resolve(libName).toAbsolutePath().toString());
+             return;
+         }
+@@ -187,7 +200,7 @@ public class LibMpfr {
+ 
+         if(!mpfrHasError()) {
+ 
+-            if(Platform.isWindows()) {
++            if(Platform.isWindows() || isMacArm()) {
+                 __gmp_version = NativeLibrary.getProcess() // library is already loaded and linked.
+                         .getGlobalVariableAddress("__gmp_version") // &(const char* __gmp_version)
+                         .getPointer(0) // const char* __gmp_version
+@@ -198,7 +211,7 @@ public class LibMpfr {
+ 
+             mpfr_version = mpfr_get_version();
+ 
+-            if(Platform.isWindows()) {
++            if(Platform.isWindows() || isMacArm()) {
+                 System.out.println(" GMP Version: " + __gmp_version);
+             }
+             System.out.println("MPFR Version: " + mpfr_version);
+diff --git a/src/fractalzoomer/core/mpfr/MpfrBigNum.java b/src/fractalzoomer/core/mpfr/MpfrBigNum.java
+index 1859bc19..0f928934 100644
+--- a/src/fractalzoomer/core/mpfr/MpfrBigNum.java
++++ b/src/fractalzoomer/core/mpfr/MpfrBigNum.java
+@@ -80,6 +80,7 @@ public class MpfrBigNum {
+ 
+         algorithm = LibMpfr.getAlgorithm();
+         use_threads = LibMpfr.hasThreadSupport() && TaskRender.USE_THREADS_IN_BIGNUM_LIBS && precision >= LibMpfr.getThreadThreshold() && Runtime.getRuntime().availableProcessors() >= 2 ? 1 : 0;
++        System.out.println("MpfrBigNum reinitialized with precision: " + precision + " algorithm: " + algorithm + " use_threads: " + use_threads);
+     }
+ 
+     private MpfrMemory mpfrMemory;
+diff --git a/src/fractalzoomer/core/mpfr/mpfr_t.java b/src/fractalzoomer/core/mpfr/mpfr_t.java
+index 908310c9..e898c11e 100644
+--- a/src/fractalzoomer/core/mpfr/mpfr_t.java
++++ b/src/fractalzoomer/core/mpfr/mpfr_t.java
+@@ -9,7 +9,20 @@ public class mpfr_t extends Pointer {
+     public static final int SIZE;
+ 
+     static {
+-        SIZE = Platform.isWindows() ? Native.SIZE_T_SIZE == 8 ? 24 : 16 : Native.SIZE_T_SIZE == 8 ? 32 : 16;
++        // SIZE = Platform.isWindows() ? Native.SIZE_T_SIZE == 8 ? 24 : 16 : Native.SIZE_T_SIZE == 8 ? 32 : 16;
++        if (Platform.isWindows() || Platform.isMac()) {
++            if (Native.SIZE_T_SIZE == 8) {
++                SIZE = 24;
++            } else {
++                SIZE = 16;
++            }
++        } else {
++            if (Native.SIZE_T_SIZE == 8) {
++                SIZE = 32;
++            } else {
++                SIZE = 16;
++            }
++}
+     }
+ 
+     /**
+diff --git a/src/fractalzoomer/core/mpir/LibMpir.java b/src/fractalzoomer/core/mpir/LibMpir.java
+index 0f21b04d..883d2b04 100644
+--- a/src/fractalzoomer/core/mpir/LibMpir.java
++++ b/src/fractalzoomer/core/mpir/LibMpir.java
+@@ -35,8 +35,8 @@ public class LibMpir {
+         if(!TaskRender.LOAD_MPIR) {
+             MPIR_LOAD_ERROR = new Exception("Disabled loading of mpir");
+         }
+-        else if(!Platform.isWindows()) {
+-            MPIR_LOAD_ERROR = new Exception("Cannot load mpir if the platform is not windows");
++        else if(!Platform.isWindows() && !NativeLoader.isMacX86()) {
++            MPIR_LOAD_ERROR = new Exception("Cannot load mpir if the platform is not windows or macos X86");
+         }
+         else if(!Platform.is64Bit()) {
+             MPIR_LOAD_ERROR = new Exception("Cannot load mpir if the OS is 32 bit");
+@@ -63,7 +63,16 @@ public class LibMpir {
+ 
+     private static void loadLibMpir() throws Exception {
+ 
+-        String libName = TaskRender.MPIR_WINDOWS_ARCHITECTURE + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpirWinLib;
++        String libName = null;
++        if (Platform.isWindows()) {
++            libName = TaskRender.MPIR_WINDOWS_ARCHITECTURE + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpirWinLib;
++        }
++        else if (NativeLoader.isMacX86()) {
++            libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpirMacosX86Lib;
++        }
++        else {
++            throw new Exception("Cannot load mpir on this platform");
++        }
+ 
+         System.out.println("Loading " + libName);
+ 
+diff --git a/src/fractalzoomer/gui/CustomPaletteEditorDialog.java b/src/fractalzoomer/gui/CustomPaletteEditorDialog.java
+index 9b937013..7b64a188 100644
+--- a/src/fractalzoomer/gui/CustomPaletteEditorDialog.java
++++ b/src/fractalzoomer/gui/CustomPaletteEditorDialog.java
+@@ -1,6 +1,7 @@
+ 
+ package fractalzoomer.gui;
+ 
++import com.formdev.flatlaf.util.SystemInfo;
+ import de.articdive.jnoise.core.api.functions.Interpolation;
+ import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
+ import de.articdive.jnoise.generators.noisegen.opensimplex.FastSimplexNoiseGenerator;
+@@ -424,7 +425,11 @@ public class CustomPaletteEditorDialog extends JDialog {
+             }
+             else {
+                 textfields[k].setPreferredSize(new Dimension(26, 26));
+-                textfields[k].setFont(new Font(textfields[k].getFont().getFontName(), Font.PLAIN, 11));
++                if(SystemInfo.isMacOS) {
++                    textfields[k].setFont(new Font(textfields[k].getFont().getFontName(), Font.PLAIN, 10));
++                } else {
++                    textfields[k].setFont(new Font(textfields[k].getFont().getFontName(), Font.PLAIN, 11));
++                }
+             }
+             textfields[k].setCaretPosition(0);
+             oldColor = textfields[k].getBackground();
+diff --git a/src/fractalzoomer/main/MainWindow.java b/src/fractalzoomer/main/MainWindow.java
+index 4c86dcee..73b9698c 100644
+--- a/src/fractalzoomer/main/MainWindow.java
++++ b/src/fractalzoomer/main/MainWindow.java
+@@ -13354,14 +13354,37 @@ public class MainWindow extends JFrame implements Constants {
+         UIManager.put( "Component.hideMnemonics", false );
+ 
+         try {
+-            Font f = Font.createFont(Font.TRUETYPE_FONT, MainWindow.class.getResourceAsStream("/fractalzoomer/fonts/segoeui.ttf"));
+-            f = f.deriveFont(Font.PLAIN, 12);
+-            UIManager.put("defaultFont", f);
+-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(f);
++            if(SystemInfo.isMacOS) {
++                String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
++                String fontToCheck = "Microsoft Sans Serif";
++                boolean fontExists = false;
++
++                for (String fontName : fontNames) {
++                    if (fontName.equalsIgnoreCase(fontToCheck)) {
++                        fontExists = true;
++                        break;
++                    }
++                }
++                if(fontExists) {
++                    System.out.println("Font exists");
++                    UIManager.put("defaultFont", new Font(fontToCheck, Font.PLAIN, 12));
++                } else {
++                    System.out.println("Font does not exist, using default system font");
++                    CommonFunctions.setUIFontSize(12);
++                }
++                CommonFunctions.setUIFontSize(12);
++            } else {
++                Font f = Font.createFont(Font.TRUETYPE_FONT, MainWindow.class.getResourceAsStream("/fractalzoomer/fonts/segoeui.ttf"));
++                f = f.deriveFont(Font.PLAIN, 12);
++                UIManager.put("defaultFont", f);
++                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(f);
++            }
+         } catch (Exception ex) {
+             CommonFunctions.setUIFontSize(12);
+         }
+     }
++    
++    
+ 
+     public boolean hasTransformedImage() {
+         return lastAction >= 0;
+diff --git a/src/fractalzoomer/native/general/darwin-aarch64/libgmp.10.dylib b/src/fractalzoomer/native/general/darwin-aarch64/libgmp.10.dylib
+new file mode 100755
+index 00000000..47a4d913
+Binary files /dev/null and b/src/fractalzoomer/native/general/darwin-aarch64/libgmp.10.dylib differ
+diff --git a/src/fractalzoomer/native/general/darwin-aarch64/libmpfr.6.dylib b/src/fractalzoomer/native/general/darwin-aarch64/libmpfr.6.dylib
+new file mode 100755
+index 00000000..225d958c
+Binary files /dev/null and b/src/fractalzoomer/native/general/darwin-aarch64/libmpfr.6.dylib differ
+diff --git a/src/fractalzoomer/native/general/darwin-aarch64/libomp.dylib b/src/fractalzoomer/native/general/darwin-aarch64/libomp.dylib
+new file mode 100644
+index 00000000..1618168f
+Binary files /dev/null and b/src/fractalzoomer/native/general/darwin-aarch64/libomp.dylib differ
+diff --git a/src/fractalzoomer/native/general/darwin-x86-64/libmpir.23.dylib b/src/fractalzoomer/native/general/darwin-x86-64/libmpir.23.dylib
+new file mode 100755
+index 00000000..2a35b60e
+Binary files /dev/null and b/src/fractalzoomer/native/general/darwin-x86-64/libmpir.23.dylib differ
+diff --git a/src/fractalzoomer/utils/NativeLoader.java b/src/fractalzoomer/utils/NativeLoader.java
+index 3a1d9a21..8e42f62b 100644
+--- a/src/fractalzoomer/utils/NativeLoader.java
++++ b/src/fractalzoomer/utils/NativeLoader.java
+@@ -28,13 +28,28 @@ public class NativeLoader {
+     public static final String[] mpfrGeneralVcpkgMsvcExtraWinLibs = {"gmp-10.dll"};
+     private static String[] winLibs;
+     private static String[] linuxLibs;
++    private static String[] macosLibs;
++    private static String[] macosX86Libs;
+     public static final String mpfrWinLib = "mpfr.dll";
+     public static final String mpirWinLib = "mpir.dll";
++    public static final String mpfrMacosArmLib = "libmpfr.6.dylib";
++    public static final String gmpMacosArmLib = "libgmp.10.dylib";
++    public static final String ompMacosArmLib = "libomp.dylib";
++    public static final String mpirMacosX86Lib = "libmpir.23.dylib";
+ 
+     public static void init() {
+ 
+     }
+ 
++    public static boolean isMacArm() {
++        return "darwin-aarch64".equals(Platform.RESOURCE_PREFIX);
++    }
++
++    public static boolean isMacX86() {
++        System.out.println(Platform.RESOURCE_PREFIX);
++        return "darwin-x86-64".equals(Platform.RESOURCE_PREFIX);
++    }
++
+     static {
+ 
+         List<String> resultList = new ArrayList<>();
+@@ -66,6 +81,14 @@ public class NativeLoader {
+             winLibs = new String[resultList.size()];
+             winLibs = resultList.toArray(winLibs);
+         }
++        else if(isMacArm()) {
++            macosLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrMacosArmLib, 
++                                      TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + gmpMacosArmLib,
++                                      TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + ompMacosArmLib};
++        }
++        else if(isMacX86()) {
++            macosX86Libs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpirMacosX86Lib};
++        }
+         else {
+             linuxLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrLinuxLib};
+         }
+@@ -191,7 +214,12 @@ public class NativeLoader {
+         tmpdir = Files.createTempDirectory(globalTempDir, libDir);
+         tmpdir.toFile().deleteOnExit();
+ 
+-        String[] libs = Platform.isWindows() ? winLibs : linuxLibs;
++        String[] libs = 
++                Platform.isWindows() ? winLibs : 
++                Platform.isLinux() ? linuxLibs : 
++                isMacArm() ? macosLibs : 
++                isMacX86() ? macosX86Libs :
++                new String[0];
+ 
+         for(String lib : libs) {
+             InputStream in = NativeLoader.class.getResourceAsStream(resourcesDir + "/" + lib);

@@ -29,13 +29,11 @@ public class NativeLoader {
     private static String[] winLibs;
     private static String[] linuxLibs;
     private static String[] macosLibs;
-    private static String[] macosX86Libs;
     public static final String mpfrWinLib = "mpfr.dll";
     public static final String mpirWinLib = "mpir.dll";
     public static final String mpfrMacosArmLib = "libmpfr.6.dylib";
     public static final String gmpMacosArmLib = "libgmp.10.dylib";
     public static final String ompMacosArmLib = "libomp.dylib";
-    public static final String mpirMacosX86Lib = "libmpir.23.dylib";
 
     public static void init() {
 
@@ -43,11 +41,6 @@ public class NativeLoader {
 
     public static boolean isMacArm() {
         return "darwin-aarch64".equals(Platform.RESOURCE_PREFIX);
-    }
-
-    public static boolean isMacX86() {
-        System.out.println(Platform.RESOURCE_PREFIX);
-        return "darwin-x86-64".equals(Platform.RESOURCE_PREFIX);
     }
 
     static {
@@ -85,9 +78,6 @@ public class NativeLoader {
             macosLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrMacosArmLib, 
                                       TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + gmpMacosArmLib,
                                       TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + ompMacosArmLib};
-        }
-        else if(isMacX86()) {
-            macosX86Libs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpirMacosX86Lib};
         }
         else {
             linuxLibs = new String[] {TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + mpfrLinuxLib};
@@ -218,7 +208,6 @@ public class NativeLoader {
                 Platform.isWindows() ? winLibs : 
                 Platform.isLinux() ? linuxLibs : 
                 isMacArm() ? macosLibs : 
-                isMacX86() ? macosX86Libs :
                 new String[0];
 
         for(String lib : libs) {
