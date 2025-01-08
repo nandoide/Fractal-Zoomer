@@ -35,8 +35,8 @@ public class LibMpir {
         if(!TaskRender.LOAD_MPIR) {
             MPIR_LOAD_ERROR = new Exception("Disabled loading of mpir");
         }
-        else if(!Platform.isWindows() && !NativeLoader.isMacX86()) {
-            MPIR_LOAD_ERROR = new Exception("Cannot load mpir if the platform is not windows or macos X86");
+        else if(!Platform.isWindows()) {
+            MPIR_LOAD_ERROR = new Exception("Cannot load mpir if the platform is not windows");
         }
         else if(!Platform.is64Bit()) {
             MPIR_LOAD_ERROR = new Exception("Cannot load mpir if the OS is 32 bit");
@@ -63,16 +63,7 @@ public class LibMpir {
 
     private static void loadLibMpir() throws Exception {
 
-        String libName = null;
-        if (Platform.isWindows()) {
-            libName = TaskRender.MPIR_WINDOWS_ARCHITECTURE + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpirWinLib;
-        }
-        else if (NativeLoader.isMacX86()) {
-            libName = TaskRender.generalArchitecture + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpirMacosX86Lib;
-        }
-        else {
-            throw new Exception("Cannot load mpir on this platform");
-        }
+        String libName = TaskRender.MPIR_WINDOWS_ARCHITECTURE + "/" + Platform.RESOURCE_PREFIX + "/" + NativeLoader.mpirWinLib;
 
         System.out.println("Loading " + libName);
 
