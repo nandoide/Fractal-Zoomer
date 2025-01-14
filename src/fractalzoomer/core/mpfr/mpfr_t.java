@@ -9,20 +9,7 @@ public class mpfr_t extends Pointer {
     public static final int SIZE;
 
     static {
-        // SIZE = Platform.isWindows() ? Native.SIZE_T_SIZE == 8 ? 24 : 16 : Native.SIZE_T_SIZE == 8 ? 32 : 16;
-        if (Platform.isWindows() || Platform.isMac()) {
-            if (Native.SIZE_T_SIZE == 8) {
-                SIZE = 24;
-            } else {
-                SIZE = 16;
-            }
-        } else {
-            if (Native.SIZE_T_SIZE == 8) {
-                SIZE = 32;
-            } else {
-                SIZE = 16;
-            }
-}
+        SIZE = Platform.isWindows() ? Native.SIZE_T_SIZE == 8 ? 24 : 16 : Native.SIZE_T_SIZE == 8 ? 32 : 16;
     }
 
     /**
